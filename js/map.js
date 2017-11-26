@@ -52,7 +52,7 @@ function generateOffers(array) {
   for (var i = 0; i < 8; i++) {
     array[i] = {};
     array[i].author = {};
-    array[i].author.avatar = 'img/avatars/user{{0' + temporaryAvatars[i] + '}}.png';
+    array[i].author.avatar = 'img/avatars/user0' + temporaryAvatars[i] + '.png';
     array[i].offer = {};
     array[i].offer.title = offerTitles[temporaryTitles[i]];
     array[i].offer.price = getRandomInteger(1000, 1000000);
@@ -67,7 +67,7 @@ function generateOffers(array) {
     array[i].location = {};
     array[i].location.x = getRandomInteger(300, 900);
     array[i].location.y = getRandomInteger(100, 500);
-    array[i].offer.address = '{{' + array[i].location.x + '}}, {{' + array[i].location.y + '}}';
+    array[i].offer.address = array[i].location.x + ', ' + array[i].location.y;
   }
 }
 
@@ -95,14 +95,14 @@ function getRandomInteger(min, max) {
 function generateUniqueIntegersArray(min, max, expectedLength) {
   var numbers = [];
   var swap = 0;
-  var count = 0;
+  var i = 0;
 
-  while (count < expectedLength) {
+  while (i < expectedLength) {
     swap = getRandomInteger(min, max);
 
     if (numbers.indexOf(swap) === -1) {
       numbers.push(swap);
-      count++;
+      i++;
     } else {
       continue;
     }
@@ -129,3 +129,30 @@ function generateFeaturesCollection(array) {
 
   return featuresCollection;
 }
+
+// Получение и отображение на сайте карты с пользовательскими пинами
+var map = document.querySelector('.map');
+map.classList.remove('map--faded');
+
+// Создание фрагмента документа и заполнение его разметкой по шаблону
+// Данный фрагмент создает на карте пины (<button><img></button>)
+var pinsContainer = map.querySelector('.map__pins');
+var pinsFragment = document.createDocumentFragment();
+
+for (var j = 0; j < offers.length; j++) {
+  var pin = document.createElement('button');
+  pin.className = 'map__pin';
+  pin.style.left = offers[j].location.x + 'px';
+  pin.style.top = offers[j].location.y + 'px';
+
+  var img = document.createElement('img');
+  img.src = offers[j].author.avatar;
+  img.width = 40;
+  img.height = 40;
+  img.draggable = false;
+
+  pin.appendChild(img);
+  pinsFragment.appendChild(pin);
+}
+
+pinsContainer.appendChild(pinsFragment);
