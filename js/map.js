@@ -142,8 +142,10 @@ var pinsFragment = document.createDocumentFragment();
 for (var j = 0; j < offers.length; j++) {
   var pin = document.createElement('button');
   pin.className = 'map__pin';
-  pin.style.left = offers[j].location.x + 'px';
-  pin.style.top = offers[j].location.y + 'px';
+  var pinShiftX = 23; // смещение пина по X с учетом его размеров (в px)
+  var pinShiftY = 62; // смещение пина по Y с учетом его размеров (в px)
+  pin.style.left = offers[j].location.x + pinShiftX + 'px';
+  pin.style.top = offers[j].location.y + pinShiftY + 'px';
 
   var img = document.createElement('img');
   img.src = offers[j].author.avatar;
