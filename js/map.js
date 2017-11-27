@@ -46,22 +46,22 @@ generateOffers(offers);
 * @param {array} array — входной массив для заполнения объектами
 */
 function generateOffers(array) {
-  var temporaryAvatars = generateUniqueIntegersArray(1, 8, 8);
-  var temporaryTitles = generateUniqueIntegersArray(0, 7, 8);
+  var uniqueAvatars = generateUniqueIntegersArray(1, 8, 8);
+  var uniqueTitles = generateUniqueIntegersArray(0, 7, 8);
 
   for (var i = 0; i < 8; i++) {
     array[i] = {};
     array[i].author = {};
-    array[i].author.avatar = 'img/avatars/user0' + temporaryAvatars[i] + '.png';
+    array[i].author.avatar = 'img/avatars/user0' + uniqueAvatars[i] + '.png';
     array[i].offer = {};
-    array[i].offer.title = offerTitles[temporaryTitles[i]];
+    array[i].offer.title = offerTitles[uniqueTitles[i]];
     array[i].offer.price = getRandomInteger(1000, 1000000);
     array[i].offer.type = offerTypes[getRandomInteger(0, offerTypes.length - 1)];
     array[i].offer.rooms = getRandomInteger(1, 5);
     array[i].offer.guests = getRandomInteger(0, 200);
     array[i].offer.checkin = offerTimes[getRandomInteger(0, offerTimes.length - 1)];
     array[i].offer.checkout = offerTimes[getRandomInteger(0, offerTimes.length - 1)];
-    array[i].offer.features = generateFeaturesCollection(offerFeatures);
+    array[i].offer.features = generateUniqueCollection(offerFeatures);
     array[i].offer.description = '';
     array[i].offer.photos = [];
     array[i].location = {};
@@ -112,22 +112,99 @@ function generateUniqueIntegersArray(min, max, expectedLength) {
 }
 
 /**
-* Функция, генерирующая случайный набор уникальных преимуществ на основе вариантов из входного массива (offerFeatures)
-* @function generateFeaturesCollection
-* @param {array} array — входной массив с вариантами для компоновки
-* @return {array} featuresCollection — искомая подборка уникальных преимуществ случайной длины
+* Функция, генерирующая уникальный новый набор элементов на основе вариантов из входного массива (например, offerFeatures)
+* @function generateUniqueCollection
+* @param {array} array — входной массив с вариантами для перекомпоновки
+* @return {array} uniqueCollection — новая подборка уникальных элементов случайной длины
 */
-function generateFeaturesCollection(array) {
+function generateUniqueCollection(array) {
   var maxNumber = array.length - 1;
   var collectionLength = getRandomInteger(1, maxNumber);
   var uniqueIndexes = generateUniqueIntegersArray(0, maxNumber, collectionLength);
-  var featuresCollection = [];
+  var uniqueCollection = [];
 
   for (var i = 0; i < collectionLength; i++) {
-    featuresCollection.push(array[uniqueIndexes[i]]);
+    uniqueCollection.push(array[uniqueIndexes[i]]);
   }
 
-  return featuresCollection;
+  return uniqueCollection;
+}
+
+/**
+* Функция, конвертирующая представление элемента по базе в более понятное обозначение на русском языке
+* @function convertTypeToExplanation
+* @param {string} key — на вход принимается элемент для расшифровки
+* @return {string} explanation — конвертированное значение
+*/
+function convertTypeToExplanation(key) {
+  var explanation = 'Квартира';
+
+  switch (key) {
+    case 'flat':
+      explanation = 'Квартира';
+      break;
+    case 'house':
+      explanation = 'Дом';
+      break;
+    case 'bungalo':
+      explanation = 'Бунгало';
+      break;
+  }
+
+  return explanation;
+}
+
+/**
+* Функция, удаляющая все дочерние элементы (теги) заданного родительского узла
+* @function cleanupChildNodes
+* @param {object} parentNode — родительский узел для очистки
+*/
+function cleanupChildNodes(parentNode) {
+  var childNodes = parentNode.querySelectorAll('*');
+
+  for (var i = 0; i < childNodes.length; i++) {
+    parentNode.removeChild(childNodes[i]);
+  }
+}
+
+/**
+* Функция, создающая на основе массива преимуществ (offers[i].offer.features) соответствующую HTML разметку
+* @param {array} array — входной массив со списком преимуществ
+* @return {object} featuresFragment — фрагмент с готовой HTML разметкой
+*/
+function createFeaturesMarkup(array) {
+  var arrayLength = array.length;
+  var featuresFragment = document.createDocumentFragment();
+
+  for (var i = 0; i < arrayLength; i++) {
+    var featureTag = document.createElement('li');
+    featureTag.className = 'feature';
+
+    switch (array[i]) {
+      case 'wifi':
+        featureTag.classList.add('feature--wifi');
+        break;
+      case 'dishwasher':
+        featureTag.classList.add('feature--dishwasher');
+        break;
+      case 'parking':
+        featureTag.classList.add('feature--parking');
+        break;
+      case 'washer':
+        featureTag.classList.add('feature--washer');
+        break;
+      case 'elevator':
+        featureTag.classList.add('feature--elevator');
+        break;
+      case 'conditioner':
+        featureTag.classList.add('feature--conditioner');
+        break;
+    }
+
+    featuresFragment.appendChild(featureTag);
+  }
+
+  return featuresFragment;
 }
 
 // Получение и отображение на сайте карты с пользовательскими пинами
@@ -158,3 +235,38 @@ for (var j = 0; j < offers.length; j++) {
 }
 
 pinsContainer.appendChild(pinsFragment);
+
+
+// Получение шаблона объявлений и заполнение его данными из объектов offers[ {}..{}..{} ]
+var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
+var offersFragment = document.createDocumentFragment();
+
+for (var k = 0; k < offers.length; k++) {
+  var offer = offerTemplate.cloneNode(true);
+  var avatar = offer.querySelector('.popup__avatar');
+  var title = offer.querySelector('h3');
+  var address = offer.querySelector('small');
+  var price = offer.querySelector('.popup__price');
+  var type = offer.querySelector('h4');
+  var capacity = offer.querySelector('h4 + p');
+  var stayTime = offer.querySelector('h4 + p + p');
+  var description = offer.querySelector('ul + p');
+  var featuresList = offer.querySelector('.popup__features');
+
+  offer.className = 'map__card';
+  avatar.src = offers[k].author.avatar;
+  title.textContent = offers[k].offer.title;
+  address.textContent = offers[k].offer.address;
+  price.innerHTML = offers[k].offer.price + '&#x20bd;/ночь';
+  type.textContent = convertTypeToExplanation(offers[k].offer.type);
+  capacity.textContent = offers[k].offer.rooms + ' комнаты для ' + offers[k].offer.guests + ' гостей';
+  stayTime.textContent = 'Заезд после ' + offers[k].offer.checkin + ', выезд до ' + offers[k].offer.checkout;
+  description.textContent = offers[k].offer.description;
+  cleanupChildNodes(featuresList);
+  featuresList.appendChild(createFeaturesMarkup(offers[k].offer.features));
+
+  offersFragment.appendChild(offer);
+}
+
+var insertPoint = map.querySelector('.map__filters-container');
+map.insertBefore(offersFragment, insertPoint);
