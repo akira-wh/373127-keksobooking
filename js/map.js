@@ -1,5 +1,15 @@
 'use strict';
 
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***              БИБЛИОТЕКИ ДАННЫХ (ОБЪЕКТЫ, МАССИВЫ, КОНСТАНТЫ)
+***
+***********************************************************************************
+***********************************************************************************
+*/
+
 // Массив — Заголовки предложений
 var offerTitles = [
   'Большая уютная квартира',
@@ -13,11 +23,17 @@ var offerTitles = [
 ];
 
 // Массив — Типы жилья
-var offerTypes = [
-  'flat',
-  'house',
-  'bungalo'
-];
+// var offerTypes = [
+//   'flat',
+//   'house',
+//   'bungalo'
+// ];
+
+var offerTypes = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
 // Массив — Время checkin и checkout
 var offerTimes = [
@@ -36,38 +52,56 @@ var offerFeatures = [
   'conditioner'
 ];
 
-// Массив объектов, главный — Предложения по недвижимости (заполняется вызовом функции generateOffers())
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***                             ГЕНЕРАЦИЯ ОБЪЯВЛЕНИЙ
+***
+***********************************************************************************
+***********************************************************************************
+*/
+
+// Создание главного массива объявлений и заполнение его объектами данных
 var offers = [];
-generateOffers(offers);
+generateOffers(8, offers);
 
 /**
-* Главная функция, генерирующая во входном массиве 8 объектов с готовыми предложениями по недвижимости
+* Функция, генерирующая во входном массиве объекты с готовыми предложениями по недвижимости
 * @function generateOffers
+* @param {number} expectedNumber — необходимое количество конечных объектов
 * @param {array} array — входной массив для заполнения объектами
 */
-function generateOffers(array) {
-  var uniqueAvatars = generateUniqueIntegersArray(1, 8, 8);
-  var uniqueTitles = generateUniqueIntegersArray(0, 7, 8);
+function generateOffers(expectedNumber, array) {
+  for (var i = 0; i < expectedNumber; i++) {
+    var avatarSerial = i + 1;
+    var swapLocationX = getRandomInteger(300, 900);
+    var swapLocationY = getRandomInteger(100, 500);
 
-  for (var i = 0; i < 8; i++) {
-    array[i] = {};
-    array[i].author = {};
-    array[i].author.avatar = 'img/avatars/user0' + uniqueAvatars[i] + '.png';
-    array[i].offer = {};
-    array[i].offer.title = offerTitles[uniqueTitles[i]];
-    array[i].offer.price = getRandomInteger(1000, 1000000);
-    array[i].offer.type = offerTypes[getRandomInteger(0, offerTypes.length - 1)];
-    array[i].offer.rooms = getRandomInteger(1, 5);
-    array[i].offer.guests = getRandomInteger(0, 200);
-    array[i].offer.checkin = offerTimes[getRandomInteger(0, offerTimes.length - 1)];
-    array[i].offer.checkout = offerTimes[getRandomInteger(0, offerTimes.length - 1)];
-    array[i].offer.features = generateUniqueCollection(offerFeatures);
-    array[i].offer.description = '';
-    array[i].offer.photos = [];
-    array[i].location = {};
-    array[i].location.x = getRandomInteger(300, 900);
-    array[i].location.y = getRandomInteger(100, 500);
-    array[i].offer.address = array[i].location.x + ', ' + array[i].location.y;
+    array[i] = {
+      author: {
+        avatar: 'img/avatars/user0' + avatarSerial + '.png'
+      },
+
+      offer: {
+        title: offerTitles[i],
+        price: getRandomInteger(1000, 1000000),
+        type: getRandomElementFromArray(offerTypes),
+        rooms: getRandomInteger(1, 5),
+        guests: getRandomInteger(0, 200),
+        checkin: getRandomElementFromArray(offerTimes),
+        checkout: getRandomElementFromArray(offerTimes),
+        features: generateUniqueCollection(offerFeatures),
+        description: '',
+        photos: [],
+        address: swapLocationX + ', ' + swapLocationY
+      },
+
+      location: {
+        x: swapLocationX,
+        y: swapLocationY
+      }
+    };
   }
 }
 
@@ -85,30 +119,17 @@ function getRandomInteger(min, max) {
 }
 
 /**
-* Функция, генерирующая массив уникальных целых чисел в заданном диапазоне и заданной длины
-* @function generateUniqueIntegersArray
-* @param {number} min — минимально допустимое число
-* @param {number} max — максимально допустимое число
-* @param {number} expectedLength — желаемая длина выходного массива
-* @return {array} numbers — массив уникальных чисел
+* Функция, выдающая значение рандомного элемента из входного массива
+* @function getRandomElementFromArray
+* @param {arrya} array — входной массив с данными
+* @return {string} requiredElement — искомый рандомный элемент
 */
-function generateUniqueIntegersArray(min, max, expectedLength) {
-  var numbers = [];
-  var swap = 0;
-  var i = 0;
+function getRandomElementFromArray(array) {
+  var maxIndex = array.length - 1;
+  var randomIndex = getRandomInteger(0, maxIndex);
+  var requiredElement = array[randomIndex];
 
-  while (i < expectedLength) {
-    swap = getRandomInteger(min, max);
-
-    if (numbers.indexOf(swap) === -1) {
-      numbers.push(swap);
-      i++;
-    } else {
-      continue;
-    }
-  }
-
-  return numbers;
+  return requiredElement;
 }
 
 /**
@@ -128,6 +149,33 @@ function generateUniqueCollection(array) {
   }
 
   return uniqueCollection;
+}
+
+/**
+* Функция, генерирующая массив уникальных целых чисел в заданном диапазоне и заданной длины
+* @function generateUniqueIntegersArray
+* @param {number} min — минимально допустимое число
+* @param {number} max — максимально допустимое число
+* @param {number} expectedLength — желаемая длина выходного массива
+* @return {array} uniqueArray — массив уникальных чисел
+*/
+function generateUniqueIntegersArray(min, max, expectedLength) {
+  var uniqueArray = [];
+  var swap = 0;
+  var i = 0;
+
+  while (i < expectedLength) {
+    swap = getRandomInteger(min, max);
+
+    if (uniqueArray.indexOf(swap) === -1) {
+      uniqueArray.push(swap);
+      i++;
+    } else {
+      continue;
+    }
+  }
+
+  return uniqueArray;
 }
 
 /**
@@ -154,58 +202,16 @@ function convertTypeToExplanation(key) {
   return explanation;
 }
 
-/**
-* Функция, удаляющая все дочерние элементы (теги) заданного родительского узла
-* @function cleanupChildNodes
-* @param {object} parentNode — родительский узел для очистки
+
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***              СОЗДАНИЕ НЕОБХОДИМОЙ HTML РАЗМЕТКИ ДЛЯ ОБЪЯВЛЕНИЙ
+***
+***********************************************************************************
+***********************************************************************************
 */
-function cleanupChildNodes(parentNode) {
-  var childNodes = parentNode.querySelectorAll('*');
-
-  for (var i = 0; i < childNodes.length; i++) {
-    parentNode.removeChild(childNodes[i]);
-  }
-}
-
-/**
-* Функция, создающая на основе массива преимуществ (offers[i].offer.features) соответствующую HTML разметку
-* @param {array} array — входной массив со списком преимуществ
-* @return {object} featuresFragment — фрагмент с готовой HTML разметкой
-*/
-function createFeaturesMarkup(array) {
-  var arrayLength = array.length;
-  var featuresFragment = document.createDocumentFragment();
-
-  for (var i = 0; i < arrayLength; i++) {
-    var featureTag = document.createElement('li');
-    featureTag.className = 'feature';
-
-    switch (array[i]) {
-      case 'wifi':
-        featureTag.classList.add('feature--wifi');
-        break;
-      case 'dishwasher':
-        featureTag.classList.add('feature--dishwasher');
-        break;
-      case 'parking':
-        featureTag.classList.add('feature--parking');
-        break;
-      case 'washer':
-        featureTag.classList.add('feature--washer');
-        break;
-      case 'elevator':
-        featureTag.classList.add('feature--elevator');
-        break;
-      case 'conditioner':
-        featureTag.classList.add('feature--conditioner');
-        break;
-    }
-
-    featuresFragment.appendChild(featureTag);
-  }
-
-  return featuresFragment;
-}
 
 // Получение и отображение на сайте карты с пользовательскими пинами
 var map = document.querySelector('.map');
@@ -270,3 +276,57 @@ for (var k = 0; k < offers.length; k++) {
 
 var insertPoint = map.querySelector('.map__filters-container');
 map.insertBefore(offersFragment, insertPoint);
+
+
+/**
+* Функция, удаляющая все дочерние элементы (теги) заданного родительского узла
+* @function cleanupChildNodes
+* @param {object} parentNode — родительский узел для очистки
+*/
+function cleanupChildNodes(parentNode) {
+  var childNodes = parentNode.querySelectorAll('*');
+
+  for (var i = 0; i < childNodes.length; i++) {
+    parentNode.removeChild(childNodes[i]);
+  }
+}
+
+/**
+* Функция, создающая на основе массива преимуществ (offers[i].offer.features) соответствующую HTML разметку
+* @param {array} array — входной массив со списком преимуществ
+* @return {object} featuresFragment — фрагмент с готовой HTML разметкой
+*/
+function createFeaturesMarkup(array) {
+  var arrayLength = array.length;
+  var featuresFragment = document.createDocumentFragment();
+
+  for (var i = 0; i < arrayLength; i++) {
+    var featureTag = document.createElement('li');
+    featureTag.className = 'feature';
+
+    switch (array[i]) {
+      case 'wifi':
+        featureTag.classList.add('feature--wifi');
+        break;
+      case 'dishwasher':
+        featureTag.classList.add('feature--dishwasher');
+        break;
+      case 'parking':
+        featureTag.classList.add('feature--parking');
+        break;
+      case 'washer':
+        featureTag.classList.add('feature--washer');
+        break;
+      case 'elevator':
+        featureTag.classList.add('feature--elevator');
+        break;
+      case 'conditioner':
+        featureTag.classList.add('feature--conditioner');
+        break;
+    }
+
+    featuresFragment.appendChild(featureTag);
+  }
+
+  return featuresFragment;
+}
