@@ -249,11 +249,11 @@ function renderPins() {
   for (var i = 0; i < offers.length; i++) {
     var pin = pinTemplate.cloneNode(true);
     var img = pin.querySelector('img');
-    var pinShiftX = 23; // смещение пина по X с учетом его размеров (в px).
-    var pinShiftY = 62; // смещение пина по Y с учетом его размеров (в px).
+    var pinShiftX = 5; // смещение пина по X с учетом его размеров (в px).
+    var pinShiftY = 37; // смещение пина по Y с учетом его размеров (в px).
 
-    pin.style.left = offers[i].location.x + pinShiftX + 'px';
-    pin.style.top = offers[i].location.y + pinShiftY + 'px';
+    pin.style.left = offers[i].location.x - pinShiftX + 'px';
+    pin.style.top = offers[i].location.y - pinShiftY + 'px';
     img.src = offers[i].author.avatar;
 
     pinsFragment.appendChild(pin);
