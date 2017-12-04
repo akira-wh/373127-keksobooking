@@ -311,7 +311,7 @@ function renderOffers() {
     capacity.textContent = offers[i].offer.rooms + ' комнаты для ' + offers[i].offer.guests + ' гостей';
     stayTime.textContent = 'Заезд после ' + offers[i].offer.checkin + ', выезд до ' + offers[i].offer.checkout;
     description.textContent = offers[i].offer.description;
-    cleanupChildNodes(featuresList);
+    featuresList.innerHTML = '';
     featuresList.appendChild(createFeaturesMarkup(offers[i].offer.features));
 
     offersFragment.appendChild(offer);
@@ -340,20 +340,6 @@ function decodePropertyType(externalKey) {
   }
 
   return requestedDescription;
-}
-
-/**
-* Функция, удаляющая все дочерние элементы (теги) заданного DOM узла.
-*
-* @function cleanupChildNodes.
-* @param {object} parentNode — родительский узел для очистки.
-*/
-function cleanupChildNodes(parentNode) {
-  var childNodes = parentNode.querySelectorAll('*');
-
-  for (var i = 0; i < childNodes.length; i++) {
-    parentNode.removeChild(childNodes[i]);
-  }
 }
 
 /**
