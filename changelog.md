@@ -1,3 +1,5 @@
+- **`2.08`** Улучшен код разметки + отрисовки пользовательских пинов.
+
 - **`2.07`** Улучшены все функции, участвующие в создании объявлений.
 Изменения затрагивают `generateOffers()`, `getRandomElementFromArray()`, `determineRightPropertyType()`, `generateUniqueCollection()`, `getNonrepeatingIntegers()`.
 

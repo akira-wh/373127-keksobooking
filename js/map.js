@@ -217,41 +217,58 @@ function getNonrepeatingIntegers(min, max, expectedLength) {
 ***********************************************************************************
 ***********************************************************************************
 ***
-***              СОЗДАНИЕ НЕОБХОДИМОЙ HTML РАЗМЕТКИ ДЛЯ ОБЪЯВЛЕНИЙ
+***         СОЗДАНИЕ РАЗМЕТКИ + ОТРИСОВКА НА КАРТЕ ПОЛЬЗОВАТЕЛЬСКИХ ПИНОВ
 ***
 ***********************************************************************************
 ***********************************************************************************
 */
 
-// Получение и отображение на сайте карты с пользовательскими пинами
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+// Получение и отображение карты пользовательских объявлений
+var offersMap = document.querySelector('.map');
+offersMap.classList.remove('map--faded');
 
-// Создание фрагмента документа и заполнение его разметкой по шаблону
-// Данный фрагмент создает на карте пины (<button><img></button>)
-var pinsContainer = map.querySelector('.map__pins');
-var pinsFragment = document.createDocumentFragment();
+// Создание и отрисовка на карте пользовательских пинов (аватарок-кнопкок)
+var pinsArea = offersMap.querySelector('.map__pins');
+pinsArea.appendChild(createPins());
 
-for (var j = 0; j < offers.length; j++) {
-  var pin = document.createElement('button');
-  pin.className = 'map__pin';
-  var pinShiftX = 23; // смещение пина по X с учетом его размеров (в px)
-  var pinShiftY = 62; // смещение пина по Y с учетом его размеров (в px)
-  pin.style.left = offers[j].location.x + pinShiftX + 'px';
-  pin.style.top = offers[j].location.y + pinShiftY + 'px';
+/**
+* Функция, создающая Document Fragment и заполняющая его HTML разметкой пользовательских пинов.
+* Разметка каждого пина основана на шаблоне <button><img></button> из списка <template>.
+* Количество выходных пинов соответствует количеству объектов-объявлений в массиве offers[].
+*
+* @function createPins
+* @return {object} pinsFragment — Document Fragment с html разметкой
+*/
+function createPins() {
+  var pinsFragment = document.createDocumentFragment();
+  var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
-  var img = document.createElement('img');
-  img.src = offers[j].author.avatar;
-  img.width = 40;
-  img.height = 40;
-  img.draggable = false;
+  for (var i = 0; i < offers.length; i++) {
+    var pin = pinTemplate.cloneNode(true);
+    var img = pin.querySelector('img');
+    var pinShiftX = 23; // смещение пина по X с учетом его размеров (в px)
+    var pinShiftY = 62; // смещение пина по Y с учетом его размеров (в px)
 
-  pin.appendChild(img);
-  pinsFragment.appendChild(pin);
+    pin.style.left = offers[i].location.x + pinShiftX + 'px';
+    pin.style.top = offers[i].location.y + pinShiftY + 'px';
+    img.src = offers[i].author.avatar;
+
+    pinsFragment.appendChild(pin);
+  }
+
+  return pinsFragment;
 }
 
-pinsContainer.appendChild(pinsFragment);
 
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***             СОЗДАНИЕ РАЗМЕТКИ + ОТРИСОВКА НА КАРТЕ ОБЪЯВЛЕНИЙ
+***
+***********************************************************************************
+***********************************************************************************
+*/
 
 // Получение шаблона объявлений и заполнение его данными из объектов offers[ {}..{}..{} ]
 var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
@@ -284,8 +301,8 @@ for (var k = 0; k < offers.length; k++) {
   offersFragment.appendChild(offer);
 }
 
-var insertPoint = map.querySelector('.map__filters-container');
-map.insertBefore(offersFragment, insertPoint);
+var insertPoint = offersMap.querySelector('.map__filters-container');
+offersMap.insertBefore(offersFragment, insertPoint);
 
 /**
 * Функция, конвертирующая представление элемента по базе в более понятное обозначение на русском языке
