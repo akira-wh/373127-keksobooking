@@ -1,3 +1,6 @@
+- **`2.07`** Улучшены все функции, участвующие в создании объявлений.
+Изменения затрагивают `generateOffers()`, `getRandomElementFromArray()`, `determineRightPropertyType()`, `generateUniqueCollection()`, `getNonrepeatingIntegers()`.
+
 - **`2.06`** Упрощена и улучшена главная функция `generateOffers()`.
 
 - **`2.05`** Настроена автозаполнение и отрисовка объявлений на карте.

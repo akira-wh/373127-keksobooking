@@ -4,7 +4,7 @@
 ***********************************************************************************
 ***********************************************************************************
 ***
-***              БИБЛИОТЕКИ ДАННЫХ (ОБЪЕКТЫ, МАССИВЫ, КОНСТАНТЫ)
+***              БИБЛИОТЕКИ ДАННЫХ (ОБЪЕКТЫ, МАССИВЫ, КОНСТАНТЫ etc)
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -22,18 +22,12 @@ var offerTitles = [
   'Неуютное бунгало по колено в воде'
 ];
 
-// Массив — Типы жилья
-// var offerTypes = [
-//   'flat',
-//   'house',
-//   'bungalo'
-// ];
-
-var offerTypes = {
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало'
-};
+// Сложный массив — Типы жилья
+var offerPropertyTypes = [
+  ['flat', 'Квартира'],
+  ['house', 'Дом'],
+  ['bungalo', 'Бунгало']
+];
 
 // Массив — Время checkin и checkout
 var offerTimes = [
@@ -67,7 +61,8 @@ var offers = [];
 generateOffers(8, offers);
 
 /**
-* Функция, генерирующая во входном массиве объекты с готовыми предложениями по недвижимости
+* Функция, заполняющая входной массив объектами-объявлениями по недвижимости
+*
 * @function generateOffers
 * @param {number} expectedNumber — необходимое количество конечных объектов
 * @param {array} array — входной массив для заполнения объектами
@@ -77,6 +72,7 @@ function generateOffers(expectedNumber, array) {
     var avatarSerial = i + 1;
     var swapLocationX = getRandomInteger(300, 900);
     var swapLocationY = getRandomInteger(100, 500);
+    var currentTitle = offerTitles[i];
 
     array[i] = {
       author: {
@@ -86,7 +82,7 @@ function generateOffers(expectedNumber, array) {
       offer: {
         title: offerTitles[i],
         price: getRandomInteger(1000, 1000000),
-        type: getRandomElementFromArray(offerTypes),
+        type: determineRightPropertyType(currentTitle),
         rooms: getRandomInteger(1, 5),
         guests: getRandomInteger(0, 200),
         checkin: getRandomElementFromArray(offerTimes),
@@ -107,6 +103,7 @@ function generateOffers(expectedNumber, array) {
 
 /**
 * Функция, генерирующая случайное целое число в указанном диапазоне (min и max участвуют)
+*
 * @function getRandomInteger
 * @param {number} min — минимально допустимое число
 * @param {number} max — максимально допустимое число
@@ -115,14 +112,16 @@ function generateOffers(expectedNumber, array) {
 function getRandomInteger(min, max) {
   var result = min + Math.random() * (max + 1 - min);
   result = Math.floor(result);
+
   return result;
 }
 
 /**
-* Функция, выдающая значение рандомного элемента из входного массива
+* Функция, выбирающая из входного массива рандомный элемент и отдающая его значение
+*
 * @function getRandomElementFromArray
-* @param {arrya} array — входной массив с данными
-* @return {string} requiredElement — искомый рандомный элемент
+* @param {arrya} array — входной массив
+* @return {string} requiredElement — значение рандомного элемента
 */
 function getRandomElementFromArray(array) {
   var maxIndex = array.length - 1;
@@ -133,73 +132,84 @@ function getRandomElementFromArray(array) {
 }
 
 /**
-* Функция, генерирующая уникальный новый набор элементов на основе вариантов из входного массива (например, offerFeatures)
-* @function generateUniqueCollection
-* @param {array} array — входной массив с вариантами для перекомпоновки
-* @return {array} uniqueCollection — новая подборка уникальных элементов случайной длины
+* Функция, которая определяет по заголовку объявления соответствующий ему тип недвижимости.
+*
+* @function determineRightPropertyType
+* @param {string} workingTitle — входной заголовок объявления
+* @return {string} requiredValue — определенный тип недвижимости
 */
-function generateUniqueCollection(array) {
-  var maxNumber = array.length - 1;
-  var collectionLength = getRandomInteger(1, maxNumber);
-  var uniqueIndexes = generateUniqueIntegersArray(0, maxNumber, collectionLength);
-  var uniqueCollection = [];
+function determineRightPropertyType(workingTitle) {
+  var types = offerPropertyTypes;
+  var flat = 0;
+  var house = 1;
+  var bungalo = 2;
 
-  for (var i = 0; i < collectionLength; i++) {
-    uniqueCollection.push(array[uniqueIndexes[i]]);
+  if (workingTitle.indexOf('квартира') >= 0) {
+    var requiredValue = types[flat][0];
+  } else if (workingTitle.indexOf('дворец') >= 0 || workingTitle.indexOf('домик') >= 0) {
+    requiredValue = types[house][0];
+  } else if (workingTitle.indexOf('бунгало') >= 0) {
+    requiredValue = types[bungalo][0];
+  } else {
+    requiredValue = 'Тип недвижимости неизвестен';
   }
 
-  return uniqueCollection;
+  return requiredValue;
 }
 
 /**
-* Функция, генерирующая массив уникальных целых чисел в заданном диапазоне и заданной длины
-* @function generateUniqueIntegersArray
+* Функция, создающая новый набор элементов на основе вариантов из входного массива.
+* Элементы не повторяются, а их количество не превышает объем входного массива.
+* 1. Узнаем пороговую длину входного массива
+* 2. Генерируем длину новой коллекции (не менее 1 элемента, не более длины входного массива)
+* 3. Создаем временно пустую коллекцию
+* 4. Рандомно выбираем из входного массива элементы для новой коллекции
+* 5. Копируем выбранные элементы
+* 6. Отдаем подборку
+*
+* @function generateUniqueCollection
+* @param {array} array — входной массив с вариантами для перекомпоновки
+* @return {array} collection — новая подборка
+*/
+function generateUniqueCollection(array) {
+  var maxLength = array.length - 1;
+  var newCollectionLength = getRandomInteger(1, maxLength);
+  var collection = [];
+  var selectedElements = getNonrepeatingIntegers(0, maxLength, newCollectionLength);
+
+  for (var i = 0; i < newCollectionLength; i++) {
+    collection.push(array[selectedElements[i]]);
+  }
+
+  return collection;
+}
+
+/**
+* Функция, генерирующая массив неповторяющихся целых чисел в заданном диапазоне и заданной длины
+*
+* @function getNonrepeatingIntegers
 * @param {number} min — минимально допустимое число
 * @param {number} max — максимально допустимое число
-* @param {number} expectedLength — желаемая длина выходного массива
-* @return {array} uniqueArray — массив уникальных чисел
+* @param {number} expectedLength — ожидаемая длина выходного массива
+* @return {array} array — массив рандомных неповторяющихся чисел
 */
-function generateUniqueIntegersArray(min, max, expectedLength) {
-  var uniqueArray = [];
-  var swap = 0;
+function getNonrepeatingIntegers(min, max, expectedLength) {
+  var array = [];
   var i = 0;
+  var unique = -1;
 
   while (i < expectedLength) {
-    swap = getRandomInteger(min, max);
+    var newNumber = getRandomInteger(min, max);
 
-    if (uniqueArray.indexOf(swap) === -1) {
-      uniqueArray.push(swap);
+    if (array.indexOf(newNumber) === unique) {
+      array.push(newNumber);
       i++;
     } else {
       continue;
     }
   }
 
-  return uniqueArray;
-}
-
-/**
-* Функция, конвертирующая представление элемента по базе в более понятное обозначение на русском языке
-* @function convertTypeToExplanation
-* @param {string} key — на вход принимается элемент для расшифровки
-* @return {string} explanation — конвертированное значение
-*/
-function convertTypeToExplanation(key) {
-  var explanation = 'Квартира';
-
-  switch (key) {
-    case 'flat':
-      explanation = 'Квартира';
-      break;
-    case 'house':
-      explanation = 'Дом';
-      break;
-    case 'bungalo':
-      explanation = 'Бунгало';
-      break;
-  }
-
-  return explanation;
+  return array;
 }
 
 
@@ -277,9 +287,35 @@ for (var k = 0; k < offers.length; k++) {
 var insertPoint = map.querySelector('.map__filters-container');
 map.insertBefore(offersFragment, insertPoint);
 
+/**
+* Функция, конвертирующая представление элемента по базе в более понятное обозначение на русском языке
+*
+* @function convertTypeToExplanation
+* @param {string} key — на вход принимается элемент для расшифровки
+* @return {string} explanation — конвертированное значение
+*/
+function convertTypeToExplanation(key) {
+  switch (key) {
+    case 'flat':
+      var explanation = 'Квартира';
+      break;
+    case 'house':
+      explanation = 'Дом';
+      break;
+    case 'bungalo':
+      explanation = 'Бунгало';
+      break;
+    default:
+      explanation = 'Тип недвижимости неопределен';
+      break;
+  }
+
+  return explanation;
+}
 
 /**
 * Функция, удаляющая все дочерние элементы (теги) заданного родительского узла
+*
 * @function cleanupChildNodes
 * @param {object} parentNode — родительский узел для очистки
 */
@@ -293,6 +329,7 @@ function cleanupChildNodes(parentNode) {
 
 /**
 * Функция, создающая на основе массива преимуществ (offers[i].offer.features) соответствующую HTML разметку
+*
 * @param {array} array — входной массив со списком преимуществ
 * @return {object} featuresFragment — фрагмент с готовой HTML разметкой
 */
