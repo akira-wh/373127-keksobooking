@@ -246,12 +246,47 @@ userPin.addEventListener('mouseup', onUserPinFirstClick);
 userPin.addEventListener('keydown', onUserPinFirstEnterPress);
 
 /**
+* Обработчик, активирующий основной функционал сайта по первому клику на управлящем ине.
+* Активирует карту, форму создания объявлений и отрисовывает пины.
+* Удаляет альтернативный отлов того же события (onUserFirstEnterPress) и самого себя после отработки.
+*
+* @function onUserPinFirstClick
+*/
+function onUserPinFirstClick() {
+  activateMap();
+  activateUserForm();
+  renderPins();
+  pinArea.addEventListener('click', onPinClick);
+  userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
+  userPin.removeEventListener('mouseup', onUserPinFirstClick);
+}
+
+/**
+* Обработчик, активирующий основной функционал сайта по первому нажатию ENTER на управляющем пине.
+* Активирует карту, форму создания объявлений и отрисовывает пины.
+* Удаляет альтернативный отлов того же события (onUserPinFirstClick) и самого себя после отработки.
+*
+* @function onUserPinFirstEnterPress
+* @param {object} evt — объект события
+*/
+function onUserPinFirstEnterPress(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activateMap();
+    activateUserForm();
+    renderPins();
+    pinArea.addEventListener('click', onPinClick);
+    userPin.removeEventListener('mouseup', onUserPinFirstClick);
+    userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
+  }
+}
+
+/**
 * Функция, активирующая карту пинов и объявлений.
 * Активация происходит за счет снятия у соответствующего <section> блокирующего класса .map--faded.
 *
-* @function activateOffersMap
+* @function activateMap
 */
-function activateOffersMap() {
+function activateMap() {
   map.classList.remove('map--faded');
 }
 
@@ -270,41 +305,6 @@ function activateUserForm() {
 
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = false;
-  }
-}
-
-/**
-* Обработчик, активирующий основной функционал сайта по первому клику на управлящем ине.
-* Активирует карту, форму создания объявлений и отрисовывает пины.
-* Удаляет альтернативный отлов того же события (onUserFirstEnterPress) и самого себя после отработки.
-*
-* @function onUserPinFirstClick
-*/
-function onUserPinFirstClick() {
-  activateOffersMap();
-  activateUserForm();
-  renderPins();
-  pinArea.addEventListener('click', onPinClick);
-  userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
-  userPin.removeEventListener('mouseup', onUserPinFirstClick);
-}
-
-/**
-* Обработчик, активирующий основной функционал сайта по первому нажатию ENTER на управляющем пине.
-* Активирует карту, форму создания объявлений и отрисовывает пины.
-* Удаляет альтернативный отлов того же события (onUserPinFirstClick) и самого себя после отработки.
-*
-* @function onUserPinFirstEnterPress
-* @param {object} evt — объект события
-*/
-function onUserPinFirstEnterPress(evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    activateOffersMap();
-    activateUserForm();
-    renderPins();
-    pinArea.addEventListener('click', onPinClick);
-    userPin.removeEventListener('mouseup', onUserPinFirstClick);
-    userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
   }
 }
 
@@ -350,7 +350,6 @@ function removeUselessOffer() {
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
 }
-
 
 /*
 ***********************************************************************************
@@ -414,7 +413,7 @@ function renderPins() {
 */
 function renderRequestedOffer(index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
-  var offersFragment = document.createDocumentFragment();
+  var offerFragment = document.createDocumentFragment();
 
   var offer = offerTemplate.cloneNode(true);
   var avatar = offer.querySelector('.popup__avatar');
@@ -438,10 +437,10 @@ function renderRequestedOffer(index) {
   featuresList.innerHTML = '';
   featuresList.appendChild(createFeaturesMarkup(offers[index].offer.features));
 
-  offersFragment.appendChild(offer);
+  offerFragment.appendChild(offer);
 
-  var offersInsertPoint = map.querySelector('.map__filters-container');
-  map.insertBefore(offersFragment, offersInsertPoint);
+  var offerInsertPoint = map.querySelector('.map__filters-container');
+  map.insertBefore(offerFragment, offerInsertPoint);
 }
 
 /**
