@@ -11,6 +11,9 @@
 ***********************************************************************************
 */
 
+// Действующие константы
+var ENTER_KEYCODE = 13;
+
 // Массив — Заголовки предложений.
 var offerTitles = [
   'Большая уютная квартира',
@@ -53,7 +56,7 @@ var offerFeatures = [
 ***********************************************************************************
 ***********************************************************************************
 ***
-***                             ГЕНЕРАЦИЯ ОБЪЯВЛЕНИЙ
+***                           ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -215,32 +218,91 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   return nonrepeatingIntegers;
 }
 
-
 /*
 ***********************************************************************************
 ***********************************************************************************
 ***
-***         СОЗДАНИЕ РАЗМЕТКИ + ОТРИСОВКА НА КАРТЕ ПОЛЬЗОВАТЕЛЬСКИХ ПИНОВ
+***       ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
 ***
 ***********************************************************************************
 ***********************************************************************************
 */
 
-// Получение и отображение карты пользовательских объявлений.
+// Получение карты объявлений и пинов.
 var offersMap = document.querySelector('.map');
-offersMap.classList.remove('map--faded');
 
-// Создание и отрисовка на карте пользовательских пинов (аватарок-кнопкок).
-var pinsArea = offersMap.querySelector('.map__pins');
-pinsArea.appendChild(renderPins());
+// Получение внутренней области заполнения пинами.
+var pinsArea = document.querySelector('.map__pins');
+
+// Получение главного пользовательского пина.
+var userPin = document.querySelector('.map__pin--main');
+
+// Получение формы создания объявлений
+var userForm = document.querySelector('.notice__form');
+
+userPin.addEventListener('mouseup', function () {
+  activateOffersMap();
+  activateUserForm();
+  renderPins();
+  renderOffers();
+});
+
+userPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activateOffersMap();
+    activateUserForm();
+    renderPins();
+    renderOffers();
+  }
+});
 
 /**
-* Функция, создающая Document Fragment и заполняющая его разметкой пользовательских пинов.
-* Разметка каждого пина основана на шаблоне <button><img></button> из списка <template>.
-* Количество пинов на выходе соответствует количеству объектов-объявлений в массиве offers[].
+* Функция, активирующая карту пинов и объявлений.
+* Активация происходит за счет снятия у соответствующего <section> блокирующего класса .map--faded.
+*
+* @function activateOffersMap.
+*/
+function activateOffersMap() {
+  offersMap.classList.remove('map--faded');
+}
+
+/**
+* Функция, активирующая форму создания объявлений.
+* Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled,
+* а также получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
+*
+* @function activateUserForm.
+*/
+function activateUserForm() {
+  userForm.classList.remove('notice__form--disabled');
+
+  var fieldsets = userForm.querySelectorAll('fieldset');
+  var fieldsetsNumber = fieldsets.length - 1;
+
+  for (var i = 0; i < fieldsetsNumber; i++) {
+    fieldsets[i].disabled = false;
+  }
+}
+
+
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***                   СОЗДАНИЕ РАЗМЕТКИ + ОТРИСОВКА НА КАРТЕ ПИНОВ
+***
+***********************************************************************************
+***********************************************************************************
+*/
+
+/**
+* Функция создания и отрисовки пользовательских пинов.
+* Создает Document Fragment, заполняет разметкой и внедряет на страницу.
+* Информационная составляющая снимается с объектов-объявлений массива offers[].
+* Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
+* Количество пинов на выходе соответствует количеству объектов-объявлений offers[].
 *
 * @function renderPins.
-* @return {object} — Document Fragment с html разметкой.
 */
 function renderPins() {
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -259,7 +321,7 @@ function renderPins() {
     pinsFragment.appendChild(pin);
   }
 
-  return pinsFragment;
+  pinsArea.appendChild(pinsFragment);
 }
 
 
@@ -273,17 +335,14 @@ function renderPins() {
 ***********************************************************************************
 */
 
-// Получение в разметке точки вставки объявлений, вставка и отрисовка их на карте.
-var offersInsertPoint = offersMap.querySelector('.map__filters-container');
-offersMap.insertBefore(renderOffers(), offersInsertPoint);
-
 /**
-* Функция, создающая Document Fragment и заполняющая его разметкой пользовательских объявлений.
+* Функция создания и отрисовки пользовательских объявлений.
+* Создает Document Fragment, заполняет разметкой и внедряет на страницу.
+* Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка каждого объявления основана на шаблоне <article class="map__card"> из списка <template>.
-* Количество объявлений на выходе соответствует количеству объектов-объявлений в массиве offers[].
+* Количество объявлений на выходе соответствует количеству объектов-объявлений offers[].
 *
 * @function renderOffers.
-* @return {object} — Document Fragment с html разметкой.
 */
 function renderOffers() {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
@@ -291,7 +350,6 @@ function renderOffers() {
 
   for (var i = 0; i < offers.length; i++) {
     var offer = offerTemplate.cloneNode(true);
-
     var avatar = offer.querySelector('.popup__avatar');
     var title = offer.querySelector('h3');
     var address = offer.querySelector('small');
@@ -317,7 +375,8 @@ function renderOffers() {
     offersFragment.appendChild(offer);
   }
 
-  return offersFragment;
+  var offersInsertPoint = offersMap.querySelector('.map__filters-container');
+  offersMap.insertBefore(offersFragment, offersInsertPoint);
 }
 
 /**
