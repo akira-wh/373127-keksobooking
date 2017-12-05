@@ -69,9 +69,9 @@ generateOffers(8, offers);
 /**
 * Функция, заполняющая входной массив объектами-объявлениями по недвижимости.
 *
-* @function generateOffers.
-* @param {number} expectedNumber — необходимое количество конечных объектов.
-* @param {array} targetArray — входной массив для заполнения объектами.
+* @function generateOffers
+* @param {number} expectedNumber — необходимое количество конечных объектов
+* @param {array} targetArray — входной массив для заполнения объектами
 */
 function generateOffers(expectedNumber, targetArray) {
   for (var i = 0; i < expectedNumber; i++) {
@@ -110,10 +110,10 @@ function generateOffers(expectedNumber, targetArray) {
 /**
 * Функция, генерирующая случайное целое число в указанном диапазоне (minValue и maxValue участвуют).
 *
-* @function getRandomInteger.
-* @param {number} minValue — минимально допустимое число.
-* @param {number} maxValue — максимально допустимое число.
-* @return {number} — искомое случайное число.
+* @function getRandomInteger
+* @param {number} minValue — минимально допустимое число
+* @param {number} maxValue — максимально допустимое число
+* @return {number} — искомое случайное число
 */
 function getRandomInteger(minValue, maxValue) {
   var randomInteger = minValue + Math.random() * (maxValue + 1 - minValue);
@@ -125,9 +125,9 @@ function getRandomInteger(minValue, maxValue) {
 /**
 * Функция, выбирающая из входного массива рандомный элемент и возвращающая его значение.
 *
-* @function getRandomElementFromArray.
-* @param {array} externalArray — входной массив с элементами на выбор.
-* @return {string} — значение рандомного элемента.
+* @function getRandomElementFromArray
+* @param {array} externalArray — входной массив с элементами на выбор
+* @return {string} — значение рандомного элемента
 */
 function getRandomElementFromArray(externalArray) {
   var maxIndex = externalArray.length - 1;
@@ -140,9 +140,9 @@ function getRandomElementFromArray(externalArray) {
 /**
 * Функция, которая определяет по заголовку объявления соответствующий ему тип недвижимости..
 *
-* @function determineRightPropertyType.
-* @param {string} workingTitle — входной заголовок объявления.
-* @return {string} — определенный тип недвижимости.
+* @function determineRightPropertyType
+* @param {string} workingTitle — входной заголовок объявления
+* @return {string} — определенный тип недвижимости
 */
 function determineRightPropertyType(workingTitle) {
   var types = offerPropertyTypes;
@@ -173,9 +173,9 @@ function determineRightPropertyType(workingTitle) {
 * 5. Копируем выбранные элементы.
 * 6. Отдаем подборку.
 *
-* @function generateUniqueCollection.
-* @param {array} externalArray — входной массив с вариантами для перекомпоновки.
-* @return {array} — новая подборка.
+* @function generateUniqueCollection
+* @param {array} externalArray — входной массив с вариантами для перекомпоновки
+* @return {array} — новая подборка
 */
 function generateUniqueCollection(externalArray) {
   var maxLength = externalArray.length - 1;
@@ -193,11 +193,11 @@ function generateUniqueCollection(externalArray) {
 /**
 * Функция, генерирующая массив неповторяющихся целых чисел в заданном диапазоне и заданной длины.
 *
-* @function getNonrepeatingIntegers.
-* @param {number} minValue — минимально допустимое число.
-* @param {number} maxValue — максимально допустимое число.
-* @param {number} expectedLength — ожидаемая длина выходного массива.
-* @return {array} — массив рандомных неповторяющихся чисел.
+* @function getNonrepeatingIntegers
+* @param {number} minValue — минимально допустимое число
+* @param {number} maxValue — максимально допустимое число
+* @param {number} expectedLength — ожидаемая длина выходного массива
+* @return {array} — массив рандомных неповторяющихся чисел
 */
 function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   var nonrepeatingIntegers = [];
@@ -271,7 +271,7 @@ function activateOffersMap() {
 * Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled,
 * а также получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
 *
-* @function activateUserForm.
+* @function activateUserForm
 */
 function activateUserForm() {
   userForm.classList.remove('notice__form--disabled');
@@ -302,7 +302,7 @@ function activateUserForm() {
 * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
 * Количество пинов на выходе соответствует количеству объектов-объявлений offers[].
 *
-* @function renderPins.
+* @function renderPins
 */
 function renderPins() {
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -342,7 +342,7 @@ function renderPins() {
 * Разметка каждого объявления основана на шаблоне <article class="map__card"> из списка <template>.
 * Количество объявлений на выходе соответствует количеству объектов-объявлений offers[].
 *
-* @function renderOffers.
+* @function renderOffers
 */
 function renderOffers() {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
@@ -382,9 +382,9 @@ function renderOffers() {
 /**
 * Функция, расшифровывающая представление элемента по базе в понятное обозначение на русском языке.
 *
-* @function decodePropertyType.
-* @param {string} externalKey — на вход принимается значение для расшифровки.
-* @return {string} — конвертированное значение.
+* @function decodePropertyType
+* @param {string} externalKey — на вход принимается значение для расшифровки
+* @return {string} — конвертированное значение
 */
 function decodePropertyType(externalKey) {
   var base = offerPropertyTypes;
@@ -404,8 +404,8 @@ function decodePropertyType(externalKey) {
 /**
 * Функция, создающая на основе массива преимуществ соответствующую HTML разметку.
 *
-* @param {array} externalArray — входной массив со списком преимуществ.
-* @return {object} — фрагмент с готовой HTML разметкой.
+* @param {array} externalArray — входной массив со списком преимуществ
+* @return {object} — фрагмент с готовой HTML разметкой
 */
 function createFeaturesMarkup(externalArray) {
   var arrayLength = externalArray.length;
