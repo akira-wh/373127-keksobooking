@@ -260,7 +260,7 @@ userPin.addEventListener('keydown', function (evt) {
 * Функция, активирующая карту пинов и объявлений.
 * Активация происходит за счет снятия у соответствующего <section> блокирующего класса .map--faded.
 *
-* @function activateOffersMap.
+* @function activateOffersMap
 */
 function activateOffersMap() {
   offersMap.classList.remove('map--faded');
