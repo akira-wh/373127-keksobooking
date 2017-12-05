@@ -229,10 +229,10 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 */
 
 // Получение карты объявлений и пинов.
-var offersMap = document.querySelector('.map');
+var map = document.querySelector('.map');
 
 // Получение контейнера пинов.
-var pinsArea = document.querySelector('.map__pins');
+var pinArea = document.querySelector('.map__pins');
 
 // Получение управляющего пользовательского пина.
 var userPin = document.querySelector('.map__pin--main');
@@ -252,7 +252,7 @@ userPin.addEventListener('keydown', onUserPinFirstEnterPress);
 * @function activateOffersMap
 */
 function activateOffersMap() {
-  offersMap.classList.remove('map--faded');
+  map.classList.remove('map--faded');
 }
 
 /**
@@ -284,7 +284,7 @@ function onUserPinFirstClick() {
   activateOffersMap();
   activateUserForm();
   renderPins();
-  pinsArea.addEventListener('click', onPinClick);
+  pinArea.addEventListener('click', onPinClick);
   userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
   userPin.removeEventListener('mouseup', onUserPinFirstClick);
 }
@@ -302,7 +302,7 @@ function onUserPinFirstEnterPress(evt) {
     activateOffersMap();
     activateUserForm();
     renderPins();
-    pinsArea.addEventListener('click', onPinClick);
+    pinArea.addEventListener('click', onPinClick);
     userPin.removeEventListener('mouseup', onUserPinFirstClick);
     userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
   }
@@ -320,14 +320,14 @@ function onPinClick(evt) {
   var pinsNumber = pins.length;
   var target = evt.target;
 
-  while (target !== pinsArea) {
+  while (target !== pinArea) {
 
     if (target.className === 'map__pin') {
       for (var i = 0; i < pinsNumber; i++) {
         if (pins[i] === target) {
           var equivalentIndex = i;
           removeUselessOffer();
-          renderOffer(equivalentIndex);
+          renderRequestedOffer(equivalentIndex);
           return;
         }
       }
@@ -344,7 +344,7 @@ function onPinClick(evt) {
 * @function removeUselessOffer
 */
 function removeUselessOffer() {
-  var uselessOffer = offersMap.querySelector('.map__card.popup');
+  var uselessOffer = map.querySelector('.map__card.popup');
 
   if (uselessOffer) {
     uselessOffer.parentNode.removeChild(uselessOffer);
@@ -374,8 +374,9 @@ function removeUselessOffer() {
 function renderPins() {
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinsFragment = document.createDocumentFragment();
+  var pinsNumber = offers.length;
 
-  for (var i = 0; i < offers.length; i++) {
+  for (var i = 0; i < pinsNumber; i++) {
     var pin = pinTemplate.cloneNode(true);
     var img = pin.querySelector('img');
     var pinShiftX = 5; // смещение пина по X с учетом его размеров (в px).
@@ -388,7 +389,7 @@ function renderPins() {
     pinsFragment.appendChild(pin);
   }
 
-  pinsArea.appendChild(pinsFragment);
+  pinArea.appendChild(pinsFragment);
 }
 
 
@@ -408,10 +409,10 @@ function renderPins() {
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
 *
-* @function renderOffer
+* @function renderRequestedOffer
 * @param {number} index — индекс необходимого объявления из массива
 */
-function renderOffer(index) {
+function renderRequestedOffer(index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
   var offersFragment = document.createDocumentFragment();
 
@@ -439,8 +440,8 @@ function renderOffer(index) {
 
   offersFragment.appendChild(offer);
 
-  var offersInsertPoint = offersMap.querySelector('.map__filters-container');
-  offersMap.insertBefore(offersFragment, offersInsertPoint);
+  var offersInsertPoint = map.querySelector('.map__filters-container');
+  map.insertBefore(offersFragment, offersInsertPoint);
 }
 
 /**
