@@ -360,7 +360,6 @@ function renderOffers() {
     var description = offer.querySelector('ul + p');
     var featuresList = offer.querySelector('.popup__features');
 
-    offer.className = 'map__card';
     avatar.src = offers[i].author.avatar;
     title.textContent = offers[i].offer.title;
     address.textContent = offers[i].offer.address;
