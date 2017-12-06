@@ -309,8 +309,8 @@ function activateUserForm() {
 }
 
 /**
-* Обработчик, отрисовывающий рядом с выбранным пином соответствующее ему объявление.
-* Выбранный пин определяется проверкой на всплытии, объявление — по соответствующему индексу пина.
+* Обработчик, отрисовывающий рядом с выбранным пином соответствующее тому объявление.
+* Используется проверка на всплытии. Индекс пина соответствует индексу объявления.
 *
 * @function onPinClick
 * @param {object} evt — объект события
@@ -320,32 +320,28 @@ function onPinClick(evt) {
   var pinsNumber = pins.length;
   var target = evt.target;
 
-  // Удаление класса-модификатора --active у предыдущего пина (если был).
-  removePreviousPinActivityModifier();
-
-
-  // Поиск нового пина, затронутого событием.
-  // Поиск идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
+  // Проверка на то, что вызванный элемент — пин.
+  // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
   while (target !== pinArea) {
 
-    // Если target — искомый пин с нужным классом:
+    // Если target — искомый пин с верным классом...
     if (target.className === 'map__pin') {
 
-      // Ему добавляется класс-модификатор --active...
-      target.classList.add('map__pin--active');
-
-      // ... и определяется его порядковый индекс по базе.
+      // Определяется его порядковый индекс (индекс в массиве пинов).
+      // Когда индекс установлен — вызывается соответствующее этому индексу объявление (старое удаляется).
       for (var i = 0; i < pinsNumber; i++) {
         if (pins[i] === target) {
 
-          // Когда индекс установлен — вызывается соответствующее этому индексу объявление...
-          var equivalentIndex = i;
           removeUselessOffer();
-          renderRequestedOffer(equivalentIndex);
+          removeUselessPinActivityModifier();
 
-          // ... и регистрируется отлов событий для закрытия по желанию пользователя.
-          var requestedOfferCloseButton = map.querySelector('.map__card.popup .popup__close');
-          requestedOfferCloseButton.addEventListener('click', onOfferCloseButtonPress);
+          var referenceIndex = i;
+          renderNewOffer(referenceIndex);
+          setPinActivityModifier(target);
+
+          // Здесь регистрируется отлов событий для закрытия объявления.
+          var offerCloseButton = map.querySelector('.map__card.popup .popup__close');
+          offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
           window.addEventListener('keydown', onOfferEscPress);
 
           return;
@@ -366,6 +362,7 @@ function onPinClick(evt) {
 */
 function onOfferCloseButtonPress() {
   removeUselessOffer();
+  removeUselessPinActivityModifier();
 }
 
 /**
@@ -377,11 +374,13 @@ function onOfferCloseButtonPress() {
 function onOfferEscPress(evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     removeUselessOffer();
+    removeUselessPinActivityModifier();
   }
 }
 
 /**
-* Функция, удаляющая ненужное объявление и отлов его событий.
+* Функция, которая проверяет и удаляет ненужное объявление.
+* Вместе с объявлением удаляется и отлов его событий.
 *
 * @function removeUselessOffer
 */
@@ -393,6 +392,7 @@ function removeUselessOffer() {
 
     uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
     window.removeEventListener('keydown', onOfferEscPress);
+
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
 }
@@ -401,14 +401,25 @@ function removeUselessOffer() {
 * Функция, которая проверяет и удаляет у ненужного пина класс-модификатор .map__pin--active.
 * Применяется при переключении пинов.
 *
-* @function removePreviousPinActivityModifier
+* @function removeUselessPinActivityModifier
 */
-function removePreviousPinActivityModifier() {
+function removeUselessPinActivityModifier() {
   var activeElement = pinArea.querySelector('.map__pin--active');
 
   if (activeElement) {
     activeElement.classList.remove('map__pin--active');
   }
+}
+
+/**
+* Функция, которая устанавливает необходимому пину класс-модификатор .map__pin--active.
+* Применяется при переключение пинов.
+*
+* @function setPinActivityModifier
+* @param {object} target — DOM элемент
+*/
+function setPinActivityModifier(target) {
+  target.classList.add('map__pin--active');
 }
 
 
@@ -469,10 +480,10 @@ function renderPins() {
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
 *
-* @function renderRequestedOffer
+* @function renderNewOffer
 * @param {number} index — индекс необходимого объявления из массива
 */
-function renderRequestedOffer(index) {
+function renderNewOffer(index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
   var offerFragment = document.createDocumentFragment();
 
