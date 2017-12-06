@@ -291,8 +291,8 @@ function activateMap() {
 
 /**
 * Функция, активирующая форму создания объявлений.
-* Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled,
-* а также получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
+* Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
+* получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
 *
 * @function activateUserForm
 */
@@ -319,24 +319,33 @@ function onPinClick(evt) {
   var pinsNumber = pins.length;
   var target = evt.target;
 
-  // Удаление у предыдущего пина класса-модификатора --active.
-  removeActivityModifier();
+  // Удаление класса-модификатора --active у предыдущего пина (если был).
+  removePreviousPinActivityModifier();
 
-  // Поиск нового пина, который был задействован событием.
+
+  // Поиск нового пина, затронутого событием.
   // Поиск идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
   while (target !== pinArea) {
 
-    // Когда target — искомый пин с нужным классом — определяется его порядковый индекс по базе
+    // Если target — искомый пин с нужным классом:
     if (target.className === 'map__pin') {
-      // ... и добавляется класс-модификатор --active.
+
+      // Ему добавляется класс-модификатор --active...
       target.classList.add('map__pin--active');
 
+      // ... и определяется его порядковый индекс по базе.
       for (var i = 0; i < pinsNumber; i++) {
         if (pins[i] === target) {
-          // Когда индекс установлен — вызывается соответствующее этому индексу объявление.
+
+          // Когда индекс установлен — вызывается соответствующее этому индексу объявление...
           var equivalentIndex = i;
           removeUselessOffer();
           renderRequestedOffer(equivalentIndex);
+
+          // ... и в полученном объявлении регистрируется отлов клика по кноке "Закрыть".
+          var requestedOfferCloseButton = map.querySelector('.map__card.popup .popup__close');
+          requestedOfferCloseButton.addEventListener('click', onOfferClose);
+
           return;
         }
       }
@@ -349,7 +358,16 @@ function onPinClick(evt) {
 }
 
 /**
-* Функция, удаляющая popup с ненужным объявлением.
+* Обработчик, удаляющий ненужное объявление и отлов его событий.
+*
+* @function onOfferClose
+*/
+function onOfferClose() {
+  removeUselessOffer();
+}
+
+/**
+* Функция, удаляющая ненужное объявление и отлов его событий.
 *
 * @function removeUselessOffer
 */
@@ -357,23 +375,27 @@ function removeUselessOffer() {
   var uselessOffer = map.querySelector('.map__card.popup');
 
   if (uselessOffer) {
+    var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
+
+    uselessOfferCloseButton.removeEventListener('click', onOfferClose);
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
 }
 
 /**
-* Функция, которая проверяет и удаляет у пина класс-модификатор .map__pin--active.
+* Функция, которая проверяет и удаляет у ненужного пина класс-модификатор .map__pin--active.
 * Применяется при переключении пинов.
 *
-* @function removeActivityModifier
+* @function removePreviousPinActivityModifier
 */
-function removeActivityModifier() {
+function removePreviousPinActivityModifier() {
   var activeElement = pinArea.querySelector('.map__pin--active');
 
   if (activeElement) {
     activeElement.classList.remove('map__pin--active');
   }
 }
+
 
 /*
 ***********************************************************************************
