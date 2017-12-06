@@ -319,12 +319,18 @@ function onPinClick(evt) {
   var pinsNumber = pins.length;
   var target = evt.target;
 
-  // Поиск пина, который был задействован событием.
+  // Удаление у предыдущего пина класса-модификатора --active.
+  removeActivityModifier();
+
+  // Поиск нового пина, который был задействован событием.
   // Поиск идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
   while (target !== pinArea) {
 
-    // Когда target — искомый пин с нужным классом — определяется его порядковый индекс по базе.
+    // Когда target — искомый пин с нужным классом — определяется его порядковый индекс по базе
     if (target.className === 'map__pin') {
+      // ... и добавляется класс-модификатор --active.
+      target.classList.add('map__pin--active');
+
       for (var i = 0; i < pinsNumber; i++) {
         if (pins[i] === target) {
           // Когда индекс установлен — вызывается соответствующее этому индексу объявление.
@@ -352,6 +358,20 @@ function removeUselessOffer() {
 
   if (uselessOffer) {
     uselessOffer.parentNode.removeChild(uselessOffer);
+  }
+}
+
+/**
+* Функция, которая проверяет и удаляет у пина класс-модификатор .map__pin--active.
+* Применяется при переключении пинов.
+*
+* @function removeActivityModifier
+*/
+function removeActivityModifier() {
+  var activeElement = pinArea.querySelector('.map__pin--active');
+
+  if (activeElement) {
+    activeElement.classList.remove('map__pin--active');
   }
 }
 
