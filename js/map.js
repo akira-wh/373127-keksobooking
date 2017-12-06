@@ -13,6 +13,7 @@
 
 // Константы
 var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 
 // Массив — Заголовки предложений.
 var offerTitles = [
@@ -342,9 +343,10 @@ function onPinClick(evt) {
           removeUselessOffer();
           renderRequestedOffer(equivalentIndex);
 
-          // ... и в полученном объявлении регистрируется отлов клика по кноке "Закрыть".
+          // ... и регистрируется отлов событий для закрытия по желанию пользователя.
           var requestedOfferCloseButton = map.querySelector('.map__card.popup .popup__close');
-          requestedOfferCloseButton.addEventListener('click', onOfferClose);
+          requestedOfferCloseButton.addEventListener('click', onOfferCloseButtonPress);
+          window.addEventListener('keydown', onOfferEscPress);
 
           return;
         }
@@ -358,12 +360,24 @@ function onPinClick(evt) {
 }
 
 /**
-* Обработчик, удаляющий ненужное объявление и отлов его событий.
+* Обработчик, удаляющий ненужное объявление и дальнейший отлов его событий по клику.
 *
-* @function onOfferClose
+* @function onOfferCloseButtonPress
 */
-function onOfferClose() {
+function onOfferCloseButtonPress() {
   removeUselessOffer();
+}
+
+/**
+* Обработчик, удаляющий ненужное объявление и дальнейший его событий по нажатию ESC.
+*
+* @function onOfferEscPress
+* @param {object} evt — объект события
+*/
+function onOfferEscPress(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    removeUselessOffer();
+  }
 }
 
 /**
@@ -377,7 +391,8 @@ function removeUselessOffer() {
   if (uselessOffer) {
     var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
 
-    uselessOfferCloseButton.removeEventListener('click', onOfferClose);
+    uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
+    window.removeEventListener('keydown', onOfferEscPress);
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
 }
