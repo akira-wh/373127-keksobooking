@@ -91,7 +91,7 @@ function generateOffers(expectedNumber, targetArray) {
         price: getRandomInteger(1000, 1000000),
         type: determineRightPropertyType(selectedTitle),
         rooms: getRandomInteger(1, 5),
-        guests: getRandomInteger(0, 200),
+        guests: getRandomInteger(0, 20),
         checkin: getRandomElementFromArray(offerTimes),
         checkout: getRandomElementFromArray(offerTimes),
         features: generateUniqueCollection(offerFeatures),
