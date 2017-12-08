@@ -76,7 +76,7 @@ generateOffers(8, offers);
 */
 function generateOffers(expectedNumber, targetArray) {
   for (var i = 0; i < expectedNumber; i++) {
-    var avatarSerial = i + 1;
+    var avatarSerial = i++;
     var selectedLocationX = getRandomInteger(300, 900);
     var selectedLocationY = getRandomInteger(100, 500);
     var selectedTitle = offerTitles[i];
