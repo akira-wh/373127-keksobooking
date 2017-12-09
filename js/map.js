@@ -15,7 +15,7 @@ var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
 
 // Массив — Заголовки предложений.
-var offerTitles = [
+var offersTitles = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -28,21 +28,21 @@ var offerTitles = [
 
 // Массив — Типы жилья (ключи и расшифровки).
 // Не объект, потому что необходим нумерованный список.
-var offerPropertyTypes = [
+var offersPropertyTypes = [
   ['flat', 'Квартира'],
   ['house', 'Дом'],
   ['bungalo', 'Бунгало']
 ];
 
 // Массив — Время checkin и checkout.
-var offerTimes = [
+var offersTimes = [
   '12:00',
   '13:00',
   '14:00'
 ];
 
 // Массив — Преимущества жилья.
-var offerFeatures = [
+var offersFeatures = [
   'wifi',
   'dishwasher',
   'parking',
@@ -79,7 +79,7 @@ function generateOffers(expectedNumber) {
     var avatarSerial = i + 1;
     var selectedLocationX = getRandomInteger(300, 900);
     var selectedLocationY = getRandomInteger(100, 500);
-    var selectedTitle = offerTitles[i];
+    var selectedTitle = offersTitles[i];
 
     offersArray[i] = {
       author: {
@@ -89,12 +89,12 @@ function generateOffers(expectedNumber) {
       offer: {
         title: selectedTitle,
         price: getRandomInteger(1000, 1000000),
-        type: determineRightPropertyType(selectedTitle),
+        type: determineRightPropertyType(selectedTitle, offersPropertyTypes),
         rooms: getRandomInteger(1, 5),
         guests: getRandomInteger(0, 20),
-        checkin: getRandomElementFromArray(offerTimes),
-        checkout: getRandomElementFromArray(offerTimes),
-        features: generateUniqueCollection(offerFeatures),
+        checkin: getRandomElementFromArray(offersTimes),
+        checkout: getRandomElementFromArray(offersTimes),
+        features: generateUniqueCollection(offersFeatures),
         description: '',
         photos: [],
         address: selectedLocationX + ', ' + selectedLocationY
@@ -129,13 +129,13 @@ function getRandomInteger(minValue, maxValue) {
 * Выбор из входного массива рандомного элемента и возвращение его значения.
 *
 * @function getRandomElementFromArray
-* @param {array} externalArray — входной массив с элементами на выбор
+* @param {array} sourceArray — входной массив с элементами на выбор
 * @return {string} — значение рандомного элемента
 */
-function getRandomElementFromArray(externalArray) {
-  var maxIndex = externalArray.length - 1;
+function getRandomElementFromArray(sourceArray) {
+  var maxIndex = sourceArray.length - 1;
   var randomIndex = getRandomInteger(0, maxIndex);
-  var requestedElement = externalArray[randomIndex];
+  var requestedElement = sourceArray[randomIndex];
 
   return requestedElement;
 }
@@ -145,20 +145,20 @@ function getRandomElementFromArray(externalArray) {
 *
 * @function determineRightPropertyType
 * @param {string} title — входной заголовок объявления
+* @param {array} typesArray — входной массив с типами недвижимости
 * @return {string} — определенный тип недвижимости
 */
-function determineRightPropertyType(title) {
-  var types = offerPropertyTypes;
+function determineRightPropertyType(title, typesArray) {
   var flat = 0;
   var house = 1;
   var bungalo = 2;
 
   if (title.indexOf('квартира') !== -1) {
-    var requestedType = types[flat][0];
+    var requestedType = typesArray[flat][0];
   } else if (title.indexOf('дворец') !== -1 || title.indexOf('домик') !== -1) {
-    requestedType = types[house][0];
+    requestedType = typesArray[house][0];
   } else if (title.indexOf('бунгало') !== -1) {
-    requestedType = types[bungalo][0];
+    requestedType = typesArray[bungalo][0];
   } else {
     requestedType = 'Тип недвижимости неизвестен';
   }
@@ -177,17 +177,17 @@ function determineRightPropertyType(title) {
 * 6. Отдаем подборку.
 *
 * @function generateUniqueCollection
-* @param {array} externalArray — входной массив с вариантами для перекомпоновки
+* @param {array} sourceArray — входной массив с вариантами для перекомпоновки
 * @return {array} — новая подборка
 */
-function generateUniqueCollection(externalArray) {
-  var maxValue = externalArray.length - 1;
+function generateUniqueCollection(sourceArray) {
+  var maxValue = sourceArray.length - 1;
   var newCollectionLength = getRandomInteger(1, maxValue);
-  var requestedCollection = [];
   var selectedElements = getNonrepeatingIntegers(0, maxValue, newCollectionLength);
+  var requestedCollection = [];
 
   for (var i = 0; i < newCollectionLength; i++) {
-    requestedCollection.push(externalArray[selectedElements[i]]);
+    requestedCollection.push(sourceArray[selectedElements[i]]);
   }
 
   return requestedCollection;
@@ -359,6 +359,8 @@ function onPinClick(evt) {
     }
 
   }
+
+  return;
 }
 
 /**
@@ -401,6 +403,7 @@ function removeUselessOffer() {
 
     uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
     window.removeEventListener('keydown', onOfferEscPress);
+
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
 
@@ -414,10 +417,10 @@ function removeUselessOffer() {
 * Применяется при переключение пинов.
 *
 * @function setPinActivityModifier
-* @param {object} target — DOM элемент
+* @param {object} node — DOM элемент
 */
-function setPinActivityModifier(target) {
-  target.classList.add('map__pin--active');
+function setPinActivityModifier(node) {
+  node.classList.add('map__pin--active');
 }
 
 
@@ -480,10 +483,10 @@ function renderPins() {
 * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
 *
 * @function renderNewOffer
-* @param {array} offers — входной массив с объявлениями для извлечения данных
+* @param {array} offersArray — входной массив с объявлениями для извлечения данных
 * @param {number} index — индекс необходимого объявления
 */
-function renderNewOffer(offers, index) {
+function renderNewOffer(offersArray, index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
   var offerFragment = document.createDocumentFragment();
 
@@ -498,16 +501,16 @@ function renderNewOffer(offers, index) {
   var description = offer.querySelector('ul + p');
   var featuresList = offer.querySelector('.popup__features');
 
-  avatar.src = offers[index].author.avatar;
-  title.textContent = offers[index].offer.title;
-  address.textContent = offers[index].offer.address;
-  price.textContent = offers[index].offer.price + '\u20bd / ночь';
-  type.textContent = decodePropertyType(offers[index].offer.type);
-  capacity.textContent = offers[index].offer.rooms + ' комнаты для ' + offers[index].offer.guests + ' гостей';
-  stayTime.textContent = 'Заезд после ' + offers[index].offer.checkin + ', выезд до ' + offers[index].offer.checkout;
-  description.textContent = offers[index].offer.description;
+  avatar.src = offersArray[index].author.avatar;
+  title.textContent = offersArray[index].offer.title;
+  address.textContent = offersArray[index].offer.address;
+  price.textContent = offersArray[index].offer.price + '\u20bd / ночь';
+  type.textContent = decodePropertyType(offersArray[index].offer.type, offersPropertyTypes);
+  capacity.textContent = offersArray[index].offer.rooms + ' комнаты для ' + offersArray[index].offer.guests + ' гостей';
+  stayTime.textContent = 'Заезд после ' + offersArray[index].offer.checkin + ', выезд до ' + offersArray[index].offer.checkout;
+  description.textContent = offersArray[index].offer.description;
   featuresList.innerHTML = '';
-  featuresList.appendChild(createFeaturesMarkup(offers[index].offer.features));
+  featuresList.appendChild(createFeaturesMarkup(offersArray[index].offer.features));
 
   offerFragment.appendChild(offer);
 
@@ -521,16 +524,16 @@ function renderNewOffer(offers, index) {
 *
 * @function decodePropertyType
 * @param {string} key — на вход принимается значение для расшифровки
+* @param {array} typesArray — входной массив с типами недвижимости для расшифровки
 * @return {string} — конвертированное значение
 */
-function decodePropertyType(key) {
-  var types = offerPropertyTypes;
-  var typesNumber = offerPropertyTypes.length;
+function decodePropertyType(key, typesArray) {
+  var typesNumber = typesArray.length;
   var requestedDescription = 'Тип недвижимости не определен';
 
   for (var i = 0; i < typesNumber; i++) {
-    if (types[i].indexOf(key) >= 0) {
-      requestedDescription = types[i][1];
+    if (typesArray[i].indexOf(key) >= 0) {
+      requestedDescription = typesArray[i][1];
       break;
     }
   }
@@ -541,16 +544,16 @@ function decodePropertyType(key) {
 /**
 * Создание на основе массива преимуществ соответствующей HTML разметки.
 *
-* @param {array} features — входной массив со списком преимуществ
+* @param {array} featuresArray — входной массив со списком преимуществ
 * @return {object} — фрагмент с готовой HTML разметкой
 */
-function createFeaturesMarkup(features) {
-  var featuresNumber = features.length;
+function createFeaturesMarkup(featuresArray) {
+  var featuresNumber = featuresArray.length;
   var featuresFragment = document.createDocumentFragment();
 
   for (var i = 0; i < featuresNumber; i++) {
     var featureTag = document.createElement('li');
-    featureTag.className = 'feature  feature--' + features[i];
+    featureTag.className = 'feature  feature--' + featuresArray[i];
 
     featuresFragment.appendChild(featureTag);
   }
