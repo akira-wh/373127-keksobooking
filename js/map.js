@@ -1,6 +1,5 @@
 'use strict';
 
-
 /*
 ***********************************************************************************
 ***********************************************************************************
@@ -63,25 +62,26 @@ var offerFeatures = [
 ***********************************************************************************
 */
 
-// Создание основного массива объявлений и заполнение его объектами данных.
-var offers = [];
-generateOffers(8, offers);
+// Создание и заполнение главного массива объявлений.
+var offers = generateOffers(8);
 
 /**
-* Функция, заполняющая входной массив объектами-объявлениями по недвижимости.
+* Создание и заполнение массива объектами-объявлениями.
 *
 * @function generateOffers
-* @param {number} expectedNumber — необходимое количество конечных объектов
-* @param {array} targetArray — входной массив для заполнения объектами
+* @param {number} expectedNumber — необходимое количество объектов-объявлений
+* @return {array} — заполненный массив
 */
-function generateOffers(expectedNumber, targetArray) {
+function generateOffers(expectedNumber) {
+  var offersArray = [];
+
   for (var i = 0; i < expectedNumber; i++) {
-    var avatarSerial = i++;
+    var avatarSerial = i + 1;
     var selectedLocationX = getRandomInteger(300, 900);
     var selectedLocationY = getRandomInteger(100, 500);
     var selectedTitle = offerTitles[i];
 
-    targetArray[i] = {
+    offersArray[i] = {
       author: {
         avatar: 'img/avatars/user0' + avatarSerial + '.png'
       },
@@ -106,10 +106,12 @@ function generateOffers(expectedNumber, targetArray) {
       }
     };
   }
+
+  return offersArray;
 }
 
 /**
-* Функция, генерирующая случайное целое число в указанном диапазоне (minValue и maxValue участвуют).
+* Генерация случайного числа в указанном диапазоне (minValue и maxValue участвуют).
 *
 * @function getRandomInteger
 * @param {number} minValue — минимально допустимое число
@@ -124,7 +126,7 @@ function getRandomInteger(minValue, maxValue) {
 }
 
 /**
-* Функция, выбирающая из входного массива рандомный элемент и возвращающая его значение.
+* Выбор из входного массива рандомного элемента и возвращение его значения.
 *
 * @function getRandomElementFromArray
 * @param {array} externalArray — входной массив с элементами на выбор
@@ -139,23 +141,23 @@ function getRandomElementFromArray(externalArray) {
 }
 
 /**
-* Функция, которая определяет по заголовку объявления соответствующий ему тип недвижимости.
+* Определение по заголовку объявления соответствующий ему тип недвижимости.
 *
 * @function determineRightPropertyType
-* @param {string} workingTitle — входной заголовок объявления
+* @param {string} title — входной заголовок объявления
 * @return {string} — определенный тип недвижимости
 */
-function determineRightPropertyType(workingTitle) {
+function determineRightPropertyType(title) {
   var types = offerPropertyTypes;
   var flat = 0;
   var house = 1;
   var bungalo = 2;
 
-  if (workingTitle.indexOf('квартира') >= 0) {
+  if (title.indexOf('квартира') !== -1) {
     var requestedType = types[flat][0];
-  } else if (workingTitle.indexOf('дворец') >= 0 || workingTitle.indexOf('домик') >= 0) {
+  } else if (title.indexOf('дворец') !== -1 || title.indexOf('домик') !== -1) {
     requestedType = types[house][0];
-  } else if (workingTitle.indexOf('бунгало') >= 0) {
+  } else if (title.indexOf('бунгало') !== -1) {
     requestedType = types[bungalo][0];
   } else {
     requestedType = 'Тип недвижимости неизвестен';
@@ -165,7 +167,7 @@ function determineRightPropertyType(workingTitle) {
 }
 
 /**
-* Функция, создающая новый набор элементов на основе вариантов из входного массива.
+* Создание нового набора элементов на основе вариантов из входного массива.
 * Элементы не повторяются, а их количество не превышает объем входного массива.
 * 1. Узнаем пороговую длину входного массива.
 * 2. Генерируем длину новой коллекции (не менее 1 элемента, не более длины входного массива).
@@ -179,10 +181,10 @@ function determineRightPropertyType(workingTitle) {
 * @return {array} — новая подборка
 */
 function generateUniqueCollection(externalArray) {
-  var maxLength = externalArray.length - 1;
-  var newCollectionLength = getRandomInteger(1, maxLength);
+  var maxValue = externalArray.length - 1;
+  var newCollectionLength = getRandomInteger(1, maxValue);
   var requestedCollection = [];
-  var selectedElements = getNonrepeatingIntegers(0, maxLength, newCollectionLength);
+  var selectedElements = getNonrepeatingIntegers(0, maxValue, newCollectionLength);
 
   for (var i = 0; i < newCollectionLength; i++) {
     requestedCollection.push(externalArray[selectedElements[i]]);
@@ -192,7 +194,7 @@ function generateUniqueCollection(externalArray) {
 }
 
 /**
-* Функция, генерирующая массив неповторяющихся целых чисел в заданном диапазоне и заданной длины.
+* Генерация массива неповторяющихся целых чисел в заданном диапазоне и заданной длины.
 *
 * @function getNonrepeatingIntegers
 * @param {number} minValue — минимально допустимое число
@@ -223,85 +225,88 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 ***********************************************************************************
 ***********************************************************************************
 ***
-***         ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
+***   ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ И РАБОТА ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
 ***
 ***********************************************************************************
 ***********************************************************************************
 */
 
-// Получение карты объявлений и пинов.
-var map = document.querySelector('.map');
-
-// Получение контейнера пинов.
-var pinArea = document.querySelector('.map__pins');
-
 // Получение управляющего пользовательского пина.
-var userPin = document.querySelector('.map__pin--main');
+// Отлов первого взаимодействия с ним -> запуск основного функционала сайта.
+var controlPin = document.querySelector('.map__pin--main');
 
-// Получение формы создания объявлений.
-var userForm = document.querySelector('.notice__form');
-
-// Отлов первого взаимодействия с управляющим пином и запуск основного функционала сайта.
-userPin.addEventListener('mouseup', onUserPinFirstClick);
-userPin.addEventListener('keydown', onUserPinFirstEnterPress);
+controlPin.addEventListener('mouseup', onControlPinFirstClick);
+controlPin.addEventListener('keydown', onControlPinFirstEnterPress);
 
 /**
-* Обработчик, активирующий основной функционал сайта по первому клику на управлящем ине.
-* Активирует карту, форму создания объявлений и отрисовывает пины.
-* Удаляет альтернативный отлов того же события (onUserFirstEnterPress) и самого себя после отработки.
+* Активация основного функционала сайта.
+* Вызывается по первому КЛИКУ на управлящем пине.
 *
-* @function onUserPinFirstClick
+* @function onControlPinFirstClick
 */
-function onUserPinFirstClick() {
-  activateMap();
-  activateUserForm();
-  renderPins();
-  pinArea.addEventListener('click', onPinClick);
-  userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
-  userPin.removeEventListener('mouseup', onUserPinFirstClick);
+function onControlPinFirstClick() {
+  activateServices();
 }
 
 /**
-* Обработчик, активирующий основной функционал сайта по первому нажатию ENTER на управляющем пине.
-* Активирует карту, форму создания объявлений и отрисовывает пины.
-* Удаляет альтернативный отлов того же события (onUserPinFirstClick) и самого себя после отработки.
+* Активация основного функционала сайта.
+* Вызывается по первому нажатию ENTER на управлящем пине.
 *
-* @function onUserPinFirstEnterPress
+* @function onControlPinFirstEnterPress
 * @param {object} evt — объект события
 */
-function onUserPinFirstEnterPress(evt) {
+function onControlPinFirstEnterPress(evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    activateMap();
-    activateUserForm();
-    renderPins();
-    pinArea.addEventListener('click', onPinClick);
-    userPin.removeEventListener('mouseup', onUserPinFirstClick);
-    userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
+    activateServices();
   }
 }
 
 /**
-* Функция, активирующая карту пинов и объявлений.
+* Активация основных пользовательских сервисов:
+* 1. Запускаются карта и форма создания объявлений,
+* 2. Отрисовываются пины,
+* 3. Начинается отлов переключения пинов/объявлений,
+* 4. Исключается возможность запустить себя как функцию повторно.
+*
+* @function activateServices
+*/
+function activateServices() {
+  activateMap();
+  activateUserForm();
+  renderPins();
+
+  var pinArea = document.querySelector('.map__pins');
+  pinArea.addEventListener('click', onPinClick);
+
+  // Спорное место (зависимость от глобальной переменной controlPin).
+  controlPin.removeEventListener('keydown', onControlPinFirstEnterPress);
+  controlPin.removeEventListener('mouseup', onControlPinFirstClick);
+}
+
+/**
+* Активация пинов и объявлений.
 * Активация происходит за счет снятия у соответствующего <section> блокирующего класса .map--faded.
 *
 * @function activateMap
 */
 function activateMap() {
+  var map = document.querySelector('.map');
   map.classList.remove('map--faded');
 }
 
 /**
-* Функция, активирующая форму создания объявлений.
+* Активация формы создания объявлений.
 * Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
 * получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
 *
 * @function activateUserForm
 */
 function activateUserForm() {
-  userForm.classList.remove('notice__form--disabled');
-
+  var userForm = document.querySelector('.notice__form');
   var fieldsets = userForm.querySelectorAll('fieldset');
-  var fieldsetsNumber = fieldsets.length - 1;
+  var fieldsetsNumber = fieldsets.length;
+
+  userForm.classList.remove('notice__form--disabled');
 
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = false;
@@ -309,14 +314,16 @@ function activateUserForm() {
 }
 
 /**
-* Обработчик, отрисовывающий рядом с выбранным пином соответствующее тому объявление.
-* Используется проверка на всплытии. Индекс пина соответствует индексу объявления.
+* Отрисовка рядом с выбранным пином соответствующего ему объявления.
+* Проверка на всплытии.
+* Индекс пина соответствует индексу объявления.
 *
 * @function onPinClick
 * @param {object} evt — объект события
 */
 function onPinClick(evt) {
-  var pins = document.querySelectorAll('.map__pins button:not(.map__pin--main)');
+  var pinArea = document.querySelector('.map__pins');
+  var pins = pinArea.querySelectorAll('button:not(.map__pin--main)');
   var pinsNumber = pins.length;
   var target = evt.target;
 
@@ -324,7 +331,7 @@ function onPinClick(evt) {
   // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
   while (target !== pinArea) {
 
-    // Если target — искомый пин с верным классом...
+    // Если target — искомый пин...
     if (target.className === 'map__pin') {
 
       // Определяется его порядковый индекс (индекс в массиве пинов).
@@ -333,14 +340,13 @@ function onPinClick(evt) {
         if (pins[i] === target) {
 
           removeUselessOffer();
-          removeUselessPinActivityModifier();
 
           var referenceIndex = i;
-          renderNewOffer(referenceIndex);
+          renderNewOffer(offers, referenceIndex);
           setPinActivityModifier(target);
 
           // Здесь регистрируется отлов событий для закрытия объявления.
-          var offerCloseButton = map.querySelector('.map__card.popup .popup__close');
+          var offerCloseButton = document.querySelector('.popup .popup__close');
           offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
           window.addEventListener('keydown', onOfferEscPress);
 
@@ -356,17 +362,20 @@ function onPinClick(evt) {
 }
 
 /**
-* Обработчик, удаляющий ненужное объявление и дальнейший отлов его событий по клику.
+* Удаление ненужного объявления, отлова его событий,
+* а также модификатора активности у соответствующего пина.
+* Вызывается нажатием на кнопку ЗАКРЫТЬ в открытом объявлении.
 *
 * @function onOfferCloseButtonPress
 */
 function onOfferCloseButtonPress() {
   removeUselessOffer();
-  removeUselessPinActivityModifier();
 }
 
 /**
-* Обработчик, удаляющий ненужное объявление и дальнейший его событий по нажатию ESC.
+* Удаление ненужного объявления, отлова его событий,
+* а также модификатора активности у соответствующего пина.
+* Вызывается нажатием на ESC при открытом объявлении.
 *
 * @function onOfferEscPress
 * @param {object} evt — объект события
@@ -374,45 +383,34 @@ function onOfferCloseButtonPress() {
 function onOfferEscPress(evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     removeUselessOffer();
-    removeUselessPinActivityModifier();
   }
 }
 
 /**
-* Функция, которая проверяет и удаляет ненужное объявление.
-* Вместе с объявлением удаляется и отлов его событий.
+* Удаление ненужного объявления, отлова его событий,
+* а также модификатора активности у соответствующего пина.
 *
 * @function removeUselessOffer
 */
 function removeUselessOffer() {
-  var uselessOffer = map.querySelector('.map__card.popup');
+  var uselessOffer = document.querySelector('.popup');
+  var uselessActivePin = document.querySelector('.map__pin--active');
 
   if (uselessOffer) {
     var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
 
     uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
     window.removeEventListener('keydown', onOfferEscPress);
-
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
-}
 
-/**
-* Функция, которая проверяет и удаляет у ненужного пина класс-модификатор .map__pin--active.
-* Применяется при переключении пинов.
-*
-* @function removeUselessPinActivityModifier
-*/
-function removeUselessPinActivityModifier() {
-  var activeElement = pinArea.querySelector('.map__pin--active');
-
-  if (activeElement) {
-    activeElement.classList.remove('map__pin--active');
+  if (uselessActivePin) {
+    uselessActivePin.classList.remove('map__pin--active');
   }
 }
 
 /**
-* Функция, которая устанавливает необходимому пину класс-модификатор .map__pin--active.
+* Добавление необходимому пину класса-модификатора .map__pin--active.
 * Применяется при переключение пинов.
 *
 * @function setPinActivityModifier
@@ -434,8 +432,8 @@ function setPinActivityModifier(target) {
 */
 
 /**
-* Функция создания и отрисовки пользовательских пинов.
-* Создает Document Fragment, заполняет разметкой и внедряет на страницу.
+* Создание и отрисовка пользовательских пинов.
+* Создается Document Fragment, заполняется разметкой и внедряется на страницу.
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
 * Количество пинов на выходе соответствует количеству объектов-объявлений offers[].
@@ -443,6 +441,7 @@ function setPinActivityModifier(target) {
 * @function renderPins
 */
 function renderPins() {
+  var pinArea = document.querySelector('.map__pins');
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinsFragment = document.createDocumentFragment();
   var pinsNumber = offers.length;
@@ -475,15 +474,16 @@ function renderPins() {
 */
 
 /**
-* Функция создания и отрисовки необходимого объявления.
-* Создает Document Fragment, заполняет разметкой и внедряет на страницу.
+* Создание и отрисовка необходимого объявления.
+* Создается Document Fragment, заполняется разметкой и внедряется на страницу.
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
 *
 * @function renderNewOffer
-* @param {number} index — индекс необходимого объявления из массива
+* @param {array} offers — входной массив с объявлениями для извлечения данных
+* @param {number} index — индекс необходимого объявления
 */
-function renderNewOffer(index) {
+function renderNewOffer(offers, index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
   var offerFragment = document.createDocumentFragment();
 
@@ -511,25 +511,26 @@ function renderNewOffer(index) {
 
   offerFragment.appendChild(offer);
 
+  var map = document.querySelector('.map');
   var offerInsertPoint = map.querySelector('.map__filters-container');
   map.insertBefore(offerFragment, offerInsertPoint);
 }
 
 /**
-* Функция, расшифровывающая представление элемента по базе в понятное обозначение на русском языке.
+* Расшифровка представления элемента по базе в понятное обозначение на русском языке.
 *
 * @function decodePropertyType
-* @param {string} externalKey — на вход принимается значение для расшифровки
+* @param {string} key — на вход принимается значение для расшифровки
 * @return {string} — конвертированное значение
 */
-function decodePropertyType(externalKey) {
-  var base = offerPropertyTypes;
-  var baseLength = offerPropertyTypes.length;
+function decodePropertyType(key) {
+  var types = offerPropertyTypes;
+  var typesNumber = offerPropertyTypes.length;
   var requestedDescription = 'Тип недвижимости не определен';
 
-  for (var i = 0; i < baseLength; i++) {
-    if (base[i].indexOf(externalKey) >= 0) {
-      requestedDescription = base[i][1];
+  for (var i = 0; i < typesNumber; i++) {
+    if (types[i].indexOf(key) >= 0) {
+      requestedDescription = types[i][1];
       break;
     }
   }
@@ -538,18 +539,18 @@ function decodePropertyType(externalKey) {
 }
 
 /**
-* Функция, создающая на основе массива преимуществ соответствующую HTML разметку.
+* Создание на основе массива преимуществ соответствующей HTML разметки.
 *
-* @param {array} externalArray — входной массив со списком преимуществ
+* @param {array} features — входной массив со списком преимуществ
 * @return {object} — фрагмент с готовой HTML разметкой
 */
-function createFeaturesMarkup(externalArray) {
-  var arrayLength = externalArray.length;
+function createFeaturesMarkup(features) {
+  var featuresNumber = features.length;
   var featuresFragment = document.createDocumentFragment();
 
-  for (var i = 0; i < arrayLength; i++) {
+  for (var i = 0; i < featuresNumber; i++) {
     var featureTag = document.createElement('li');
-    featureTag.className = 'feature  feature--' + externalArray[i];
+    featureTag.className = 'feature  feature--' + features[i];
 
     featuresFragment.appendChild(featureTag);
   }

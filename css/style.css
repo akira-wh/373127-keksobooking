@@ -244,6 +244,11 @@ textarea:focus
     background: none;
 }
 
+.map__pin:not(.map__pin--main):hover,
+.map__pin:not(.map__pin--main):active {
+  cursor: pointer;
+}
+
 .map__pin img
 {
     padding: 3px;
