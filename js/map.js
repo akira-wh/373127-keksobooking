@@ -26,13 +26,12 @@ var offersTitles = [
   'Неуютное бунгало по колено в воде'
 ];
 
-// Массив — Типы жилья (ключи и расшифровки).
-// Не объект, потому что необходим нумерованный список.
-var offersPropertyTypes = [
-  ['flat', 'Квартира'],
-  ['house', 'Дом'],
-  ['bungalo', 'Бунгало']
-];
+// Объект — Типы жилья (ключи и расшифровки).
+var offersPropertyTypes = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
 // Массив — Время checkin и checkout.
 var offersTimes = [
@@ -89,7 +88,7 @@ function generateOffers(expectedNumber) {
       offer: {
         title: selectedTitle,
         price: getRandomInteger(1000, 1000000),
-        type: determineRightPropertyType(selectedTitle, offersPropertyTypes),
+        type: determineRightPropertyType(selectedTitle),
         rooms: getRandomInteger(1, 5),
         guests: getRandomInteger(0, 20),
         checkin: getRandomElementFromArray(offersTimes),
@@ -142,25 +141,23 @@ function getRandomElementFromArray(sourceElements) {
 
 /**
 * Определение по заголовку объявления соответствующий ему тип недвижимости.
+* Работа с keywords: '..квартира..' -> flat; '..бунгало..' -> bungalo; '..дом..' -> house;
 *
 * @function determineRightPropertyType
 * @param {string} title — входной заголовок объявления
-* @param {array} sourceTypes — входной массив с типами недвижимости
-* @return {string} — определенный тип недвижимости
+* @return {string} — тип недвижимости, подходящий заголовку объявления
 */
-function determineRightPropertyType(title, sourceTypes) {
-  var flat = 0;
-  var house = 1;
-  var bungalo = 2;
+function determineRightPropertyType(title) {
+  title = title.toLowerCase();
 
   if (title.indexOf('квартира') !== -1) {
-    var requestedType = sourceTypes[flat][0];
+    var requestedType = 'flat';
   } else if (title.indexOf('дворец') !== -1 || title.indexOf('домик') !== -1) {
-    requestedType = sourceTypes[house][0];
+    requestedType = 'house';
   } else if (title.indexOf('бунгало') !== -1) {
-    requestedType = sourceTypes[bungalo][0];
+    requestedType = 'bungalo';
   } else {
-    requestedType = 'Тип недвижимости неизвестен';
+    requestedType = 'Тип недвижимости неопределен';
   }
 
   return requestedType;
