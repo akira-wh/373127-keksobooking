@@ -274,6 +274,7 @@ function activateServices() {
   activateMap();
   activateUserForm();
   syncFormTimes();
+  syncFormPropertyCapacity();
   renderPins(8, offers);
 
   var pinArea = document.querySelector('.map__pins');
@@ -592,5 +593,20 @@ function syncFormTimes() {
 
   selectCheckout.addEventListener('input', function () {
     selectCheckin.selectedIndex = selectCheckout.selectedIndex;
+  });
+}
+
+/**
+* Синхронизация опций селектов "Количество комнат" и "Количество мест".
+* Синхронизируются <select> #room_number и #capacity
+*
+* @function syncFormPropertyCapacity
+*/
+function syncFormPropertyCapacity() {
+  var selectRooms = document.querySelector('select#room_number');
+  var selectCapacity = document.querySelector('select#capacity');
+
+  selectRooms.addEventListener('input', function () {
+    selectCapacity.selectedIndex = selectRooms.selectedIndex;
   });
 }
