@@ -607,6 +607,19 @@ function syncFormPropertyCapacity() {
   var selectCapacity = document.querySelector('select#capacity');
 
   selectRooms.addEventListener('input', function () {
-    selectCapacity.selectedIndex = selectRooms.selectedIndex;
+    switch (selectRooms.selectedIndex) {
+      case 0: // 1 комната
+        selectCapacity.selectedIndex = 2; // для 1 гостя
+        break;
+      case 1: // 2 комнаты
+        selectCapacity.selectedIndex = 1; // для 2-х гостей
+        break;
+      case 2: // 3 комнаты
+        selectCapacity.selectedIndex = 0; // для 3-х гостей
+        break;
+      case 3: // 100 комнат
+        selectCapacity.selectedIndex = 3; // не для гостей
+        break;
+    }
   });
 }
