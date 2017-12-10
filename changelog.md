@@ -1,3 +1,5 @@
+- **`3.07`** Частично сокращены комментарии.
+
 - **`3.06`** Переработаны determineRightPropertyType() и decodePropertyType().
 
 - **`3.05`** offersPropertyTypes теперь объект.

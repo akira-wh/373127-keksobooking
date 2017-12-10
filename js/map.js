@@ -14,7 +14,7 @@
 var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
 
-// Массив — Заголовки предложений.
+// Массив — Заголовки объявлений.
 var offersTitles = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
@@ -55,7 +55,7 @@ var offersFeatures = [
 ***********************************************************************************
 ***********************************************************************************
 ***
-***                       ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В МАССИВ
+***             ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В ГЛАВНЫЙ МАССИВ offers[]
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -88,7 +88,7 @@ function generateOffers(expectedNumber) {
       offer: {
         title: selectedTitle,
         price: getRandomInteger(1000, 1000000),
-        type: determineRightPropertyType(selectedTitle),
+        type: determinePropertyType(selectedTitle),
         rooms: getRandomInteger(1, 5),
         guests: getRandomInteger(0, 20),
         checkin: getRandomElementFromArray(offersTimes),
@@ -141,13 +141,14 @@ function getRandomElementFromArray(sourceElements) {
 
 /**
 * Определение по заголовку объявления соответствующий ему тип недвижимости.
-* Работа с keywords: '..квартира..' -> flat; '..бунгало..' -> bungalo; '..дом..' -> house;
+* Определение происходит по ключевым словам.
+* #квартира -> flat etc.
 *
-* @function determineRightPropertyType
+* @function determinePropertyType
 * @param {string} title — входной заголовок объявления
 * @return {string} — тип недвижимости, подходящий заголовку объявления
 */
-function determineRightPropertyType(title) {
+function determinePropertyType(title) {
   title = title.toLowerCase();
 
   if (title.indexOf('квартира') !== -1) {
@@ -218,6 +219,7 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 
   return nonrepeatingIntegers;
 }
+
 
 /*
 ***********************************************************************************
@@ -489,7 +491,6 @@ function renderPins(expectedNumber, sourceOffers) {
 function renderNewOffer(sourceOffers, index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
   var offerFragment = document.createDocumentFragment();
-
   var offer = offerTemplate.cloneNode(true);
 
   var avatar = offer.querySelector('.popup__avatar');
@@ -502,16 +503,18 @@ function renderNewOffer(sourceOffers, index) {
   var description = offer.querySelector('ul + p');
   var featuresList = offer.querySelector('.popup__features');
 
-  avatar.src = sourceOffers[index].author.avatar;
-  title.textContent = sourceOffers[index].offer.title;
-  address.textContent = sourceOffers[index].offer.address;
-  price.textContent = sourceOffers[index].offer.price + '\u20bd / ночь';
-  type.textContent = decodePropertyType(sourceOffers[index].offer.type, offersPropertyTypes);
-  capacity.textContent = sourceOffers[index].offer.rooms + ' комнаты для ' + sourceOffers[index].offer.guests + ' гостей';
-  stayTime.textContent = 'Заезд после ' + sourceOffers[index].offer.checkin + ', выезд до ' + sourceOffers[index].offer.checkout;
-  description.textContent = sourceOffers[index].offer.description;
+  var source = sourceOffers[index];
+
+  avatar.src = source.author.avatar;
+  title.textContent = source.offer.title;
+  address.textContent = source.offer.address;
+  price.textContent = source.offer.price + '\u20bd / ночь';
+  type.textContent = decodePropertyType(source.offer.type, offersPropertyTypes);
+  capacity.textContent = source.offer.rooms + ' комнаты для ' + source.offer.guests + ' гостей';
+  stayTime.textContent = 'Заезд после ' + source.offer.checkin + ', выезд до ' + source.offer.checkout;
+  description.textContent = source.offer.description;
   featuresList.innerHTML = '';
-  featuresList.appendChild(createFeaturesMarkup(sourceOffers[index].offer.features));
+  featuresList.appendChild(createFeaturesMarkup(source.offer.features));
 
   offerFragment.appendChild(offer);
 
