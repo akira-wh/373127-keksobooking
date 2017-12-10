@@ -225,7 +225,7 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 ***********************************************************************************
 ***********************************************************************************
 ***
-***   ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ И РАБОТА ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
+***       ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -273,6 +273,7 @@ function onControlPinFirstEnterPress(evt) {
 function activateServices() {
   activateMap();
   activateUserForm();
+  syncFormTimes();
   renderPins(8, offers);
 
   var pinArea = document.querySelector('.map__pins');
@@ -563,4 +564,33 @@ function createFeaturesMarkup(sourceFeatures) {
   }
 
   return featuresFragment;
+}
+
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***                             ФОРМА СОЗДАНИЯ ОБЪЯВЛЕНИЙ
+***
+***********************************************************************************
+***********************************************************************************
+*/
+
+/**
+* Синхронизация опций селектов "Время заезда и выезда".
+* Синхронизируются <select> #timein и #timeout в форме создания объявлений .notice__form.
+*
+* @function syncFormTimes
+*/
+function syncFormTimes() {
+  var selectCheckin = document.querySelector('select#timein');
+  var selectCheckout = document.querySelector('select#timeout');
+
+  selectCheckin.addEventListener('input', function () {
+    selectCheckout.selectedIndex = selectCheckin.selectedIndex;
+  });
+
+  selectCheckout.addEventListener('input', function () {
+    selectCheckin.selectedIndex = selectCheckout.selectedIndex;
+  });
 }
