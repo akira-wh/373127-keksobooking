@@ -521,25 +521,25 @@ function renderNewOffer(sourceOffers, index) {
 }
 
 /**
-* Расшифровка представления элемента по базе в понятное обозначение на русском языке.
+* Расшифровка типа недвижимости.
+* Обозначения flat, house etc. русифицируются для выдачи клиентской стороне.
 *
 * @function decodePropertyType
-* @param {string} key — на вход принимается значение для расшифровки
-* @param {array} sourceTypes — входной массив с типами недвижимости для расшифровки
+* @param {string} currentType — на вход принимается ключ для расшифровки
+* @param {object} sourceTypes — входной объект с библиотекой ключей/значений
 * @return {string} — конвертированное значение
 */
-function decodePropertyType(key, sourceTypes) {
-  var typesNumber = sourceTypes.length;
-  var requestedDescription = 'Тип недвижимости не определен';
+function decodePropertyType(currentType, sourceTypes) {
+  var requestedDefinition = 'Тип недвижимости не определен';
 
-  for (var i = 0; i < typesNumber; i++) {
-    if (sourceTypes[i].indexOf(key) >= 0) {
-      requestedDescription = sourceTypes[i][1];
+  for (var key in sourceTypes) {
+    if (currentType === key) {
+      requestedDefinition = sourceTypes[key];
       break;
     }
   }
 
-  return requestedDescription;
+  return requestedDefinition;
 }
 
 /**

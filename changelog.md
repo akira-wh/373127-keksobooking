@@ -1,3 +1,5 @@
+- **`3.06`** Переработаны determineRightPropertyType() и decodePropertyType().
+
 - **`3.05`** offersPropertyTypes теперь объект.
 
 - **`3.04`** Восстановлена единообразность именования.
