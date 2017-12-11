@@ -274,6 +274,7 @@ function activateServices() {
   activateMap();
   activateUserForm();
   syncFormTimes();
+  syncFormPropertyPrice();
   syncFormPropertyCapacity();
   renderPins(8, offers);
 
@@ -619,6 +620,34 @@ function syncFormPropertyCapacity() {
         break;
       case 3: // 100 комнат
         selectCapacity.selectedIndex = 3; // не для гостей
+        break;
+    }
+  });
+}
+
+/**
+* Синхронизация опций селекта "Тип жилья" с подсказкой его стоимости в "Цена за ночь".
+* Синхронизируются <select> #type и значение placeholder в <input> #price.
+*
+* @function syncFormPropertyPrice
+*/
+function syncFormPropertyPrice() {
+  var selectType = document.querySelector('select#type');
+  var inputPrice = document.querySelector('input#price');
+
+  selectType.addEventListener('input', function () {
+    switch (selectType.selectedIndex) {
+      case 0: // Лачуга
+        inputPrice.placeholder = '0'; // Стоимость 0
+        break;
+      case 1: // Квартира
+        inputPrice.placeholder = '1000'; // Стоимость 1.000
+        break;
+      case 2: // Дом
+        inputPrice.placeholder = '5000'; // Стоимость 5.000
+        break;
+      case 3: // Дворец
+        inputPrice.placeholder = '10000'; // Стоимость 10.000
         break;
     }
   });

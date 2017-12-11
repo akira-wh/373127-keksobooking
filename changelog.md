@@ -1,3 +1,5 @@
+- **`4.04`** Синхронизированы `<select>` `#type` и placeholder `<input>` `#price`.
+
 - **`4.03`** Функция `syncFormPropertyCapacity()` перепроектирована.
 
 - **`4.02`** Синхронизированы опции `<select>` `#room_number` и `#capacity` (кол-во комнат и вместимость гостей).
