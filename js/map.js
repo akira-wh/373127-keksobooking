@@ -1,6 +1,5 @@
 'use strict';
 
-
 /*
 ***********************************************************************************
 ***********************************************************************************
@@ -15,8 +14,8 @@
 var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
 
-// Массив — Заголовки предложений.
-var offerTitles = [
+// Массив — Заголовки объявлений.
+var offersTitles = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -27,23 +26,22 @@ var offerTitles = [
   'Неуютное бунгало по колено в воде'
 ];
 
-// Массив — Типы жилья (ключи и расшифровки).
-// Не объект, потому что необходим нумерованный список.
-var offerPropertyTypes = [
-  ['flat', 'Квартира'],
-  ['house', 'Дом'],
-  ['bungalo', 'Бунгало']
-];
+// Объект — Типы жилья (ключи и расшифровки).
+var offersPropertyTypes = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 
 // Массив — Время checkin и checkout.
-var offerTimes = [
+var offersTimes = [
   '12:00',
   '13:00',
   '14:00'
 ];
 
 // Массив — Преимущества жилья.
-var offerFeatures = [
+var offersFeatures = [
   'wifi',
   'dishwasher',
   'parking',
@@ -57,31 +55,32 @@ var offerFeatures = [
 ***********************************************************************************
 ***********************************************************************************
 ***
-***                       ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В МАССИВ
+***             ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В ГЛАВНЫЙ МАССИВ offers[]
 ***
 ***********************************************************************************
 ***********************************************************************************
 */
 
-// Создание основного массива объявлений и заполнение его объектами данных.
-var offers = [];
-generateOffers(8, offers);
+// Создание и заполнение главного массива объявлений.
+var offers = generateOffers(8);
 
 /**
-* Функция, заполняющая входной массив объектами-объявлениями по недвижимости.
+* Создание и заполнение массива объектами-объявлениями.
 *
 * @function generateOffers
-* @param {number} expectedNumber — необходимое количество конечных объектов
-* @param {array} targetArray — входной массив для заполнения объектами
+* @param {number} expectedNumber — необходимое количество объектов-объявлений
+* @return {array} — заполненный массив
 */
-function generateOffers(expectedNumber, targetArray) {
+function generateOffers(expectedNumber) {
+  var requestedOffers = [];
+
   for (var i = 0; i < expectedNumber; i++) {
     var avatarSerial = i + 1;
     var selectedLocationX = getRandomInteger(300, 900);
     var selectedLocationY = getRandomInteger(100, 500);
-    var selectedTitle = offerTitles[i];
+    var selectedTitle = offersTitles[i];
 
-    targetArray[i] = {
+    requestedOffers[i] = {
       author: {
         avatar: 'img/avatars/user0' + avatarSerial + '.png'
       },
@@ -89,12 +88,12 @@ function generateOffers(expectedNumber, targetArray) {
       offer: {
         title: selectedTitle,
         price: getRandomInteger(1000, 1000000),
-        type: determineRightPropertyType(selectedTitle),
+        type: determinePropertyType(selectedTitle),
         rooms: getRandomInteger(1, 5),
         guests: getRandomInteger(0, 20),
-        checkin: getRandomElementFromArray(offerTimes),
-        checkout: getRandomElementFromArray(offerTimes),
-        features: generateUniqueCollection(offerFeatures),
+        checkin: getRandomElementFromArray(offersTimes),
+        checkout: getRandomElementFromArray(offersTimes),
+        features: generateUniqueCollection(offersFeatures),
         description: '',
         photos: [],
         address: selectedLocationX + ', ' + selectedLocationY
@@ -106,10 +105,12 @@ function generateOffers(expectedNumber, targetArray) {
       }
     };
   }
+
+  return requestedOffers;
 }
 
 /**
-* Функция, генерирующая случайное целое число в указанном диапазоне (minValue и maxValue участвуют).
+* Генерация случайного числа в указанном диапазоне (minValue и maxValue участвуют).
 *
 * @function getRandomInteger
 * @param {number} minValue — минимально допустимое число
@@ -124,48 +125,47 @@ function getRandomInteger(minValue, maxValue) {
 }
 
 /**
-* Функция, выбирающая из входного массива рандомный элемент и возвращающая его значение.
+* Выбор из входного массива рандомного элемента и возвращение его значения.
 *
 * @function getRandomElementFromArray
-* @param {array} externalArray — входной массив с элементами на выбор
+* @param {array} sourceElements — входной массив с элементами на выбор
 * @return {string} — значение рандомного элемента
 */
-function getRandomElementFromArray(externalArray) {
-  var maxIndex = externalArray.length - 1;
+function getRandomElementFromArray(sourceElements) {
+  var maxIndex = sourceElements.length - 1;
   var randomIndex = getRandomInteger(0, maxIndex);
-  var requestedElement = externalArray[randomIndex];
+  var requestedElement = sourceElements[randomIndex];
 
   return requestedElement;
 }
 
 /**
-* Функция, которая определяет по заголовку объявления соответствующий ему тип недвижимости.
+* Определение по заголовку объявления соответствующий ему тип недвижимости.
+* Определение происходит по ключевым словам.
+* #квартира -> flat etc.
 *
-* @function determineRightPropertyType
-* @param {string} workingTitle — входной заголовок объявления
-* @return {string} — определенный тип недвижимости
+* @function determinePropertyType
+* @param {string} title — входной заголовок объявления
+* @return {string} — тип недвижимости, подходящий заголовку объявления
 */
-function determineRightPropertyType(workingTitle) {
-  var types = offerPropertyTypes;
-  var flat = 0;
-  var house = 1;
-  var bungalo = 2;
+function determinePropertyType(title) {
+  title = title.toLowerCase();
 
-  if (workingTitle.indexOf('квартира') >= 0) {
-    var requestedType = types[flat][0];
-  } else if (workingTitle.indexOf('дворец') >= 0 || workingTitle.indexOf('домик') >= 0) {
-    requestedType = types[house][0];
-  } else if (workingTitle.indexOf('бунгало') >= 0) {
-    requestedType = types[bungalo][0];
+  if (title.indexOf('квартира') !== -1) {
+    var requestedType = 'flat';
+  } else if (title.indexOf('дворец') !== -1 || title.indexOf('домик') !== -1) {
+    requestedType = 'house';
+  } else if (title.indexOf('бунгало') !== -1) {
+    requestedType = 'bungalo';
   } else {
-    requestedType = 'Тип недвижимости неизвестен';
+    requestedType = 'Тип недвижимости неопределен';
   }
 
   return requestedType;
 }
 
 /**
-* Функция, создающая новый набор элементов на основе вариантов из входного массива.
+* Создание нового набора элементов на основе вариантов из входного массива.
 * Элементы не повторяются, а их количество не превышает объем входного массива.
 * 1. Узнаем пороговую длину входного массива.
 * 2. Генерируем длину новой коллекции (не менее 1 элемента, не более длины входного массива).
@@ -175,24 +175,25 @@ function determineRightPropertyType(workingTitle) {
 * 6. Отдаем подборку.
 *
 * @function generateUniqueCollection
-* @param {array} externalArray — входной массив с вариантами для перекомпоновки
+* @param {array} sourceElements — входной массив с вариантами для перекомпоновки
 * @return {array} — новая подборка
 */
-function generateUniqueCollection(externalArray) {
-  var maxLength = externalArray.length - 1;
-  var newCollectionLength = getRandomInteger(1, maxLength);
+function generateUniqueCollection(sourceElements) {
+  var maxValue = sourceElements.length - 1;
+  var newCollectionLength = getRandomInteger(1, maxValue);
+  var selectedElements = getNonrepeatingIntegers(0, maxValue, newCollectionLength);
+
   var requestedCollection = [];
-  var selectedElements = getNonrepeatingIntegers(0, maxLength, newCollectionLength);
 
   for (var i = 0; i < newCollectionLength; i++) {
-    requestedCollection.push(externalArray[selectedElements[i]]);
+    requestedCollection.push(sourceElements[selectedElements[i]]);
   }
 
   return requestedCollection;
 }
 
 /**
-* Функция, генерирующая массив неповторяющихся целых чисел в заданном диапазоне и заданной длины.
+* Генерация массива неповторяющихся целых чисел в заданном диапазоне и заданной длины.
 *
 * @function getNonrepeatingIntegers
 * @param {number} minValue — минимально допустимое число
@@ -203,12 +204,12 @@ function generateUniqueCollection(externalArray) {
 function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   var nonrepeatingIntegers = [];
   var i = 0;
-  var unique = -1;
+  var uniqueNumber = -1;
 
   while (i < expectedLength) {
     var newNumber = getRandomInteger(minValue, maxValue);
 
-    if (nonrepeatingIntegers.indexOf(newNumber) === unique) {
+    if (nonrepeatingIntegers.indexOf(newNumber) === uniqueNumber) {
       nonrepeatingIntegers.push(newNumber);
       i++;
     } else {
@@ -219,104 +220,116 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   return nonrepeatingIntegers;
 }
 
+
 /*
 ***********************************************************************************
 ***********************************************************************************
 ***
-***         ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
+***       ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
 ***
 ***********************************************************************************
 ***********************************************************************************
 */
 
-// Получение карты объявлений и пинов.
-var map = document.querySelector('.map');
-
-// Получение контейнера пинов.
-var pinArea = document.querySelector('.map__pins');
-
 // Получение управляющего пользовательского пина.
-var userPin = document.querySelector('.map__pin--main');
+// Отлов первого взаимодействия с ним -> запуск основного функционала сайта.
+var controlPin = document.querySelector('.map__pin--main');
 
-// Получение формы создания объявлений.
-var userForm = document.querySelector('.notice__form');
-
-// Отлов первого взаимодействия с управляющим пином и запуск основного функционала сайта.
-userPin.addEventListener('mouseup', onUserPinFirstClick);
-userPin.addEventListener('keydown', onUserPinFirstEnterPress);
+controlPin.addEventListener('mouseup', onControlPinFirstClick);
+controlPin.addEventListener('keydown', onControlPinFirstEnterPress);
 
 /**
-* Обработчик, активирующий основной функционал сайта по первому клику на управлящем ине.
-* Активирует карту, форму создания объявлений и отрисовывает пины.
-* Удаляет альтернативный отлов того же события (onUserFirstEnterPress) и самого себя после отработки.
+* Активация основного функционала сайта.
+* Вызывается по первому КЛИКУ на управлящем пине.
 *
-* @function onUserPinFirstClick
+* @function onControlPinFirstClick
 */
-function onUserPinFirstClick() {
-  activateMap();
-  activateUserForm();
-  renderPins();
-  pinArea.addEventListener('click', onPinClick);
-  userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
-  userPin.removeEventListener('mouseup', onUserPinFirstClick);
+function onControlPinFirstClick() {
+  activateServices();
 }
 
 /**
-* Обработчик, активирующий основной функционал сайта по первому нажатию ENTER на управляющем пине.
-* Активирует карту, форму создания объявлений и отрисовывает пины.
-* Удаляет альтернативный отлов того же события (onUserPinFirstClick) и самого себя после отработки.
+* Активация основного функционала сайта.
+* Вызывается по первому нажатию ENTER на управлящем пине.
 *
-* @function onUserPinFirstEnterPress
+* @function onControlPinFirstEnterPress
 * @param {object} evt — объект события
 */
-function onUserPinFirstEnterPress(evt) {
+function onControlPinFirstEnterPress(evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    activateMap();
-    activateUserForm();
-    renderPins();
-    pinArea.addEventListener('click', onPinClick);
-    userPin.removeEventListener('mouseup', onUserPinFirstClick);
-    userPin.removeEventListener('keydown', onUserPinFirstEnterPress);
+    activateServices();
   }
 }
 
 /**
-* Функция, активирующая карту пинов и объявлений.
+* Активация основных пользовательских сервисов:
+* 1. Запускаются карта и форма создания объявлений,
+* 2. Отрисовываются пины,
+* 3. Начинается отлов переключения пинов/объявлений,
+* 4. Исключается возможность запустить себя как функцию повторно.
+*
+* @function activateServices
+*/
+function activateServices() {
+  activateMap();
+  activateUserForm();
+  renderPins(8, offers);
+
+  var pinArea = document.querySelector('.map__pins');
+  pinArea.addEventListener('click', onPinClick);
+
+  // Спорное место (зависимость от глобальной переменной controlPin).
+  controlPin.removeEventListener('keydown', onControlPinFirstEnterPress);
+  controlPin.removeEventListener('mouseup', onControlPinFirstClick);
+}
+
+/**
+* Активация пинов и объявлений.
 * Активация происходит за счет снятия у соответствующего <section> блокирующего класса .map--faded.
 *
 * @function activateMap
 */
 function activateMap() {
+  var map = document.querySelector('.map');
   map.classList.remove('map--faded');
 }
 
 /**
-* Функция, активирующая форму создания объявлений.
+* Активация формы создания объявлений, синхронизация связанных <input> и <select>.
 * Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
 * получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
+* По синхронизации см.документацию syncFormTimes(), syncFormPropertyPrice() и syncFormPropertyCapacity().
 *
 * @function activateUserForm
 */
 function activateUserForm() {
-  userForm.classList.remove('notice__form--disabled');
-
+  var userForm = document.querySelector('.notice__form');
   var fieldsets = userForm.querySelectorAll('fieldset');
-  var fieldsetsNumber = fieldsets.length - 1;
+  var fieldsetsNumber = fieldsets.length;
+
+  userForm.classList.remove('notice__form--disabled');
 
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = false;
   }
+
+  syncFormTimes();
+  syncFormPropertyPrice();
+  syncFormPropertyCapacity();
+  watchFormValidity();
 }
 
 /**
-* Обработчик, отрисовывающий рядом с выбранным пином соответствующее тому объявление.
-* Используется проверка на всплытии. Индекс пина соответствует индексу объявления.
+* Отрисовка рядом с выбранным пином соответствующего ему объявления.
+* Проверка на всплытии.
+* Индекс пина соответствует индексу объявления.
 *
 * @function onPinClick
 * @param {object} evt — объект события
 */
 function onPinClick(evt) {
-  var pins = document.querySelectorAll('.map__pins button:not(.map__pin--main)');
+  var pinArea = document.querySelector('.map__pins');
+  var pins = pinArea.querySelectorAll('button:not(.map__pin--main)');
   var pinsNumber = pins.length;
   var target = evt.target;
 
@@ -324,7 +337,7 @@ function onPinClick(evt) {
   // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
   while (target !== pinArea) {
 
-    // Если target — искомый пин с верным классом...
+    // Если target — искомый пин...
     if (target.className === 'map__pin') {
 
       // Определяется его порядковый индекс (индекс в массиве пинов).
@@ -333,14 +346,13 @@ function onPinClick(evt) {
         if (pins[i] === target) {
 
           removeUselessOffer();
-          removeUselessPinActivityModifier();
 
           var referenceIndex = i;
-          renderNewOffer(referenceIndex);
+          renderNewOffer(offers, referenceIndex);
           setPinActivityModifier(target);
 
           // Здесь регистрируется отлов событий для закрытия объявления.
-          var offerCloseButton = map.querySelector('.map__card.popup .popup__close');
+          var offerCloseButton = document.querySelector('.popup .popup__close');
           offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
           window.addEventListener('keydown', onOfferEscPress);
 
@@ -353,20 +365,25 @@ function onPinClick(evt) {
     }
 
   }
+
+  return;
 }
 
 /**
-* Обработчик, удаляющий ненужное объявление и дальнейший отлов его событий по клику.
+* Удаление ненужного объявления, отлова его событий,
+* а также модификатора активности у соответствующего пина.
+* Вызывается нажатием на кнопку ЗАКРЫТЬ в открытом объявлении.
 *
 * @function onOfferCloseButtonPress
 */
 function onOfferCloseButtonPress() {
   removeUselessOffer();
-  removeUselessPinActivityModifier();
 }
 
 /**
-* Обработчик, удаляющий ненужное объявление и дальнейший его событий по нажатию ESC.
+* Удаление ненужного объявления, отлова его событий,
+* а также модификатора активности у соответствующего пина.
+* Вызывается нажатием на ESC при открытом объявлении.
 *
 * @function onOfferEscPress
 * @param {object} evt — объект события
@@ -374,18 +391,18 @@ function onOfferCloseButtonPress() {
 function onOfferEscPress(evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     removeUselessOffer();
-    removeUselessPinActivityModifier();
   }
 }
 
 /**
-* Функция, которая проверяет и удаляет ненужное объявление.
-* Вместе с объявлением удаляется и отлов его событий.
+* Удаление ненужного объявления, отлова его событий,
+* а также модификатора активности у соответствующего пина.
 *
 * @function removeUselessOffer
 */
 function removeUselessOffer() {
-  var uselessOffer = map.querySelector('.map__card.popup');
+  var uselessOffer = document.querySelector('.popup');
+  var uselessActivePin = document.querySelector('.map__pin--active');
 
   if (uselessOffer) {
     var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
@@ -395,31 +412,21 @@ function removeUselessOffer() {
 
     uselessOffer.parentNode.removeChild(uselessOffer);
   }
-}
 
-/**
-* Функция, которая проверяет и удаляет у ненужного пина класс-модификатор .map__pin--active.
-* Применяется при переключении пинов.
-*
-* @function removeUselessPinActivityModifier
-*/
-function removeUselessPinActivityModifier() {
-  var activeElement = pinArea.querySelector('.map__pin--active');
-
-  if (activeElement) {
-    activeElement.classList.remove('map__pin--active');
+  if (uselessActivePin) {
+    uselessActivePin.classList.remove('map__pin--active');
   }
 }
 
 /**
-* Функция, которая устанавливает необходимому пину класс-модификатор .map__pin--active.
+* Добавление необходимому пину класса-модификатора .map__pin--active.
 * Применяется при переключение пинов.
 *
 * @function setPinActivityModifier
-* @param {object} target — DOM элемент
+* @param {object} node — DOM элемент
 */
-function setPinActivityModifier(target) {
-  target.classList.add('map__pin--active');
+function setPinActivityModifier(node) {
+  node.classList.add('map__pin--active');
 }
 
 
@@ -434,28 +441,31 @@ function setPinActivityModifier(target) {
 */
 
 /**
-* Функция создания и отрисовки пользовательских пинов.
-* Создает Document Fragment, заполняет разметкой и внедряет на страницу.
+* Создание и отрисовка пользовательских пинов.
+* Создается Document Fragment, заполняется разметкой и внедряется на страницу.
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
 * Количество пинов на выходе соответствует количеству объектов-объявлений offers[].
 *
 * @function renderPins
+* @param {number} expectedNumber — необходимое число отрисованных пинов
+* @param {array} sourceOffers — массив объектов-объявлений для снятия данных.
 */
-function renderPins() {
+function renderPins(expectedNumber, sourceOffers) {
+  var pinArea = document.querySelector('.map__pins');
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinsFragment = document.createDocumentFragment();
-  var pinsNumber = offers.length;
 
-  for (var i = 0; i < pinsNumber; i++) {
+  for (var i = 0; i < expectedNumber; i++) {
     var pin = pinTemplate.cloneNode(true);
+
     var img = pin.querySelector('img');
     var pinShiftX = 5; // смещение пина по X с учетом его размеров (в px).
     var pinShiftY = 37; // смещение пина по Y с учетом его размеров (в px).
 
-    pin.style.left = offers[i].location.x - pinShiftX + 'px';
-    pin.style.top = offers[i].location.y - pinShiftY + 'px';
-    img.src = offers[i].author.avatar;
+    pin.style.left = sourceOffers[i].location.x - pinShiftX + 'px';
+    pin.style.top = sourceOffers[i].location.y - pinShiftY + 'px';
+    img.src = sourceOffers[i].author.avatar;
 
     pinsFragment.appendChild(pin);
   }
@@ -475,19 +485,20 @@ function renderPins() {
 */
 
 /**
-* Функция создания и отрисовки необходимого объявления.
-* Создает Document Fragment, заполняет разметкой и внедряет на страницу.
+* Создание и отрисовка необходимого объявления.
+* Создается Document Fragment, заполняется разметкой и внедряется на страницу.
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
 *
 * @function renderNewOffer
-* @param {number} index — индекс необходимого объявления из массива
+* @param {array} sourceOffers — входной массив с объявлениями для извлечения данных
+* @param {number} index — индекс необходимого объявления
 */
-function renderNewOffer(index) {
+function renderNewOffer(sourceOffers, index) {
   var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
   var offerFragment = document.createDocumentFragment();
-
   var offer = offerTemplate.cloneNode(true);
+
   var avatar = offer.querySelector('.popup__avatar');
   var title = offer.querySelector('h3');
   var address = offer.querySelector('small');
@@ -498,61 +509,194 @@ function renderNewOffer(index) {
   var description = offer.querySelector('ul + p');
   var featuresList = offer.querySelector('.popup__features');
 
-  avatar.src = offers[index].author.avatar;
-  title.textContent = offers[index].offer.title;
-  address.textContent = offers[index].offer.address;
-  price.textContent = offers[index].offer.price + '\u20bd / ночь';
-  type.textContent = decodePropertyType(offers[index].offer.type);
-  capacity.textContent = offers[index].offer.rooms + ' комнаты для ' + offers[index].offer.guests + ' гостей';
-  stayTime.textContent = 'Заезд после ' + offers[index].offer.checkin + ', выезд до ' + offers[index].offer.checkout;
-  description.textContent = offers[index].offer.description;
+  var source = sourceOffers[index];
+
+  avatar.src = source.author.avatar;
+  title.textContent = source.offer.title;
+  address.textContent = source.offer.address;
+  price.textContent = source.offer.price + '\u20bd / ночь';
+  type.textContent = decodePropertyType(source.offer.type, offersPropertyTypes);
+  capacity.textContent = source.offer.rooms + ' комнаты для ' + source.offer.guests + ' гостей';
+  stayTime.textContent = 'Заезд после ' + source.offer.checkin + ', выезд до ' + source.offer.checkout;
+  description.textContent = source.offer.description;
   featuresList.innerHTML = '';
-  featuresList.appendChild(createFeaturesMarkup(offers[index].offer.features));
+  featuresList.appendChild(createFeaturesMarkup(source.offer.features));
 
   offerFragment.appendChild(offer);
 
+  var map = document.querySelector('.map');
   var offerInsertPoint = map.querySelector('.map__filters-container');
   map.insertBefore(offerFragment, offerInsertPoint);
 }
 
 /**
-* Функция, расшифровывающая представление элемента по базе в понятное обозначение на русском языке.
+* Расшифровка типа недвижимости.
+* Обозначения flat, house etc. русифицируются для выдачи клиентской стороне.
 *
 * @function decodePropertyType
-* @param {string} externalKey — на вход принимается значение для расшифровки
+* @param {string} currentType — на вход принимается ключ для расшифровки
+* @param {object} sourceTypes — входной объект с библиотекой ключей/значений
 * @return {string} — конвертированное значение
 */
-function decodePropertyType(externalKey) {
-  var base = offerPropertyTypes;
-  var baseLength = offerPropertyTypes.length;
-  var requestedDescription = 'Тип недвижимости не определен';
+function decodePropertyType(currentType, sourceTypes) {
+  var requestedDefinition = 'Тип недвижимости не определен';
 
-  for (var i = 0; i < baseLength; i++) {
-    if (base[i].indexOf(externalKey) >= 0) {
-      requestedDescription = base[i][1];
+  for (var key in sourceTypes) {
+    if (currentType === key) {
+      requestedDefinition = sourceTypes[key];
       break;
     }
   }
 
-  return requestedDescription;
+  return requestedDefinition;
 }
 
 /**
-* Функция, создающая на основе массива преимуществ соответствующую HTML разметку.
+* Создание на основе массива преимуществ соответствующей HTML разметки.
 *
-* @param {array} externalArray — входной массив со списком преимуществ
+* @param {array} sourceFeatures — входной массив со списком преимуществ
 * @return {object} — фрагмент с готовой HTML разметкой
 */
-function createFeaturesMarkup(externalArray) {
-  var arrayLength = externalArray.length;
+function createFeaturesMarkup(sourceFeatures) {
   var featuresFragment = document.createDocumentFragment();
+  var featuresNumber = sourceFeatures.length;
 
-  for (var i = 0; i < arrayLength; i++) {
+  for (var i = 0; i < featuresNumber; i++) {
     var featureTag = document.createElement('li');
-    featureTag.className = 'feature  feature--' + externalArray[i];
+    featureTag.className = 'feature  feature--' + sourceFeatures[i];
 
     featuresFragment.appendChild(featureTag);
   }
 
   return featuresFragment;
+}
+
+/*
+***********************************************************************************
+***********************************************************************************
+***
+***             ФОРМА СОЗДАНИЯ ОБЪЯВЛЕНИЙ: СИНХРОНИЗАЦИЯ И ВАЛИДАЦИЯ
+***
+***********************************************************************************
+***********************************************************************************
+*/
+
+/**
+* Синхронизация опций селектов "Время заезда и выезда".
+* Синхронизируются <select> #timein и #timeout в форме создания объявлений .notice__form.
+*
+* @function syncFormTimes
+*/
+function syncFormTimes() {
+  var selectCheckin = document.querySelector('select#timein');
+  var selectCheckout = document.querySelector('select#timeout');
+
+  selectCheckin.addEventListener('input', function () {
+    selectCheckout.selectedIndex = selectCheckin.selectedIndex;
+  });
+
+  selectCheckout.addEventListener('input', function () {
+    selectCheckin.selectedIndex = selectCheckout.selectedIndex;
+  });
+}
+
+/**
+* Синхронизация опций селектов "Количество комнат" и "Количество мест".
+* Синхронизируются <select> #room_number и #capacity
+*
+* @function syncFormPropertyCapacity
+*/
+function syncFormPropertyCapacity() {
+  var selectRooms = document.querySelector('select#room_number');
+  var selectCapacity = document.querySelector('select#capacity');
+
+  selectRooms.addEventListener('input', function () {
+    switch (selectRooms.selectedIndex) {
+      case 0: // 1 комната
+        selectCapacity.selectedIndex = 2; // для 1 гостя
+        break;
+      case 1: // 2 комнаты
+        selectCapacity.selectedIndex = 1; // для 2-х гостей
+        break;
+      case 2: // 3 комнаты
+        selectCapacity.selectedIndex = 0; // для 3-х гостей
+        break;
+      case 3: // 100 комнат
+        selectCapacity.selectedIndex = 3; // не для гостей
+        break;
+    }
+  });
+}
+
+/**
+* Синхронизация опций селекта "Тип жилья" с подсказкой стоимости в "Цена за ночь".
+* Синхронизируются <select> #type и значение placeholder в <input> #price.
+*
+* @function syncFormPropertyPrice
+*/
+function syncFormPropertyPrice() {
+  var selectType = document.querySelector('select#type');
+  var inputPrice = document.querySelector('input#price');
+
+  selectType.addEventListener('input', function () {
+    switch (selectType.selectedIndex) {
+      case 0: // Лачуга
+        inputPrice.placeholder = '0'; // Стоимость 0
+        break;
+      case 1: // Квартира
+        inputPrice.placeholder = '1000'; // Стоимость 1.000
+        break;
+      case 2: // Дом
+        inputPrice.placeholder = '5000'; // Стоимость 5.000
+        break;
+      case 3: // Дворец
+        inputPrice.placeholder = '10000'; // Стоимость 10.000
+        break;
+    }
+  });
+}
+
+/**
+* Контроль валидности обязательных полей формы (формы создания объявлений).
+*
+* @function watchFormValidity
+*/
+function watchFormValidity() {
+  var inputTitle = document.querySelector('input#title[required]');
+  var inputAddress = document.querySelector('input#address[required]');
+  var inputPrice = document.querySelector('input#price[required]');
+
+  inputTitle.addEventListener('invalid', onInvalidInput);
+  inputAddress.addEventListener('invalid', onInvalidInput);
+  inputPrice.addEventListener('input', onInvalidInput);
+  inputPrice.addEventListener('invalid', onInvalidInput);
+}
+
+/**
+* Контроль валидности объекта события
+*
+* @function onInvalidInput
+* @param {object} evt — объект события
+*/
+function onInvalidInput(evt) {
+  var target = evt.target;
+  var valueLength = target.value.length;
+
+  if (target.validity.valueMissing) {
+    if (target.validity.badInput) {
+      target.setCustomValidity('Неверный формат ввода: допустимы только числа.');
+    } else {
+      target.setCustomValidity('Это поле не должно быть пустым.');
+    }
+  } else if (target.validity.tooShort) {
+    target.setCustomValidity('Минимально допустимая длина: 30 символов. Сейчас: ' + valueLength + '.');
+  } else if (target.validity.tooLong) {
+    target.setCustomValidity('Максимально допустимая длина: 100 символов. Сейчас: ' + valueLength + '.');
+  } else if (target.validity.rangeUnderflow) {
+    target.setCustomValidity('Минимально допустимое значение: 0.');
+  } else if (target.validity.rangeOverflow) {
+    target.setCustomValidity('Максимально допустимое значение: 1 000 000.');
+  } else {
+    target.setCustomValidity('');
+  }
 }
