@@ -642,15 +642,19 @@ function syncFormPropertyPrice() {
     switch (selectType.selectedIndex) {
       case 0: // Лачуга
         inputPrice.placeholder = '0'; // Стоимость 0
+        inputPrice.min = '0';
         break;
       case 1: // Квартира
         inputPrice.placeholder = '1000'; // Стоимость 1.000
+        inputPrice.min = '1000';
         break;
       case 2: // Дом
         inputPrice.placeholder = '5000'; // Стоимость 5.000
+        inputPrice.min = '5000';
         break;
       case 3: // Дворец
         inputPrice.placeholder = '10000'; // Стоимость 10.000
+        inputPrice.min = '10000';
         break;
     }
   });
