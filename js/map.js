@@ -273,9 +273,6 @@ function onControlPinFirstEnterPress(evt) {
 function activateServices() {
   activateMap();
   activateUserForm();
-  syncFormTimes();
-  syncFormPropertyPrice();
-  syncFormPropertyCapacity();
   renderPins(8, offers);
 
   var pinArea = document.querySelector('.map__pins');
@@ -298,9 +295,10 @@ function activateMap() {
 }
 
 /**
-* Активация формы создания объявлений.
+* Активация формы создания объявлений, синхронизация связанных <input> и <select>.
 * Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
 * получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
+* По синхронизации см.документацию syncFormTimes(), syncFormPropertyPrice() и syncFormPropertyCapacity().
 *
 * @function activateUserForm
 */
@@ -314,6 +312,10 @@ function activateUserForm() {
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = false;
   }
+
+  syncFormTimes();
+  syncFormPropertyPrice();
+  syncFormPropertyCapacity();
 }
 
 /**
@@ -626,7 +628,7 @@ function syncFormPropertyCapacity() {
 }
 
 /**
-* Синхронизация опций селекта "Тип жилья" с подсказкой его стоимости в "Цена за ночь".
+* Синхронизация опций селекта "Тип жилья" с подсказкой стоимости в "Цена за ночь".
 * Синхронизируются <select> #type и значение placeholder в <input> #price.
 *
 * @function syncFormPropertyPrice
