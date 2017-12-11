@@ -316,6 +316,7 @@ function activateUserForm() {
   syncFormTimes();
   syncFormPropertyPrice();
   syncFormPropertyCapacity();
+  watchFormValidity();
 }
 
 /**
@@ -574,7 +575,7 @@ function createFeaturesMarkup(sourceFeatures) {
 ***********************************************************************************
 ***********************************************************************************
 ***
-***                             ФОРМА СОЗДАНИЯ ОБЪЯВЛЕНИЙ
+***             ФОРМА СОЗДАНИЯ ОБЪЯВЛЕНИЙ: СИНХРОНИЗАЦИЯ И ВАЛИДАЦИЯ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -653,4 +654,49 @@ function syncFormPropertyPrice() {
         break;
     }
   });
+}
+
+/**
+* Контроль валидности обязательных полей формы (формы создания объявлений).
+*
+* @function watchFormValidity
+*/
+function watchFormValidity() {
+  var inputTitle = document.querySelector('input#title[required]');
+  var inputAddress = document.querySelector('input#address[required]');
+  var inputPrice = document.querySelector('input#price[required]');
+
+  inputTitle.addEventListener('invalid', onInvalidInput);
+  inputAddress.addEventListener('invalid', onInvalidInput);
+  inputPrice.addEventListener('input', onInvalidInput);
+  inputPrice.addEventListener('invalid', onInvalidInput);
+}
+
+/**
+* Контроль валидности объекта события
+*
+* @function onInvalidInput
+* @param {object} evt — объект события
+*/
+function onInvalidInput(evt) {
+  var target = evt.target;
+  var valueLength = target.value.length;
+
+  if (target.validity.valueMissing) {
+    if (target.validity.badInput) {
+      target.setCustomValidity('Неверный формат ввода: допустимы только числа.');
+    } else {
+      target.setCustomValidity('Это поле не должно быть пустым.');
+    }
+  } else if (target.validity.tooShort) {
+    target.setCustomValidity('Минимально допустимая длина: 30 символов. Сейчас: ' + valueLength + '.');
+  } else if (target.validity.tooLong) {
+    target.setCustomValidity('Максимально допустимая длина: 100 символов. Сейчас: ' + valueLength + '.');
+  } else if (target.validity.rangeUnderflow) {
+    target.setCustomValidity('Минимально допустимое значение: 0.');
+  } else if (target.validity.rangeOverflow) {
+    target.setCustomValidity('Максимально допустимое значение: 1 000 000.');
+  } else {
+    target.setCustomValidity('');
+  }
 }
