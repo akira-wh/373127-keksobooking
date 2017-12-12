@@ -4,7 +4,7 @@
 ***********************************************************************************
 ***********************************************************************************
 ***
-***              БИБЛИОТЕКИ ДАННЫХ (ОБЪЕКТЫ, МАССИВЫ, КОНСТАНТЫ etc)
+***                   ГЛОБАЛЬНЫЕ ОБЪЕКТЫ, МАССИВЫ, КОНСТАНТЫ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -258,6 +258,26 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = true;
   }
+
+  var inputTitle = USER_FORM.querySelector('input#title');
+  var inputAddress = USER_FORM.querySelector('input#address');
+  var inputPrice = USER_FORM.querySelector('input#price');
+  var selectCapacity = USER_FORM.querySelector('select#capacity');
+
+  USER_FORM.action = 'https://js.dump.academy/keksobooking';
+
+  inputTitle.minLength = '30';
+  inputTitle.maxLength = '100';
+  inputTitle.required = true;
+
+  inputAddress.readOnly = true;
+
+  inputPrice.placeholder = '1000';
+  inputPrice.min = '0';
+  inputPrice.max = '1000000';
+  inputPrice.required = true;
+
+  selectCapacity.selectedIndex = 2;
 })();
 
 // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта.
@@ -685,9 +705,9 @@ function syncFormPropertyPrice() {
 * @function watchFormValidity
 */
 function watchFormValidity() {
-  var inputTitle = document.querySelector('input#title[required]');
-  var inputAddress = document.querySelector('input#address[required]');
-  var inputPrice = document.querySelector('input#price[required]');
+  var inputTitle = USER_FORM.querySelector('input#title');
+  var inputAddress = USER_FORM.querySelector('input#address');
+  var inputPrice = USER_FORM.querySelector('input#price');
 
   inputTitle.addEventListener('invalid', onInvalidInput);
   inputAddress.addEventListener('invalid', onInvalidInput);
