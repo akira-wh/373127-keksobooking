@@ -247,7 +247,8 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 */
 
 /**
-* Приведение формы создания объявлений к состоянию по умолчанию (на момент загрузки сайта).
+* Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
+* Имеется ввиду состояние на момент загрузки сайта.
 *
 * @function setUserFormDefaultState
 */
@@ -466,10 +467,10 @@ function removeUselessOffer() {
 * Применяется при переключение пинов.
 *
 * @function setPinActivityModifier
-* @param {object} node — DOM элемент
+* @param {object} pin — DOM элемент
 */
-function setPinActivityModifier(node) {
-  node.classList.add('map__pin--active');
+function setPinActivityModifier(pin) {
+  pin.classList.add('map__pin--active');
 }
 
 
