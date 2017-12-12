@@ -1,3 +1,5 @@
+- **`4.12`** Хендлеры onControlPin `FirstClick` и `FirstEnterPress` слиты в один.
+
 - **`4.11`** Параметр (`node`) в `setPinActivityModifier()` переименован в (`pin`).
 
 - **`4.10`** HTML возвращен к исх.состоянию: все изменения через функцию.

@@ -13,7 +13,6 @@
 // Константы
 //
 // Коды клавиш
-var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
 
 // Управляющий пользовательский пин
@@ -282,30 +281,16 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 })();
 
 // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта.
-CONTROL_PIN.addEventListener('mouseup', onControlPinFirstClick);
-CONTROL_PIN.addEventListener('keydown', onControlPinFirstEnterPress);
+CONTROL_PIN.addEventListener('click', onControlPinFirstClick);
 
 /**
 * Активация основного функционала сайта.
-* Вызывается по первому КЛИКУ на управлящем пине.
+* Вызывается по первому КЛИКУ, нажатию ENTER или SPACE на управлящем пине.
 *
 * @function onControlPinFirstClick
 */
 function onControlPinFirstClick() {
   activateServices();
-}
-
-/**
-* Активация основного функционала сайта.
-* Вызывается по первому нажатию ENTER на управлящем пине.
-*
-* @function onControlPinFirstEnterPress
-* @param {object} evt — объект события
-*/
-function onControlPinFirstEnterPress(evt) {
-  if (evt.keyCode === ENTER_KEYCODE) {
-    activateServices();
-  }
 }
 
 /**
@@ -325,8 +310,7 @@ function activateServices() {
   var pinArea = MAP.querySelector('.map__pins');
   pinArea.addEventListener('click', onPinClick);
 
-  CONTROL_PIN.removeEventListener('keydown', onControlPinFirstEnterPress);
-  CONTROL_PIN.removeEventListener('mouseup', onControlPinFirstClick);
+  CONTROL_PIN.removeEventListener('click', onControlPinFirstClick);
 }
 
 /**
