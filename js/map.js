@@ -261,8 +261,8 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 
   var inputTitle = USER_FORM.querySelector('input#title');
   var inputAddress = USER_FORM.querySelector('input#address');
-  var inputPrice = USER_FORM.querySelector('input#price');
-  var selectCapacity = USER_FORM.querySelector('select#capacity');
+  var inputPropertyPrice = USER_FORM.querySelector('input#price');
+  var selectPropertyCapacity = USER_FORM.querySelector('select#capacity');
 
   USER_FORM.action = 'https://js.dump.academy/keksobooking';
 
@@ -272,12 +272,12 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 
   inputAddress.readOnly = true;
 
-  inputPrice.placeholder = '1000';
-  inputPrice.min = '0';
-  inputPrice.max = '1000000';
-  inputPrice.required = true;
+  inputPropertyPrice.placeholder = '1000';
+  inputPropertyPrice.min = '0';
+  inputPropertyPrice.max = '1000000';
+  inputPropertyPrice.required = true;
 
-  selectCapacity.selectedIndex = 2;
+  selectPropertyCapacity.selectedIndex = 2;
 })();
 
 // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта.
@@ -324,10 +324,11 @@ function activateMap() {
 }
 
 /**
-* Активация формы создания объявлений, синхронизация связанных <input> и <select>.
+* Активация формы создания объявлений, контроль за синхронизацией <input> и <select>.
 * Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
 * получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
-* По синхронизации см.документацию syncFormTimes(), syncFormPropertyPrice() и syncFormPropertyCapacity().
+* По синхронизации см.документацию связанных функций:
+* syncFormTimes(), syncFormPropertyPrice() и syncFormPropertyCapacity()
 *
 * @function activateUserForm
 */
@@ -341,9 +342,27 @@ function activateUserForm() {
     fieldsets[i].disabled = false;
   }
 
-  syncFormTimes();
-  syncFormPropertyPrice();
-  syncFormPropertyCapacity();
+  var selectCheckin = USER_FORM.querySelector('select#timein');
+  var selectCheckout = USER_FORM.querySelector('select#timeout');
+  selectCheckin.addEventListener('input', function (evt) {
+    syncFormTimes(selectCheckin, selectCheckout, evt);
+  });
+  selectCheckout.addEventListener('input', function (evt) {
+    syncFormTimes(selectCheckin, selectCheckout, evt);
+  });
+
+  var selectPropertyType = USER_FORM.querySelector('select#type');
+  var inputPropertyPrice = USER_FORM.querySelector('input#price');
+  selectPropertyType.addEventListener('input', function () {
+    syncFormPropertyPrice(selectPropertyType, inputPropertyPrice);
+  });
+
+  var selectRoomsNumber = USER_FORM.querySelector('select#room_number');
+  var selectPropertyCapacity = USER_FORM.querySelector('select#capacity');
+  selectRoomsNumber.addEventListener('input', function () {
+    syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity);
+  });
+
   watchFormValidity();
 }
 
@@ -618,82 +637,73 @@ function createFeaturesMarkup(sourceFeatures) {
 */
 
 /**
-* Синхронизация опций селектов "Время заезда и выезда".
-* Синхронизируются <select> #timein и #timeout в форме создания объявлений .notice__form.
+* Синхронизация опций селектов "Время заезда и выезда" в форме создания объявлений.
+* Одним из параметров передается объект события (в каком селекте изменения),
+* с учетом него изменяется противоположный селект.
 *
 * @function syncFormTimes
+* @param {node} selectCheckin — <select> #timein в форме .notice__form
+* @param {node} selectCheckout — <select> #timeout
+* @param {object} evt — объект события, объект изменений
 */
-function syncFormTimes() {
-  var selectCheckin = document.querySelector('select#timein');
-  var selectCheckout = document.querySelector('select#timeout');
-
-  selectCheckin.addEventListener('input', function () {
+function syncFormTimes(selectCheckin, selectCheckout, evt) {
+  if (evt.target === selectCheckin) {
     selectCheckout.selectedIndex = selectCheckin.selectedIndex;
-  });
-
-  selectCheckout.addEventListener('input', function () {
+  } else if (evt.target === selectCheckout) {
     selectCheckin.selectedIndex = selectCheckout.selectedIndex;
-  });
+  }
+}
+
+/**
+* Синхронизация опций селекта "Тип жилья" с подсказкой и ограничениями в "Цена за ночь".
+*
+* @function syncFormPropertyPrice
+* @param {node} selectPropertyType — <select> #type в форме .notice__form
+* @param {node} inputPropertyPrice — <input> #price
+*/
+function syncFormPropertyPrice(selectPropertyType, inputPropertyPrice) {
+  switch (selectPropertyType.selectedIndex) {
+    case 0: // Лачуга
+      inputPropertyPrice.placeholder = '0'; // Стоимость 0
+      inputPropertyPrice.min = '0';
+      break;
+    case 1: // Квартира
+      inputPropertyPrice.placeholder = '1000'; // Стоимость 1.000
+      inputPropertyPrice.min = '1000';
+      break;
+    case 2: // Дом
+      inputPropertyPrice.placeholder = '5000'; // Стоимость 5.000
+      inputPropertyPrice.min = '5000';
+      break;
+    case 3: // Дворец
+      inputPropertyPrice.placeholder = '10000'; // Стоимость 10.000
+      inputPropertyPrice.min = '10000';
+      break;
+  }
 }
 
 /**
 * Синхронизация опций селектов "Количество комнат" и "Количество мест".
-* Синхронизируются <select> #room_number и #capacity
 *
 * @function syncFormPropertyCapacity
+* @param {node} selectRoomsNumber — <select> #room_number в форме .notice__form
+* @param {node} selectPropertyCapacity — <select> #capacity
 */
-function syncFormPropertyCapacity() {
-  var selectRooms = document.querySelector('select#room_number');
-  var selectCapacity = document.querySelector('select#capacity');
-
-  selectRooms.addEventListener('input', function () {
-    switch (selectRooms.selectedIndex) {
-      case 0: // 1 комната
-        selectCapacity.selectedIndex = 2; // для 1 гостя
-        break;
-      case 1: // 2 комнаты
-        selectCapacity.selectedIndex = 1; // для 2-х гостей
-        break;
-      case 2: // 3 комнаты
-        selectCapacity.selectedIndex = 0; // для 3-х гостей
-        break;
-      case 3: // 100 комнат
-        selectCapacity.selectedIndex = 3; // не для гостей
-        break;
-    }
-  });
-}
-
-/**
-* Синхронизация опций селекта "Тип жилья" с подсказкой стоимости в "Цена за ночь".
-* Синхронизируются <select> #type и значение placeholder в <input> #price.
-*
-* @function syncFormPropertyPrice
-*/
-function syncFormPropertyPrice() {
-  var selectType = document.querySelector('select#type');
-  var inputPrice = document.querySelector('input#price');
-
-  selectType.addEventListener('input', function () {
-    switch (selectType.selectedIndex) {
-      case 0: // Лачуга
-        inputPrice.placeholder = '0'; // Стоимость 0
-        inputPrice.min = '0';
-        break;
-      case 1: // Квартира
-        inputPrice.placeholder = '1000'; // Стоимость 1.000
-        inputPrice.min = '1000';
-        break;
-      case 2: // Дом
-        inputPrice.placeholder = '5000'; // Стоимость 5.000
-        inputPrice.min = '5000';
-        break;
-      case 3: // Дворец
-        inputPrice.placeholder = '10000'; // Стоимость 10.000
-        inputPrice.min = '10000';
-        break;
-    }
-  });
+function syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity) {
+  switch (selectRoomsNumber.selectedIndex) {
+    case 0: // 1 комната
+      selectPropertyCapacity.selectedIndex = 2; // для 1 гостя
+      break;
+    case 1: // 2 комнаты
+      selectPropertyCapacity.selectedIndex = 1; // для 2-х гостей
+      break;
+    case 2: // 3 комнаты
+      selectPropertyCapacity.selectedIndex = 0; // для 3-х гостей
+      break;
+    case 3: // 100 комнат
+      selectPropertyCapacity.selectedIndex = 3; // не для гостей
+      break;
+  }
 }
 
 /**
