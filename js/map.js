@@ -374,6 +374,7 @@ function onPinClick(evt) {
         if (pins[i] === target) {
 
           removeUselessOffer();
+          removeUselessPinActivityModifier();
 
           var referenceIndex = i;
           renderNewOffer(offers, referenceIndex);
@@ -406,6 +407,7 @@ function onPinClick(evt) {
 */
 function onOfferCloseButtonPress() {
   removeUselessOffer();
+  removeUselessPinActivityModifier();
 }
 
 /**
@@ -419,18 +421,17 @@ function onOfferCloseButtonPress() {
 function onOfferEscPress(evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     removeUselessOffer();
+    removeUselessPinActivityModifier();
   }
 }
 
 /**
-* Удаление ненужного объявления, отлова его событий,
-* а также модификатора активности у соответствующего пина.
+* Удаление ненужного объявления и отлова его событий.
 *
 * @function removeUselessOffer
 */
 function removeUselessOffer() {
   var uselessOffer = MAP.querySelector('.popup');
-  var uselessActivePin = MAP.querySelector('.map__pin--active');
 
   if (uselessOffer) {
     var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
@@ -439,10 +440,6 @@ function removeUselessOffer() {
     window.removeEventListener('keydown', onOfferEscPress);
 
     uselessOffer.parentNode.removeChild(uselessOffer);
-  }
-
-  if (uselessActivePin) {
-    uselessActivePin.classList.remove('map__pin--active');
   }
 }
 
@@ -455,6 +452,20 @@ function removeUselessOffer() {
 */
 function setPinActivityModifier(pin) {
   pin.classList.add('map__pin--active');
+}
+
+/**
+* Удаление класса-модификатора .map__pin--active у ненужного пина
+* Применяется при переключении пинов.
+*
+* @function removeUselessPinActivityModifier
+*/
+function removeUselessPinActivityModifier() {
+  var uselessActivePin = MAP.querySelector('.map__pin--active');
+
+  if (uselessActivePin) {
+    uselessActivePin.classList.remove('map__pin--active');
+  }
 }
 
 
