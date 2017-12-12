@@ -11,11 +11,13 @@
 */
 
 // Константы
-var ENTER_KEYCODE = 13;
-var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13; // код клавиши ENTER
+var ESC_KEYCODE = 27; // код клавиши ESC
+var PIN_SHIFT_X = 5; // смещение управляющего пина по X с учетом его размеров (в px).
+var PIN_SHIFT_Y = 37; // смещение управляющего пина по Y с учетом его размеров (в px).
 
 // Массив — Заголовки объявлений.
-var offersTitles = [
+var OFFERS_TITLES = [
   'Большая уютная квартира',
   'Маленькая неуютная квартира',
   'Огромный прекрасный дворец',
@@ -27,21 +29,21 @@ var offersTitles = [
 ];
 
 // Объект — Типы жилья (ключи и расшифровки).
-var offersPropertyTypes = {
+var OFFERS_PROPERTY_TYPES = {
   flat: 'Квартира',
   house: 'Дом',
   bungalo: 'Бунгало'
 };
 
 // Массив — Время checkin и checkout.
-var offersTimes = [
+var OFFERS_TIMES = [
   '12:00',
   '13:00',
   '14:00'
 ];
 
 // Массив — Преимущества жилья.
-var offersFeatures = [
+var OFFERS_FEATURES = [
   'wifi',
   'dishwasher',
   'parking',
@@ -78,7 +80,7 @@ function generateOffers(expectedNumber) {
     var avatarSerial = i + 1;
     var selectedLocationX = getRandomInteger(300, 900);
     var selectedLocationY = getRandomInteger(100, 500);
-    var selectedTitle = offersTitles[i];
+    var selectedTitle = OFFERS_TITLES[i];
 
     requestedOffers[i] = {
       author: {
@@ -91,9 +93,9 @@ function generateOffers(expectedNumber) {
         type: determinePropertyType(selectedTitle),
         rooms: getRandomInteger(1, 5),
         guests: getRandomInteger(0, 20),
-        checkin: getRandomElementFromArray(offersTimes),
-        checkout: getRandomElementFromArray(offersTimes),
-        features: generateUniqueCollection(offersFeatures),
+        checkin: getRandomElementFromArray(OFFERS_TIMES),
+        checkout: getRandomElementFromArray(OFFERS_TIMES),
+        features: generateUniqueCollection(OFFERS_FEATURES),
         description: '',
         photos: [],
         address: selectedLocationX + ', ' + selectedLocationY
@@ -204,12 +206,12 @@ function generateUniqueCollection(sourceElements) {
 function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   var nonrepeatingIntegers = [];
   var i = 0;
-  var uniqueNumber = -1;
+  var uniqueIndex = -1;
 
   while (i < expectedLength) {
     var newNumber = getRandomInteger(minValue, maxValue);
 
-    if (nonrepeatingIntegers.indexOf(newNumber) === uniqueNumber) {
+    if (nonrepeatingIntegers.indexOf(newNumber) === uniqueIndex) {
       nonrepeatingIntegers.push(newNumber);
       i++;
     } else {
@@ -458,13 +460,10 @@ function renderPins(expectedNumber, sourceOffers) {
 
   for (var i = 0; i < expectedNumber; i++) {
     var pin = pinTemplate.cloneNode(true);
-
     var img = pin.querySelector('img');
-    var pinShiftX = 5; // смещение пина по X с учетом его размеров (в px).
-    var pinShiftY = 37; // смещение пина по Y с учетом его размеров (в px).
 
-    pin.style.left = sourceOffers[i].location.x - pinShiftX + 'px';
-    pin.style.top = sourceOffers[i].location.y - pinShiftY + 'px';
+    pin.style.left = sourceOffers[i].location.x - PIN_SHIFT_X + 'px';
+    pin.style.top = sourceOffers[i].location.y - PIN_SHIFT_Y + 'px';
     img.src = sourceOffers[i].author.avatar;
 
     pinsFragment.appendChild(pin);
@@ -515,7 +514,7 @@ function renderNewOffer(sourceOffers, index) {
   title.textContent = source.offer.title;
   address.textContent = source.offer.address;
   price.textContent = source.offer.price + '\u20bd / ночь';
-  type.textContent = decodePropertyType(source.offer.type, offersPropertyTypes);
+  type.textContent = decodePropertyType(source.offer.type, OFFERS_PROPERTY_TYPES);
   capacity.textContent = source.offer.rooms + ' комнаты для ' + source.offer.guests + ' гостей';
   stayTime.textContent = 'Заезд после ' + source.offer.checkin + ', выезд до ' + source.offer.checkout;
   description.textContent = source.offer.description;
