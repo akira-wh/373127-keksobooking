@@ -579,7 +579,8 @@ function decodePropertyType(currentType, sourceTypes) {
   for (var key in sourceTypes) {
     if (currentType === key) {
       requestedDefinition = sourceTypes[key];
-      break;
+
+      return requestedDefinition;
     }
   }
 
