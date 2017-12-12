@@ -11,10 +11,23 @@
 */
 
 // Константы
-var ENTER_KEYCODE = 13; // код клавиши ENTER
-var ESC_KEYCODE = 27; // код клавиши ESC
-var PIN_SHIFT_X = 5; // смещение управляющего пина по X с учетом его размеров (в px).
-var PIN_SHIFT_Y = 37; // смещение управляющего пина по Y с учетом его размеров (в px).
+//
+// Коды клавиш
+var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
+
+// Управляющий пользовательский пин
+var CONTROL_PIN = document.querySelector('.map__pin--main');
+
+// Смещение всех пинов (кроме управляющего) по X и Y с учетом брака стилизации
+var PIN_SHIFT_X = 5;
+var PIN_SHIFT_Y = 37;
+
+// Форма создания объявлений
+var USER_FORM = document.querySelector('.notice__form');
+
+// Карта пинов и объявлений
+var MAP = document.querySelector('.map');
 
 // Массив — Заголовки объявлений.
 var OFFERS_TITLES = [
@@ -233,12 +246,23 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 ***********************************************************************************
 */
 
-// Получение управляющего пользовательского пина.
-// Отлов первого взаимодействия с ним -> запуск основного функционала сайта.
-var controlPin = document.querySelector('.map__pin--main');
+/**
+* Приведение формы создания объявлений к состоянию по умолчанию (на момент загрузки сайта).
+*
+* @function setUserFormDefaultState
+*/
+(function setUserFormDefaultState() {
+  var fieldsets = USER_FORM.querySelectorAll('fieldset');
+  var fieldsetsNumber = fieldsets.length;
 
-controlPin.addEventListener('mouseup', onControlPinFirstClick);
-controlPin.addEventListener('keydown', onControlPinFirstEnterPress);
+  for (var i = 0; i < fieldsetsNumber; i++) {
+    fieldsets[i].disabled = true;
+  }
+})();
+
+// Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта.
+CONTROL_PIN.addEventListener('mouseup', onControlPinFirstClick);
+CONTROL_PIN.addEventListener('keydown', onControlPinFirstEnterPress);
 
 /**
 * Активация основного функционала сайта.
@@ -277,12 +301,11 @@ function activateServices() {
   activateUserForm();
   renderPins(8, offers);
 
-  var pinArea = document.querySelector('.map__pins');
+  var pinArea = MAP.querySelector('.map__pins');
   pinArea.addEventListener('click', onPinClick);
 
-  // Спорное место (зависимость от глобальной переменной controlPin).
-  controlPin.removeEventListener('keydown', onControlPinFirstEnterPress);
-  controlPin.removeEventListener('mouseup', onControlPinFirstClick);
+  CONTROL_PIN.removeEventListener('keydown', onControlPinFirstEnterPress);
+  CONTROL_PIN.removeEventListener('mouseup', onControlPinFirstClick);
 }
 
 /**
@@ -292,8 +315,7 @@ function activateServices() {
 * @function activateMap
 */
 function activateMap() {
-  var map = document.querySelector('.map');
-  map.classList.remove('map--faded');
+  MAP.classList.remove('map--faded');
 }
 
 /**
@@ -305,11 +327,10 @@ function activateMap() {
 * @function activateUserForm
 */
 function activateUserForm() {
-  var userForm = document.querySelector('.notice__form');
-  var fieldsets = userForm.querySelectorAll('fieldset');
+  var fieldsets = USER_FORM.querySelectorAll('fieldset');
   var fieldsetsNumber = fieldsets.length;
 
-  userForm.classList.remove('notice__form--disabled');
+  USER_FORM.classList.remove('notice__form--disabled');
 
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = false;
@@ -330,7 +351,7 @@ function activateUserForm() {
 * @param {object} evt — объект события
 */
 function onPinClick(evt) {
-  var pinArea = document.querySelector('.map__pins');
+  var pinArea = MAP.querySelector('.map__pins');
   var pins = pinArea.querySelectorAll('button:not(.map__pin--main)');
   var pinsNumber = pins.length;
   var target = evt.target;
@@ -354,7 +375,7 @@ function onPinClick(evt) {
           setPinActivityModifier(target);
 
           // Здесь регистрируется отлов событий для закрытия объявления.
-          var offerCloseButton = document.querySelector('.popup .popup__close');
+          var offerCloseButton = MAP.querySelector('.popup .popup__close');
           offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
           window.addEventListener('keydown', onOfferEscPress);
 
@@ -403,8 +424,8 @@ function onOfferEscPress(evt) {
 * @function removeUselessOffer
 */
 function removeUselessOffer() {
-  var uselessOffer = document.querySelector('.popup');
-  var uselessActivePin = document.querySelector('.map__pin--active');
+  var uselessOffer = MAP.querySelector('.popup');
+  var uselessActivePin = MAP.querySelector('.map__pin--active');
 
   if (uselessOffer) {
     var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
@@ -454,7 +475,7 @@ function setPinActivityModifier(node) {
 * @param {array} sourceOffers — массив объектов-объявлений для снятия данных.
 */
 function renderPins(expectedNumber, sourceOffers) {
-  var pinArea = document.querySelector('.map__pins');
+  var pinArea = MAP.querySelector('.map__pins');
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinsFragment = document.createDocumentFragment();
 
@@ -523,9 +544,8 @@ function renderNewOffer(sourceOffers, index) {
 
   offerFragment.appendChild(offer);
 
-  var map = document.querySelector('.map');
-  var offerInsertPoint = map.querySelector('.map__filters-container');
-  map.insertBefore(offerFragment, offerInsertPoint);
+  var offerInsertPoint = MAP.querySelector('.map__filters-container');
+  MAP.insertBefore(offerFragment, offerInsertPoint);
 }
 
 /**
