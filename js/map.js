@@ -10,8 +10,6 @@
 ***********************************************************************************
 */
 
-// Константы
-//
 // Коды клавиш
 var ESC_KEYCODE = 27;
 
@@ -64,6 +62,7 @@ var OFFERS_FEATURES = [
   'conditioner'
 ];
 
+// Библиотека ошибок валидации формы
 var inputErrors = {
   valueMissing: 'Это поле не должно быть пустым.',
   valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
@@ -71,19 +70,19 @@ var inputErrors = {
   rangeUnderflow: 'Минимально допустимое значение: ',
   rangeOverflow: 'Максимально допустимое значение: ',
   badInput: 'Неверный формат ввода: допустимы только числа.',
-
+  // Выдача динамически составленной ошибки "Значение слишком короткое"
   getValueShortDynamicError: function (currentLength) {
     return this.valueShort + currentLength + '.';
   },
-
+  // Выдача динамически составленной ошибки "Значение слишком длинное"
   getValueLongDynamicError: function (currentLength) {
     return this.valueLong + currentLength + '.';
   },
-
+  // Выдача динамически составленной ошибки "Число меньше допустимого минимума"
   getRangeUnderflowDynamicError: function (currentLimit) {
     return this.rangeUnderflow + currentLimit + '.';
   },
-
+  // Выдача динамически составленной ошибки "Число больше допустимого максимума"
   getRangeOverflowDynamicError: function (currentLimit) {
     return this.rangeOverflow + currentLimit + '.';
   }
@@ -264,7 +263,8 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 ***********************************************************************************
 ***********************************************************************************
 ***
-***       ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА: АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
+***                         ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА:
+***               НАСТРОЙКА И АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -272,7 +272,7 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 
 /**
 * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
-* Имеется ввиду состояние на момент загрузки сайта.
+* fieldset'ы формы заблокированы, форме дан ACTION="" и другие default атрибуты
 *
 * @function setUserFormDefaultState
 */
@@ -307,24 +307,26 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
 })();
 
 // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта.
+// После исполнения обоработчика - отлов сразу удаляется.
 CONTROL_PIN.addEventListener('click', onControlPinFirstClick);
 
 /**
 * Активация основного функционала сайта.
-* Вызывается по первому КЛИКУ, нажатию ENTER или SPACE на управлящем пине.
+* Вызывается по первому КЛИКУ мышью, нажатию ENTER или SPACE на управлящем пине.
+* После исполнения обоработчика - возможность повторного вызова исключается.
 *
 * @function onControlPinFirstClick
 */
 function onControlPinFirstClick() {
   activateServices();
+  CONTROL_PIN.removeEventListener('click', onControlPinFirstClick);
 }
 
 /**
 * Активация основных пользовательских сервисов:
-* 1. Запускаются карта и форма создания объявлений,
-* 2. Отрисовываются пины,
-* 3. Начинается отлов переключения пинов/объявлений,
-* 4. Исключается возможность запустить себя как функцию повторно.
+* 1. Запуск карты и формы создания объявлений,
+* 2. Отрисовывка пинов,
+* 3. Отлов переключения пинов/объявлений.
 *
 * @function activateServices
 */
@@ -335,13 +337,10 @@ function activateServices() {
 
   var pinArea = MAP.querySelector('.map__pins');
   pinArea.addEventListener('click', onPinClick);
-
-  CONTROL_PIN.removeEventListener('click', onControlPinFirstClick);
 }
 
 /**
-* Активация пинов и объявлений.
-* Активация происходит за счет снятия у соответствующего <section> блокирующего класса .map--faded.
+* Активация карты пинов и объявлений (удаление блокирующего класса .map--faded).
 *
 * @function activateMap
 */
@@ -350,15 +349,15 @@ function activateMap() {
 }
 
 /**
-* Активация формы создания объявлений, контроль за синхронизацией <input> и <select>, валидация.
-* Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
-* получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
-* По синхронизации см.документацию связанных функций:
-* syncFormTimes(), syncFormPropertyPrice() и syncFormPropertyCapacity()
+* Активация формы создания объявлений, контроль за синхронизацией полей и их валидностью.
+*
+* Удаление у <form> блокирующего класса .notice__form--disabled, у <fieldset> — атрибута disabled.
+* По синхронизации и валидации см.документацию связанных функций.
 *
 * @function activateUserForm
 */
 function activateUserForm() {
+  // Активация формы и fieldset'ов.
   var fieldsets = USER_FORM.querySelectorAll('fieldset');
   var fieldsetsNumber = fieldsets.length;
 
@@ -368,6 +367,7 @@ function activateUserForm() {
     fieldsets[i].disabled = false;
   }
 
+  // Синхронизация между собой необходимых полей.
   var selectCheckin = USER_FORM.querySelector('select#timein');
   var selectCheckout = USER_FORM.querySelector('select#timeout');
   selectCheckin.addEventListener('input', function (evt) {
@@ -389,6 +389,7 @@ function activateUserForm() {
     syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity);
   });
 
+  // Проверка вводимых данных на валидность.
   var inputTitle = USER_FORM.querySelector('input#title');
   var inputPrice = USER_FORM.querySelector('input#price');
   inputTitle.addEventListener('input', onInvalidInput);
@@ -396,9 +397,8 @@ function activateUserForm() {
 }
 
 /**
-* Отрисовка рядом с выбранным пином соответствующего ему объявления.
-* Проверка на всплытии.
-* Индекс пина соответствует индексу объявления.
+* Отрисовка рядом с выбранным пином соответствующего тому объявления.
+* Проверка на всплытии. Индекс пина соответствует индексу объявления.
 *
 * @function onPinClick
 * @param {object} evt — объект события
@@ -449,7 +449,7 @@ function onPinClick(evt) {
 /**
 * Удаление ненужного объявления, отлова его событий,
 * а также модификатора активности у соответствующего пина.
-* Вызывается нажатием на кнопку ЗАКРЫТЬ в открытом объявлении.
+* Вызывается нажатием на кнопку ЗАКРЫТЬ в объявлении.
 *
 * @function onOfferCloseButtonPress
 */
@@ -496,7 +496,7 @@ function removeUselessOffer() {
 * Применяется при переключение пинов.
 *
 * @function setPinActivityModifier
-* @param {object} pin — DOM элемент
+* @param {node} pin — DOM элемент
 */
 function setPinActivityModifier(pin) {
   pin.classList.add('map__pin--active');
@@ -529,10 +529,10 @@ function removeUselessPinActivityModifier() {
 
 /**
 * Создание и отрисовка пользовательских пинов.
+*
 * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
-* Количество пинов на выходе соответствует количеству объектов-объявлений offers[].
 *
 * @function renderPins
 * @param {number} expectedNumber — необходимое число отрисованных пинов
@@ -570,6 +570,7 @@ function renderPins(expectedNumber, sourceOffers) {
 
 /**
 * Создание и отрисовка необходимого объявления.
+*
 * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
 * Информационная составляющая снимается с объектов-объявлений массива offers[].
 * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
@@ -613,8 +614,8 @@ function renderNewOffer(sourceOffers, index) {
 }
 
 /**
-* Расшифровка типа недвижимости.
-* Обозначения flat, house etc. русифицируются для выдачи клиентской стороне.
+* Расшифровка типа недвижимости для выдачи клиентской стороне.
+* Обозначения flat, house etc. русифицируются (квартира, дом, и тд).
 *
 * @function decodePropertyType
 * @param {string} currentType — на вход принимается ключ для расшифровки
@@ -668,7 +669,7 @@ function createFeaturesMarkup(sourceFeatures) {
 /**
 * Синхронизация опций селектов "Время заезда и выезда" в форме создания объявлений.
 * Одним из параметров передается объект события (в каком селекте изменения),
-* с учетом него изменяется противоположный селект.
+* с учетом чего изменяется противоположный селект.
 *
 * @function syncFormTimes
 * @param {node} selectCheckin — <select> #timein в форме .notice__form
@@ -736,7 +737,8 @@ function syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity) {
 }
 
 /**
-* Контроль валидности объекта события
+* Контроль валидности объекта события.
+* Выдача custom-ошибок и подсветка поля красным цветом.
 *
 * @function onInvalidInput
 * @param {object} evt — объект события
@@ -744,10 +746,10 @@ function syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity) {
 function onInvalidInput(evt) {
   var target = evt.target;
 
-  var currentValueLength = target.value.length;
-  var minLength = target.minLength;
-  var maxLength = target.maxLength;
-  var isMinLengthExist = minLength > 0;
+  var currentValueLength = target.value.length; // Текущая длина значения
+  var minLength = target.minLength; // Ограничение минимальной длины
+  var maxLength = target.maxLength; // Ограничение максимальной длины
+  var isMinLengthExist = minLength > 0; // Проверка есть ли вообще ограничение длины
   var isMaxLengthExist = minLength > 0;
 
   if (target.validity.valueMissing) {
