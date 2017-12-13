@@ -64,6 +64,31 @@ var OFFERS_FEATURES = [
   'conditioner'
 ];
 
+var inputErrors = {
+  valueMissing: 'Это поле не должно быть пустым.',
+  valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
+  valueLong: 'Максимально допустимая длина: 100 символов. Сейчас: ',
+  rangeUnderflow: 'Минимально допустимое значение: ',
+  rangeOverflow: 'Максимально допустимое значение: ',
+  badInput: 'Неверный формат ввода: допустимы только числа.',
+
+  getValueShortDynamicError: function (currentLength) {
+    return this.valueShort + currentLength + '.';
+  },
+
+  getValueLongDynamicError: function (currentLength) {
+    return this.valueLong + currentLength + '.';
+  },
+
+  getRangeUnderflowDynamicError: function (currentLimit) {
+    return this.rangeUnderflow + currentLimit + '.';
+  },
+
+  getRangeOverflowDynamicError: function (currentLimit) {
+    return this.rangeOverflow + currentLimit + '.';
+  }
+};
+
 
 /*
 ***********************************************************************************
@@ -270,10 +295,11 @@ function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
   inputTitle.maxLength = '100';
   inputTitle.required = true;
 
+  inputAddress.value = '375, 600'; // default координаты управляющего пина (центр, центр)
   inputAddress.readOnly = true;
 
   inputPropertyPrice.placeholder = '1000';
-  inputPropertyPrice.min = '0';
+  inputPropertyPrice.min = '1000';
   inputPropertyPrice.max = '1000000';
   inputPropertyPrice.required = true;
 
@@ -324,7 +350,7 @@ function activateMap() {
 }
 
 /**
-* Активация формы создания объявлений, контроль за синхронизацией <input> и <select>.
+* Активация формы создания объявлений, контроль за синхронизацией <input> и <select>, валидация.
 * Активация происходит за счет снятия у <form> блокирующего класса .notice__form--disabled, а также
 * получения и снятия у внутренних <fieldset> блокирующего атрибута disabled.
 * По синхронизации см.документацию связанных функций:
@@ -363,7 +389,10 @@ function activateUserForm() {
     syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity);
   });
 
-  watchFormValidity();
+  var inputTitle = USER_FORM.querySelector('input#title');
+  var inputPrice = USER_FORM.querySelector('input#price');
+  inputTitle.addEventListener('input', onInvalidInput);
+  inputPrice.addEventListener('input', onInvalidInput);
 }
 
 /**
@@ -707,22 +736,6 @@ function syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity) {
 }
 
 /**
-* Контроль валидности обязательных полей формы (формы создания объявлений).
-*
-* @function watchFormValidity
-*/
-function watchFormValidity() {
-  var inputTitle = USER_FORM.querySelector('input#title');
-  var inputAddress = USER_FORM.querySelector('input#address');
-  var inputPrice = USER_FORM.querySelector('input#price');
-
-  inputTitle.addEventListener('invalid', onInvalidInput);
-  inputAddress.addEventListener('invalid', onInvalidInput);
-  inputPrice.addEventListener('input', onInvalidInput);
-  inputPrice.addEventListener('invalid', onInvalidInput);
-}
-
-/**
 * Контроль валидности объекта события
 *
 * @function onInvalidInput
@@ -730,23 +743,38 @@ function watchFormValidity() {
 */
 function onInvalidInput(evt) {
   var target = evt.target;
-  var valueLength = target.value.length;
+
+  var currentValueLength = target.value.length;
+  var minLength = target.minLength;
+  var maxLength = target.maxLength;
+  var isMinLengthExist = minLength > 0;
+  var isMaxLengthExist = minLength > 0;
 
   if (target.validity.valueMissing) {
     if (target.validity.badInput) {
-      target.setCustomValidity('Неверный формат ввода: допустимы только числа.');
+      var message = inputErrors.badInput;
     } else {
-      target.setCustomValidity('Это поле не должно быть пустым.');
+      message = inputErrors.valueMissing;
     }
-  } else if (target.validity.tooShort) {
-    target.setCustomValidity('Минимально допустимая длина: 30 символов. Сейчас: ' + valueLength + '.');
-  } else if (target.validity.tooLong) {
-    target.setCustomValidity('Максимально допустимая длина: 100 символов. Сейчас: ' + valueLength + '.');
+  } else if (target.validity.tooShort || (isMinLengthExist && currentValueLength < minLength)) {
+    message = inputErrors.getValueShortDynamicError(currentValueLength);
+  } else if (target.validity.tooLong || (isMaxLengthExist && currentValueLength > maxLength)) {
+    message = inputErrors.getValueLongDynamicError(currentValueLength);
   } else if (target.validity.rangeUnderflow) {
-    target.setCustomValidity('Минимально допустимое значение: 0.');
+    var minRange = target.min;
+    message = inputErrors.getRangeUnderflowDynamicError(minRange);
   } else if (target.validity.rangeOverflow) {
-    target.setCustomValidity('Максимально допустимое значение: 1 000 000.');
+    var maxRange = target.max;
+    message = inputErrors.getRangeOverflowDynamicError(maxRange);
   } else {
-    target.setCustomValidity('');
+    message = '';
+  }
+
+  target.setCustomValidity(message);
+
+  if (message === '') {
+    target.style.border = '';
+  } else {
+    target.style.border = '2px solid crimson';
   }
 }
