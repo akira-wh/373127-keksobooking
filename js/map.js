@@ -114,8 +114,8 @@ function generateOffers(expectedNumber) {
 
   for (var i = 0; i < expectedNumber; i++) {
     var avatarSerial = i + 1;
-    var selectedLocationX = getRandomInteger(300, 900);
-    var selectedLocationY = getRandomInteger(100, 500);
+    var selectedLocationX = window.utils.getRandomInteger(300, 900);
+    var selectedLocationY = window.utils.getRandomInteger(100, 500);
     var selectedTitle = OFFERS_TITLES[i];
 
     requestedOffers[i] = {
@@ -125,13 +125,13 @@ function generateOffers(expectedNumber) {
 
       offer: {
         title: selectedTitle,
-        price: getRandomInteger(1000, 1000000),
+        price: window.utils.getRandomInteger(1000, 1000000),
         type: determinePropertyType(selectedTitle),
-        rooms: getRandomInteger(1, 5),
-        guests: getRandomInteger(0, 20),
-        checkin: getRandomElementFromArray(OFFERS_TIMES),
-        checkout: getRandomElementFromArray(OFFERS_TIMES),
-        features: generateUniqueCollection(OFFERS_FEATURES),
+        rooms: window.utils.getRandomInteger(1, 5),
+        guests: window.utils.getRandomInteger(0, 20),
+        checkin: window.utils.getRandomElementFromArray(OFFERS_TIMES),
+        checkout: window.utils.getRandomElementFromArray(OFFERS_TIMES),
+        features: window.utils.generateUniqueCollection(OFFERS_FEATURES),
         description: '',
         photos: [],
         address: selectedLocationX + ', ' + selectedLocationY
@@ -145,36 +145,6 @@ function generateOffers(expectedNumber) {
   }
 
   return requestedOffers;
-}
-
-/**
-* Генерация случайного числа в указанном диапазоне (minValue и maxValue участвуют).
-*
-* @function getRandomInteger
-* @param {number} minValue — минимально допустимое число
-* @param {number} maxValue — максимально допустимое число
-* @return {number} — искомое случайное число
-*/
-function getRandomInteger(minValue, maxValue) {
-  var randomInteger = minValue + Math.random() * (maxValue + 1 - minValue);
-  randomInteger = Math.floor(randomInteger);
-
-  return randomInteger;
-}
-
-/**
-* Выбор из входного массива рандомного элемента и возвращение его значения.
-*
-* @function getRandomElementFromArray
-* @param {array} sourceElements — входной массив с элементами на выбор
-* @return {string} — значение рандомного элемента
-*/
-function getRandomElementFromArray(sourceElements) {
-  var maxIndex = sourceElements.length - 1;
-  var randomIndex = getRandomInteger(0, maxIndex);
-  var requestedElement = sourceElements[randomIndex];
-
-  return requestedElement;
 }
 
 /**
@@ -200,62 +170,6 @@ function determinePropertyType(title) {
   }
 
   return requestedType;
-}
-
-/**
-* Создание нового набора элементов на основе вариантов из входного массива.
-* Элементы не повторяются, а их количество не превышает объем входного массива.
-* 1. Узнаем пороговую длину входного массива.
-* 2. Генерируем длину новой коллекции (не менее 1 элемента, не более длины входного массива).
-* 3. Создаем временно пустую коллекцию.
-* 4. Рандомно выбираем из входного массива элементы для новой коллекции.
-* 5. Копируем выбранные элементы.
-* 6. Отдаем подборку.
-*
-* @function generateUniqueCollection
-* @param {array} sourceElements — входной массив с вариантами для перекомпоновки
-* @return {array} — новая подборка
-*/
-function generateUniqueCollection(sourceElements) {
-  var maxValue = sourceElements.length - 1;
-  var newCollectionLength = getRandomInteger(1, maxValue);
-  var selectedElements = getNonrepeatingIntegers(0, maxValue, newCollectionLength);
-
-  var requestedCollection = [];
-
-  for (var i = 0; i < newCollectionLength; i++) {
-    requestedCollection.push(sourceElements[selectedElements[i]]);
-  }
-
-  return requestedCollection;
-}
-
-/**
-* Генерация массива неповторяющихся целых чисел в заданном диапазоне и заданной длины.
-*
-* @function getNonrepeatingIntegers
-* @param {number} minValue — минимально допустимое число
-* @param {number} maxValue — максимально допустимое число
-* @param {number} expectedLength — ожидаемая длина выходного массива
-* @return {array} — массив рандомных неповторяющихся чисел
-*/
-function getNonrepeatingIntegers(minValue, maxValue, expectedLength) {
-  var nonrepeatingIntegers = [];
-  var i = 0;
-  var uniqueIndex = -1;
-
-  while (i < expectedLength) {
-    var newNumber = getRandomInteger(minValue, maxValue);
-
-    if (nonrepeatingIntegers.indexOf(newNumber) === uniqueIndex) {
-      nonrepeatingIntegers.push(newNumber);
-      i++;
-    } else {
-      continue;
-    }
-  }
-
-  return nonrepeatingIntegers;
 }
 
 
