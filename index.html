@@ -88,8 +88,8 @@
   <div class="notice">
     <h2 class="notice__title">Ваше объявление</h2>
 
-    <form class="notice__form  notice__form--disabled" action="https://js.dump.academy/keksobooking" method="post" enctype="multipart/form-data" autocomplete="off">
-      <fieldset class="notice__header" disabled>
+    <form class="notice__form  notice__form--disabled" method="post" enctype="multipart/form-data" autocomplete="off">
+      <fieldset class="notice__header">
         <legend>Ваша фотография (для карты)</legend>
         <div class="notice__photo">
           <div class="upload">
@@ -105,17 +105,17 @@
         </div>
       </fieldset>
 
-      <fieldset class="form__element  form__element--wide" disabled>
+      <fieldset class="form__element  form__element--wide">
         <label for="title">Заголовок объявления</label>
-        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" minlength="30" maxlength="100" required>
+        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио">
       </fieldset>
 
-      <fieldset class="form__element  form__element--wide" disabled>
+      <fieldset class="form__element  form__element--wide">
         <label for="address">Адрес</label>
-        <input id="address" name="address" type="text" readonly required>
+        <input id="address" name="address" type="text">
       </fieldset>
 
-      <fieldset class="form__element" disabled>
+      <fieldset class="form__element">
         <label for="type">Тип жилья</label>
         <select id="type" name="type">
           <option value="bungalo">Лачуга</option>
@@ -125,12 +125,12 @@
         </select>
       </fieldset>
 
-      <fieldset class="form__element" disabled>
+      <fieldset class="form__element">
         <label for="price">Цена за ночь, руб.</label>
-        <input id="price" name="price" type="number" placeholder="1000" min="0" max="1000000" required>
+        <input id="price" name="price" type="number" placeholder="5000">
       </fieldset>
 
-      <fieldset class="form__element" disabled>
+      <fieldset class="form__element">
         <label for="timein">Время заезда и выезда</label>
         <select id="timein" name="timein">
           <option value="12:00" selected>После 12</option>
@@ -144,7 +144,7 @@
         </select>
       </fieldset>
 
-      <fieldset class="form__element" disabled>
+      <fieldset class="form__element">
         <label for="room_number">Кол-во комнат</label>
         <select id="room_number" name="rooms">
           <option value="1" selected>1 комната</option>
@@ -154,17 +154,17 @@
         </select>
       </fieldset>
 
-      <fieldset class="form__element" disabled>
+      <fieldset class="form__element">
         <label for="capacity">Количество мест</label>
         <select id="capacity" name="capacity">
-          <option value="3">для 3 гостей</option>
+          <option value="3" selected>для 3 гостей</option>
           <option value="2">для 2 гостей</option>
-          <option value="1" selected>для 1 гостя</option>
+          <option value="1">для 1 гостя</option>
           <option value="0">не для гостей</option>
         </select>
       </fieldset>
 
-      <fieldset class="form__element  features  form__element--wide" disabled>
+      <fieldset class="form__element  features  form__element--wide">
         <legend>Удобства: Wi-Fi, кухня, парковка, стиралка, лифт, кондиционер</legend>
 
         <input type="checkbox" name="features" value="wifi" id="feature-wifi">
@@ -186,12 +186,12 @@
         <label class="feature  feature--conditioner" for="feature-conditioner">Кондиционер</label>
       </fieldset>
 
-      <fieldset class="form__element  form__element--wide" disabled>
+      <fieldset class="form__element  form__element--wide">
         <label for="description">Описание (не обязательно)</label>
         <textarea id="description" name="description" placeholder="Здесь расскажите о том, какое ваше жилье замечательное и вообще"></textarea>
       </fieldset>
 
-      <fieldset class="form__element  form__element--wide" disabled>
+      <fieldset class="form__element  form__element--wide">
         <label>Фотографии жилья</label>
         <div class="form__photo-container">
           <div class="upload">
@@ -201,7 +201,7 @@
         </div>
       </fieldset>
 
-      <fieldset class="form__element  form__element--submit" disabled>
+      <fieldset class="form__element  form__element--submit">
         <button class="form__submit" type="submit">Опубликовать</button>
         или
         <button class="form__reset" type="reset">очистить</button>
@@ -272,6 +272,7 @@
   </button>
 </template>
 
+<script src="js/utils.js"></script>
 <script src="js/map.js"></script>
 </body>
 </html>
