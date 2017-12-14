@@ -35,7 +35,7 @@ window.utils = {
   */
   getRandomElementFromArray: function (sourceElements) {
     var maxIndex = sourceElements.length - 1;
-    var randomIndex = window.utils.getRandomInteger(0, maxIndex);
+    var randomIndex = this.getRandomInteger(0, maxIndex);
     var requestedElement = sourceElements[randomIndex];
 
     return requestedElement;
@@ -57,8 +57,8 @@ window.utils = {
   */
   generateUniqueCollection: function (sourceElements) {
     var maxValue = sourceElements.length - 1;
-    var newCollectionLength = window.utils.getRandomInteger(1, maxValue);
-    var selectedElements = window.utils.getNonrepeatingIntegers(0, maxValue, newCollectionLength);
+    var newCollectionLength = this.getRandomInteger(1, maxValue);
+    var selectedElements = this.getNonrepeatingIntegers(0, maxValue, newCollectionLength);
 
     var requestedCollection = [];
 
@@ -84,7 +84,7 @@ window.utils = {
     var uniqueIndex = -1;
 
     while (i < expectedLength) {
-      var newNumber = window.utils.getRandomInteger(minValue, maxValue);
+      var newNumber = this.getRandomInteger(minValue, maxValue);
 
       if (nonrepeatingIntegers.indexOf(newNumber) === uniqueIndex) {
         nonrepeatingIntegers.push(newNumber);
