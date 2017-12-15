@@ -482,6 +482,11 @@ textarea:focus
     background: none;
 }
 
+.popup__close:hover
+{
+    cursor: pointer;
+}
+
 .popup__close:active
 {
     transform: translate(1px, 1px);

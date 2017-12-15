@@ -41,8 +41,8 @@
   */
   function activateServices() {
     activateMap();
-    window.renderPins(8, window.offers);
-    window.activateUserForm();
+    window.render.renderPins(8, window.data.offers);
+    window.form.activateUserForm();
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
   }
 
@@ -104,7 +104,7 @@
             removeUselessPinActivityModifier();
 
             var referenceIndex = i;
-            window.renderOffer(window.offers, referenceIndex);
+            window.render.renderOffer(window.data.offers, referenceIndex);
             setPinActivityModifier(target);
 
             // Здесь регистрируется отлов событий для закрытия объявления.

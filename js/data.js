@@ -4,7 +4,7 @@
 ***********************************************************************************
 ***********************************************************************************
 ***
-***         ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В ГЛОБАЛЬНЫЙ МАССИВ window.offers[]
+***     ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В ГЛОБАЛЬНЫЙ МАССИВ window.data.offers[]
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -13,7 +13,9 @@
 (function () {
 
   // Создание и заполнение глобального массива объявлений.
-  window.offers = generateOffers(8);
+  window.data = {
+    offers: generateOffers(8)
+  };
 
   /**
   * Создание и заполнение массива объектами-объявлениями.
@@ -26,7 +28,7 @@
     var requestedOffers = [];
 
     for (var i = 0; i < expectedNumber; i++) {
-      var avatarSerial = i + 1;
+      var avatarSerial = i + 1; // Нумерация аватаров начинаются с 1, а не 0
       var selectedLocationX = window.utils.getRandomInteger(300, 900);
       var selectedLocationY = window.utils.getRandomInteger(100, 500);
       var selectedTitle = window.constants.OFFERS_TITLES[i];
