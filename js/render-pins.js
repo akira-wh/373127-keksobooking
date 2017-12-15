@@ -22,7 +22,6 @@
 * @param {array} sourceOffers — массив объектов-объявлений для съема данных
 */
 window.renderPins = function (expectedNumber, sourceOffers) {
-  var pinArea = window.constants.MAP.querySelector('.map__pins');
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinsFragment = document.createDocumentFragment();
 
@@ -37,5 +36,5 @@ window.renderPins = function (expectedNumber, sourceOffers) {
     pinsFragment.appendChild(pin);
   }
 
-  pinArea.appendChild(pinsFragment);
+  window.constants.PINS_CONTAINER.appendChild(pinsFragment);
 };

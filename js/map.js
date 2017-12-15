@@ -43,9 +43,7 @@
     activateMap();
     window.renderPins(8, window.offers);
     window.activateUserForm();
-
-    var pinArea = window.constants.MAP.querySelector('.map__pins');
-    pinArea.addEventListener('click', onPinClick);
+    window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
   }
 
   /*
@@ -86,14 +84,13 @@
   * @param {object} evt — объект события
   */
   function onPinClick(evt) {
-    var pinArea = window.constants.MAP.querySelector('.map__pins');
-    var pins = pinArea.querySelectorAll('button:not(.map__pin--main)');
+    var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
     var pinsNumber = pins.length;
     var target = evt.target;
 
     // Проверка на то, что вызванный элемент — пин.
     // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
-    while (target !== pinArea) {
+    while (target !== window.constants.PINS_CONTAINER) {
 
       // Если target — искомый пин...
       if (target.className === 'map__pin') {

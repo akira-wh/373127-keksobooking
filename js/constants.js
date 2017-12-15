@@ -19,14 +19,17 @@ window.constants = {
   PIN_SHIFT_X: 5,
   PIN_SHIFT_Y: 37,
 
+  // Карта пинов и объявлений
+  MAP: document.querySelector('.map'),
+
+  // Контейнер пинов
+  PINS_CONTAINER: document.querySelector('.map__pins'),
+
   // Управляющий пользовательский пин
   CONTROL_PIN: document.querySelector('.map__pin--main'),
 
   // Форма создания объявлений
   USER_FORM: document.querySelector('.notice__form'),
-
-  // Карта пинов и объявлений
-  MAP: document.querySelector('.map'),
 
   // Массив — Заголовки объявлений
   OFFERS_TITLES: [
