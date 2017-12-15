@@ -16,27 +16,28 @@
   window.form = {
 
     /**
-    * Активация формы создания объявлений, контроль синхронизации полей и их валидности.
+    * Активация формы создания объявлений, контроль синхронизации и валидности.
     *
-    * Удаление у <form> блокирующего класса .notice__form--disabled, у <fieldset> — атрибута disabled.
+    * Удаление у <form> блокирующего класса .notice__form--disabled,
+    * а у всех <fieldset> — блокирующего атрибута disabled.
     * По синхронизации и валидации см.документацию связанных функций ниже.
     *
-    * @function activateUserForm
+    * @function activateForm
     */
-    activateUserForm: function () {
+    activateForm: function () {
       // Активация формы и fieldset'ов
-      var fieldsets = window.constants.USER_FORM.querySelectorAll('fieldset');
+      var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
       var fieldsetsNumber = fieldsets.length;
 
-      window.constants.USER_FORM.classList.remove('notice__form--disabled');
+      window.constants.FORM.classList.remove('notice__form--disabled');
 
       for (var i = 0; i < fieldsetsNumber; i++) {
         fieldsets[i].disabled = false;
       }
 
       // Контроль синхронизации необходимых полей
-      var selectCheckin = window.constants.USER_FORM.querySelector('select#timein');
-      var selectCheckout = window.constants.USER_FORM.querySelector('select#timeout');
+      var selectCheckin = window.constants.FORM.querySelector('select#timein');
+      var selectCheckout = window.constants.FORM.querySelector('select#timeout');
       selectCheckin.addEventListener('input', function (evt) {
         syncFormTimes(selectCheckin, selectCheckout, evt);
       });
@@ -44,21 +45,21 @@
         syncFormTimes(selectCheckin, selectCheckout, evt);
       });
 
-      var selectPropertyType = window.constants.USER_FORM.querySelector('select#type');
-      var inputPropertyPrice = window.constants.USER_FORM.querySelector('input#price');
+      var selectPropertyType = window.constants.FORM.querySelector('select#type');
+      var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
       selectPropertyType.addEventListener('input', function () {
         syncFormPropertyPrice(selectPropertyType, inputPropertyPrice);
       });
 
-      var selectRoomsNumber = window.constants.USER_FORM.querySelector('select#room_number');
-      var selectPropertyCapacity = window.constants.USER_FORM.querySelector('select#capacity');
+      var selectRoomsNumber = window.constants.FORM.querySelector('select#room_number');
+      var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
       selectRoomsNumber.addEventListener('input', function () {
         syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity);
       });
 
       // Проверка вводимых данных на валидность
-      var inputTitle = window.constants.USER_FORM.querySelector('input#title');
-      var inputPrice = window.constants.USER_FORM.querySelector('input#price');
+      var inputTitle = window.constants.FORM.querySelector('input#title');
+      var inputPrice = window.constants.FORM.querySelector('input#price');
       inputTitle.addEventListener('input', onInvalidInput);
       inputTitle.addEventListener('invalid', onInvalidInput);
       inputPrice.addEventListener('input', onInvalidInput);

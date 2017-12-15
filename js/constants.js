@@ -15,7 +15,7 @@ window.constants = {
   // Коды клавиш
   ESC_KEYCODE: 27,
 
-  // Смещение всех пинов (кроме управляющего) по X и Y с учетом брака стилизации
+  // Смещение всех пинов (кроме управляющего) по X и Y (в px)
   PIN_SHIFT_X: 5,
   PIN_SHIFT_Y: 37,
 
@@ -28,8 +28,15 @@ window.constants = {
   // Управляющий пользовательский пин
   CONTROL_PIN: document.querySelector('.map__pin--main'),
 
+  // Смещение управляющего пина по Y (в px)
+  CONTROL_PIN_SHIFT_Y: 45,
+
+  // Ограничения координат управляющего пина
+  COORDS_MIN_LIMIT_Y: 55,
+  COORDS_MAX_LIMIT_Y: 455,
+
   // Форма создания объявлений
-  USER_FORM: document.querySelector('.notice__form'),
+  FORM: document.querySelector('.notice__form'),
 
   // Массив — Заголовки объявлений
   OFFERS_TITLES: [

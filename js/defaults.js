@@ -15,34 +15,35 @@
 * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
 * fieldset'ы формы заблокированы, форме установлен ACTION="" и другие default атрибуты
 *
-* @function setUserFormDefaultState
+* @function setFormDefaults
 */
-(function setUserFormDefaultState() {
-  window.constants.USER_FORM.action = 'https://js.dump.academy/keksobooking';
+(function setFormDefaults() {
+  window.constants.FORM.action = 'https://js.dump.academy/keksobooking';
 
-  var fieldsets = window.constants.USER_FORM.querySelectorAll('fieldset');
+  var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
   var fieldsetsNumber = fieldsets.length;
 
   for (var i = 0; i < fieldsetsNumber; i++) {
     fieldsets[i].disabled = true;
   }
 
-  var inputTitle = window.constants.USER_FORM.querySelector('input#title');
+  var inputTitle = window.constants.FORM.querySelector('input#title');
   inputTitle.minLength = '30';
   inputTitle.maxLength = '100';
   inputTitle.required = true;
 
-  var inputAddress = window.constants.USER_FORM.querySelector('input#address');
-  inputAddress.value = '375, 600'; // default координаты управляющего пина (центр, центр)
+  var inputAddress = window.constants.FORM.querySelector('input#address');
+  // default координаты управляющего пина (центр, указательная пика)
+  inputAddress.value = 'x: 600, y: 420';
   inputAddress.readOnly = true;
   inputAddress.tabIndex = -1;
 
-  var inputPropertyPrice = window.constants.USER_FORM.querySelector('input#price');
+  var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
   inputPropertyPrice.placeholder = '1000';
   inputPropertyPrice.min = '1000';
   inputPropertyPrice.max = '1000000';
   inputPropertyPrice.required = true;
 
-  var selectPropertyCapacity = window.constants.USER_FORM.querySelector('select#capacity');
+  var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
   selectPropertyCapacity.selectedIndex = 2;
 })();

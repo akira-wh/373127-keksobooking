@@ -6,7 +6,7 @@
 ***
 ***                           ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА:
 ***                       АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
-***                     ПРИ ВЗАИМОДЕЙСТВИИ С УПРАВЛЯЮЩИМ ПИНОМ
+***                  ПРИ ПЕРВОМ ВЗАИМОДЕЙСТВИИ С УПРАВЛЯЮЩИМ ПИНОМ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -41,8 +41,9 @@
   */
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
+    window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinDragStart);
     window.render.renderPins(8, window.data.offers);
-    window.form.activateUserForm();
+    window.form.activateForm();
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
   }
 
@@ -51,6 +52,87 @@
   ***********************************************************************************
   ***
   ***                             ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ:
+  ***      ПЕРЕМЕЩЕНИЕ УПРАВЛЯЮЩЕГО ПИНА + ИЗМЕНЕНИЕ КООРДИНАТ АДРЕСА В ФОРМЕ
+  ***
+  ***********************************************************************************
+  ***********************************************************************************
+  */
+
+  /**
+  * Фиксирование координат в момент начала драга на управляющем пине,
+  * вызов вспомогательных функций для основного процесса перемещения.
+  *
+  * @function onControlPinDragStart
+  * @param {object} downEvt — объект события, зажатие ЛКМ
+  */
+  function onControlPinDragStart(downEvt) {
+    downEvt.preventDefault();
+
+    var startCoords = {
+      x: downEvt.clientX,
+      y: downEvt.clientY
+    };
+
+    document.addEventListener('mousemove', onControlPinDrag);
+    document.addEventListener('mouseup', onControlPinDragEnd);
+
+    /**
+    * Перемещение управляющего пина.
+    * Смещение курсора мыши вызывает соразмерное смещение пина.
+    * Новые координаты пина передаются в графу "адрес" формы объявлений.
+    *
+    * @function onControlPinDrag
+    * @param {object} moveEvt — объект события, перемещение мыши
+    */
+    function onControlPinDrag(moveEvt) {
+      moveEvt.preventDefault();
+
+      var shiftDistance = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var newCoordsX = window.constants.CONTROL_PIN.offsetLeft - shiftDistance.x;
+      var newCoordsY = window.constants.CONTROL_PIN.offsetTop - shiftDistance.y;
+
+      if (newCoordsY < window.constants.COORDS_MIN_LIMIT_Y) {
+        newCoordsY = window.constants.COORDS_MIN_LIMIT_Y;
+      } else if (newCoordsY > window.constants.COORDS_MAX_LIMIT_Y) {
+        newCoordsY = window.constants.COORDS_MAX_LIMIT_Y;
+      }
+
+      window.constants.CONTROL_PIN.style.left = newCoordsX + 'px';
+      window.constants.CONTROL_PIN.style.top = newCoordsY + 'px';
+
+      var inputAddress = window.constants.FORM.querySelector('input#address');
+      inputAddress.value =
+        'x: ' + newCoordsX + ', ' +
+        'y: ' + (newCoordsY + window.constants.CONTROL_PIN_SHIFT_Y);
+    }
+
+    /**
+    * Завершение драга на управляющем пине — удаление слушателей.
+    * Хендлер прекращает контроль за перемещением мыши и удаляет сам себя.
+    *
+    * @function onControlPinDragEnd
+    * @param {object} endEvt — объект события, отжатие ЛКМ
+    */
+    function onControlPinDragEnd(endEvt) {
+      endEvt.preventDefault();
+      document.removeEventListener('mousemove', onControlPinDrag);
+      document.removeEventListener('mouseup', onControlPinDragEnd);
+    }
+  }
+
+  /*
+  ***********************************************************************************
+  ***********************************************************************************
+  ***
   ***             ПЕРЕКЛЮЧЕНИЕ ПИНОВ И ОБЪЯВЛЕНИЙ, ЗАКРЫТИЕ ОБЪЯВЛЕНИЙ
   ***
   ***********************************************************************************
