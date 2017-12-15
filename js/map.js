@@ -4,693 +4,293 @@
 ***********************************************************************************
 ***********************************************************************************
 ***
-***                   ГЛОБАЛЬНЫЕ ОБЪЕКТЫ, МАССИВЫ, КОНСТАНТЫ
+***                           ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА:
+***                       АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
+***                  ПРИ ПЕРВОМ ВЗАИМОДЕЙСТВИИ С УПРАВЛЯЮЩИМ ПИНОМ
 ***
 ***********************************************************************************
 ***********************************************************************************
 */
 
-// Коды клавиш
-var ESC_KEYCODE = 27;
+(function () {
 
-// Управляющий пользовательский пин
-var CONTROL_PIN = document.querySelector('.map__pin--main');
+  // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта
+  // После исполнения обоработчика - отлов удаляется.
+  window.constants.CONTROL_PIN.addEventListener('click', onControlPinFirstClick);
 
-// Смещение всех пинов (кроме управляющего) по X и Y с учетом брака стилизации
-var PIN_SHIFT_X = 5;
-var PIN_SHIFT_Y = 37;
-
-// Форма создания объявлений
-var USER_FORM = document.querySelector('.notice__form');
-
-// Карта пинов и объявлений
-var MAP = document.querySelector('.map');
-
-// Массив — Заголовки объявлений.
-var OFFERS_TITLES = [
-  'Большая уютная квартира',
-  'Маленькая неуютная квартира',
-  'Огромный прекрасный дворец',
-  'Маленький ужасный дворец',
-  'Красивый гостевой домик',
-  'Некрасивый негостеприимный домик',
-  'Уютное бунгало далеко от моря',
-  'Неуютное бунгало по колено в воде'
-];
-
-// Объект — Типы жилья (ключи и расшифровки).
-var OFFERS_PROPERTY_TYPES = {
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало'
-};
-
-// Массив — Время checkin и checkout.
-var OFFERS_TIMES = [
-  '12:00',
-  '13:00',
-  '14:00'
-];
-
-// Массив — Преимущества жилья.
-var OFFERS_FEATURES = [
-  'wifi',
-  'dishwasher',
-  'parking',
-  'washer',
-  'elevator',
-  'conditioner'
-];
-
-// Библиотека ошибок валидации формы
-var inputErrors = {
-  valueMissing: 'Это поле не должно быть пустым.',
-  valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
-  valueLong: 'Максимально допустимая длина: 100 символов. Сейчас: ',
-  rangeUnderflow: 'Минимально допустимое значение: ',
-  rangeOverflow: 'Максимально допустимое значение: ',
-  badInput: 'Неверный формат ввода: допустимы только числа.',
-  // Выдача динамически составленной ошибки "Значение слишком короткое"
-  getValueShortDynamicError: function (currentLength) {
-    return this.valueShort + currentLength + '.';
-  },
-  // Выдача динамически составленной ошибки "Значение слишком длинное"
-  getValueLongDynamicError: function (currentLength) {
-    return this.valueLong + currentLength + '.';
-  },
-  // Выдача динамически составленной ошибки "Число меньше допустимого минимума"
-  getRangeUnderflowDynamicError: function (currentLimit) {
-    return this.rangeUnderflow + currentLimit + '.';
-  },
-  // Выдача динамически составленной ошибки "Число больше допустимого максимума"
-  getRangeOverflowDynamicError: function (currentLimit) {
-    return this.rangeOverflow + currentLimit + '.';
+  /**
+  * Активация основного функционала сайта.
+  * Вызывается по первому КЛИКУ мышью, нажатию ENTER или SPACE на управлящем пине.
+  * После исполнения обоработчика - возможность повторного вызова исключается.
+  *
+  * @function onControlPinFirstClick
+  */
+  function onControlPinFirstClick() {
+    activateServices();
+    window.constants.CONTROL_PIN.removeEventListener('click', onControlPinFirstClick);
   }
-};
 
+  /**
+  * Активация основных пользовательских сервисов:
+  * 1. Запуск карты
+  * 2. Отрисовывка пинов,
+  * 3. Запуск формы создания объявлений,
+  * 4. Отлов переключения пинов/объявлений.
+  *
+  * @function activateServices
+  */
+  function activateServices() {
+    window.constants.MAP.classList.remove('map--faded');
+    window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
+    window.render.renderPins(8, window.data.offers);
+    window.form.activateForm();
+    window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
+  }
 
-/*
-***********************************************************************************
-***********************************************************************************
-***
-***             ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В ГЛАВНЫЙ МАССИВ offers[]
-***
-***********************************************************************************
-***********************************************************************************
-*/
+  /*
+  ***********************************************************************************
+  ***********************************************************************************
+  ***
+  ***                             ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ:
+  ***      ПЕРЕМЕЩЕНИЕ УПРАВЛЯЮЩЕГО ПИНА + ИЗМЕНЕНИЕ КООРДИНАТ АДРЕСА В ФОРМЕ
+  ***
+  ***********************************************************************************
+  ***********************************************************************************
+  */
 
-// Создание и заполнение главного массива объявлений.
-var offers = generateOffers(8);
+  /**
+  * Фиксирование координат в момент начала драга на управляющем пине,
+  * вызов вспомогательных функций для основного процесса перемещения.
+  *
+  * @function onControlPinMousedown
+  * @param {object} downEvt — объект события, зажатие ЛКМ
+  */
+  function onControlPinMousedown(downEvt) {
+    downEvt.preventDefault();
 
-/**
-* Создание и заполнение массива объектами-объявлениями.
-*
-* @function generateOffers
-* @param {number} expectedNumber — необходимое количество объектов-объявлений
-* @return {array} — заполненный массив
-*/
-function generateOffers(expectedNumber) {
-  var requestedOffers = [];
-
-  for (var i = 0; i < expectedNumber; i++) {
-    var avatarSerial = i + 1;
-    var selectedLocationX = window.utils.getRandomInteger(300, 900);
-    var selectedLocationY = window.utils.getRandomInteger(100, 500);
-    var selectedTitle = OFFERS_TITLES[i];
-
-    requestedOffers[i] = {
-      author: {
-        avatar: 'img/avatars/user0' + avatarSerial + '.png'
-      },
-
-      offer: {
-        title: selectedTitle,
-        price: window.utils.getRandomInteger(1000, 1000000),
-        type: determinePropertyType(selectedTitle),
-        rooms: window.utils.getRandomInteger(1, 5),
-        guests: window.utils.getRandomInteger(0, 20),
-        checkin: window.utils.getRandomElementFromArray(OFFERS_TIMES),
-        checkout: window.utils.getRandomElementFromArray(OFFERS_TIMES),
-        features: window.utils.generateUniqueCollection(OFFERS_FEATURES),
-        description: '',
-        photos: [],
-        address: selectedLocationX + ', ' + selectedLocationY
-      },
-
-      location: {
-        x: selectedLocationX,
-        y: selectedLocationY
-      }
+    var startCoords = {
+      x: downEvt.clientX,
+      y: downEvt.clientY
     };
-  }
 
-  return requestedOffers;
-}
+    document.addEventListener('mousemove', onControlPinMousemove);
+    document.addEventListener('mouseup', onControlPinMouseup);
 
-/**
-* Определение по заголовку объявления соответствующий ему тип недвижимости.
-* Определение происходит по ключевым словам.
-* #квартира -> flat etc.
-*
-* @function determinePropertyType
-* @param {string} title — входной заголовок объявления
-* @return {string} — тип недвижимости, подходящий заголовку объявления
-*/
-function determinePropertyType(title) {
-  title = title.toLowerCase();
+    /**
+    * Перемещение управляющего пина.
+    * Смещение курсора мыши вызывает соразмерное смещение пина.
+    * Новые координаты пина передаются в графу "адрес" формы объявлений.
+    *
+    * @function onControlPinMousemove
+    * @param {object} moveEvt — объект события, перемещение мыши
+    */
+    function onControlPinMousemove(moveEvt) {
+      moveEvt.preventDefault();
 
-  if (title.indexOf('квартира') !== -1) {
-    var requestedType = 'flat';
-  } else if (title.indexOf('дворец') !== -1 || title.indexOf('домик') !== -1) {
-    requestedType = 'house';
-  } else if (title.indexOf('бунгало') !== -1) {
-    requestedType = 'bungalo';
-  } else {
-    requestedType = 'Тип недвижимости неопределен';
-  }
+      var shiftDistance = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
 
-  return requestedType;
-}
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
 
-
-/*
-***********************************************************************************
-***********************************************************************************
-***
-***                         ОСНОВНОЙ ФУНКЦИОНАЛ ПОРТАЛА:
-***               НАСТРОЙКА И АКТИВАЦИЯ ПОЛЬЗОВАТЕЛЬСКИХ СЕРВИСОВ
-***
-***********************************************************************************
-***********************************************************************************
-*/
-
-/**
-* Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
-* fieldset'ы формы заблокированы, форме дан ACTION="" и другие default атрибуты
-*
-* @function setUserFormDefaultState
-*/
-(function setUserFormDefaultState() {
-  var fieldsets = USER_FORM.querySelectorAll('fieldset');
-  var fieldsetsNumber = fieldsets.length;
-
-  for (var i = 0; i < fieldsetsNumber; i++) {
-    fieldsets[i].disabled = true;
-  }
-
-  var inputTitle = USER_FORM.querySelector('input#title');
-  var inputAddress = USER_FORM.querySelector('input#address');
-  var inputPropertyPrice = USER_FORM.querySelector('input#price');
-  var selectPropertyCapacity = USER_FORM.querySelector('select#capacity');
-
-  USER_FORM.action = 'https://js.dump.academy/keksobooking';
-
-  inputTitle.minLength = '30';
-  inputTitle.maxLength = '100';
-  inputTitle.required = true;
-
-  inputAddress.value = '375, 600'; // default координаты управляющего пина (центр, центр)
-  inputAddress.readOnly = true;
-
-  inputPropertyPrice.placeholder = '1000';
-  inputPropertyPrice.min = '1000';
-  inputPropertyPrice.max = '1000000';
-  inputPropertyPrice.required = true;
-
-  selectPropertyCapacity.selectedIndex = 2;
-})();
-
-// Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта.
-// После исполнения обоработчика - отлов сразу удаляется.
-CONTROL_PIN.addEventListener('click', onControlPinFirstClick);
-
-/**
-* Активация основного функционала сайта.
-* Вызывается по первому КЛИКУ мышью, нажатию ENTER или SPACE на управлящем пине.
-* После исполнения обоработчика - возможность повторного вызова исключается.
-*
-* @function onControlPinFirstClick
-*/
-function onControlPinFirstClick() {
-  activateServices();
-  CONTROL_PIN.removeEventListener('click', onControlPinFirstClick);
-}
-
-/**
-* Активация основных пользовательских сервисов:
-* 1. Запуск карты и формы создания объявлений,
-* 2. Отрисовывка пинов,
-* 3. Отлов переключения пинов/объявлений.
-*
-* @function activateServices
-*/
-function activateServices() {
-  activateMap();
-  activateUserForm();
-  renderPins(8, offers);
-
-  var pinArea = MAP.querySelector('.map__pins');
-  pinArea.addEventListener('click', onPinClick);
-}
-
-/**
-* Активация карты пинов и объявлений (удаление блокирующего класса .map--faded).
-*
-* @function activateMap
-*/
-function activateMap() {
-  MAP.classList.remove('map--faded');
-}
-
-/**
-* Активация формы создания объявлений, контроль за синхронизацией полей и их валидностью.
-*
-* Удаление у <form> блокирующего класса .notice__form--disabled, у <fieldset> — атрибута disabled.
-* По синхронизации и валидации см.документацию связанных функций.
-*
-* @function activateUserForm
-*/
-function activateUserForm() {
-  // Активация формы и fieldset'ов.
-  var fieldsets = USER_FORM.querySelectorAll('fieldset');
-  var fieldsetsNumber = fieldsets.length;
-
-  USER_FORM.classList.remove('notice__form--disabled');
-
-  for (var i = 0; i < fieldsetsNumber; i++) {
-    fieldsets[i].disabled = false;
-  }
-
-  // Синхронизация между собой необходимых полей.
-  var selectCheckin = USER_FORM.querySelector('select#timein');
-  var selectCheckout = USER_FORM.querySelector('select#timeout');
-  selectCheckin.addEventListener('input', function (evt) {
-    syncFormTimes(selectCheckin, selectCheckout, evt);
-  });
-  selectCheckout.addEventListener('input', function (evt) {
-    syncFormTimes(selectCheckin, selectCheckout, evt);
-  });
-
-  var selectPropertyType = USER_FORM.querySelector('select#type');
-  var inputPropertyPrice = USER_FORM.querySelector('input#price');
-  selectPropertyType.addEventListener('input', function () {
-    syncFormPropertyPrice(selectPropertyType, inputPropertyPrice);
-  });
-
-  var selectRoomsNumber = USER_FORM.querySelector('select#room_number');
-  var selectPropertyCapacity = USER_FORM.querySelector('select#capacity');
-  selectRoomsNumber.addEventListener('input', function () {
-    syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity);
-  });
-
-  // Проверка вводимых данных на валидность.
-  var inputTitle = USER_FORM.querySelector('input#title');
-  var inputPrice = USER_FORM.querySelector('input#price');
-  inputTitle.addEventListener('input', onInvalidInput);
-  inputPrice.addEventListener('input', onInvalidInput);
-}
-
-/**
-* Отрисовка рядом с выбранным пином соответствующего тому объявления.
-* Проверка на всплытии. Индекс пина соответствует индексу объявления.
-*
-* @function onPinClick
-* @param {object} evt — объект события
-*/
-function onPinClick(evt) {
-  var pinArea = MAP.querySelector('.map__pins');
-  var pins = pinArea.querySelectorAll('button:not(.map__pin--main)');
-  var pinsNumber = pins.length;
-  var target = evt.target;
-
-  // Проверка на то, что вызванный элемент — пин.
-  // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
-  while (target !== pinArea) {
-
-    // Если target — искомый пин...
-    if (target.className === 'map__pin') {
-
-      // Определяется его порядковый индекс (индекс в массиве пинов).
-      // Когда индекс установлен — вызывается соответствующее этому индексу объявление (старое удаляется).
-      for (var i = 0; i < pinsNumber; i++) {
-        if (pins[i] === target) {
-
-          removeUselessOffer();
-          removeUselessPinActivityModifier();
-
-          var referenceIndex = i;
-          renderNewOffer(offers, referenceIndex);
-          setPinActivityModifier(target);
-
-          // Здесь регистрируется отлов событий для закрытия объявления.
-          var offerCloseButton = MAP.querySelector('.popup .popup__close');
-          offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
-          window.addEventListener('keydown', onOfferEscPress);
-
-          return;
-        }
-      }
-    } else {
-      // Если target НЕ искомый элемент — проверяется родительский узел.
-      target = target.parentNode;
+      var newCoords = getNewCoords(shiftDistance.x, shiftDistance.y);
+      changeControlPinPosition(newCoords);
+      changeAddressValue(newCoords);
     }
 
+    /**
+    * Завершение драга на управляющем пине — удаление слушателей.
+    * Хендлер прекращает контроль за перемещением мыши и удаляет сам себя.
+    *
+    * @function onControlPinMouseup
+    * @param {object} upEvt — объект события, отжатие ЛКМ
+    */
+    function onControlPinMouseup(upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onControlPinMousemove);
+      document.removeEventListener('mouseup', onControlPinMouseup);
+    }
   }
 
-  return;
-}
+  /**
+  * Обновление координат управляющего пина.
+  * Координаты ограничены рамками: не менее 100 по X, не более 500 по Y
+  *
+  * @function getNewCoords
+  * @param {number} shiftX — число, разница в расстоянии от стартовых координат по X
+  * @param {number} shiftY — число, разница в расстоянии от стартовых координат по Y
+  * @return {object} — объект с новыми координатами
+  */
+  function getNewCoords(shiftX, shiftY) {
+    var newCoords = {
+      x: window.constants.CONTROL_PIN.offsetLeft - shiftX,
+      y: window.constants.CONTROL_PIN.offsetTop - shiftY
+    };
 
-/**
-* Удаление ненужного объявления, отлова его событий,
-* а также модификатора активности у соответствующего пина.
-* Вызывается нажатием на кнопку ЗАКРЫТЬ в объявлении.
-*
-* @function onOfferCloseButtonPress
-*/
-function onOfferCloseButtonPress() {
-  removeUselessOffer();
-  removeUselessPinActivityModifier();
-}
+    if (newCoords.y < window.constants.COORDS_MIN_LIMIT_Y) {
+      newCoords.y = window.constants.COORDS_MIN_LIMIT_Y;
+    } else if (newCoords.y > window.constants.COORDS_MAX_LIMIT_Y) {
+      newCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
+    }
 
-/**
-* Удаление ненужного объявления, отлова его событий,
-* а также модификатора активности у соответствующего пина.
-* Вызывается нажатием на ESC при открытом объявлении.
-*
-* @function onOfferEscPress
-* @param {object} evt — объект события
-*/
-function onOfferEscPress(evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
+    return newCoords;
+  }
+
+  /**
+  * Перемещение управляющего пина на странице на заданные координаты.
+  *
+  * @function changeControlPinPosition
+  * @param {object} newCoords — объект с новыми координатами для пина
+  */
+  function changeControlPinPosition(newCoords) {
+    window.constants.CONTROL_PIN.style.left = newCoords.x + 'px';
+    window.constants.CONTROL_PIN.style.top = newCoords.y + 'px';
+  }
+
+  /**
+  * Обновление координат недвижимости в поле формы "Адрес".
+  *
+  * @function changeAddressValue
+  * @param {object} newCoords — объект с новыми координатами адреса недвижимости
+  */
+  function changeAddressValue(newCoords) {
+    var inputAddress = window.constants.FORM.querySelector('input#address');
+
+    inputAddress.value =
+      'x: ' + newCoords.x + ', ' +
+      'y: ' + (newCoords.y + window.constants.CONTROL_PIN_SHIFT_Y);
+  }
+
+  /*
+  ***********************************************************************************
+  ***********************************************************************************
+  ***
+  ***             ПЕРЕКЛЮЧЕНИЕ ПИНОВ И ОБЪЯВЛЕНИЙ, ЗАКРЫТИЕ ОБЪЯВЛЕНИЙ
+  ***
+  ***********************************************************************************
+  ***********************************************************************************
+  */
+
+  /**
+  * Отрисовка рядом с выбранным пином соответствующего тому объявления.
+  * Проверка на всплытии. Индекс пина соответствует индексу объявления.
+  *
+  * @function onPinClick
+  * @param {object} evt — объект события
+  */
+  function onPinClick(evt) {
+    var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
+    var pinsNumber = pins.length;
+    var target = evt.target;
+
+    // Проверка на то, что вызванный элемент — пин.
+    // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
+    while (target !== window.constants.PINS_CONTAINER) {
+
+      // Если target — искомый пин...
+      if (target.className === 'map__pin') {
+
+        // Определяется его порядковый индекс (индекс в массиве пинов).
+        // Когда индекс установлен — вызывается соответствующее этому индексу объявление (старое удаляется).
+        for (var i = 0; i < pinsNumber; i++) {
+          if (pins[i] === target) {
+
+            removeUselessOffer();
+            removeUselessPinActivityModifier();
+
+            var referenceIndex = i;
+            window.render.renderOffer(window.data.offers, referenceIndex);
+            setPinActivityModifier(target);
+
+            // Здесь регистрируется отлов событий для закрытия объявления.
+            var offerCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
+            offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
+            window.addEventListener('keydown', onOfferEscPress);
+
+            return;
+          }
+        }
+      } else {
+        // Если target НЕ искомый элемент — проверяется родительский узел.
+        target = target.parentNode;
+      }
+
+    }
+
+    return;
+  }
+
+  /**
+  * Удаление ненужного объявления и отлова его событий.
+  *
+  * @function removeUselessOffer
+  */
+  function removeUselessOffer() {
+    var uselessOffer = window.constants.MAP.querySelector('.popup');
+
+    if (uselessOffer) {
+      var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
+
+      uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
+      window.removeEventListener('keydown', onOfferEscPress);
+
+      uselessOffer.parentNode.removeChild(uselessOffer);
+    }
+  }
+
+  /**
+  * Удаление класса-модификатора .map__pin--active у ненужного пина
+  * Применяется при переключении пинов.
+  *
+  * @function removeUselessPinActivityModifier
+  */
+  function removeUselessPinActivityModifier() {
+    var uselessActivePin = window.constants.MAP.querySelector('.map__pin--active');
+
+    if (uselessActivePin) {
+      uselessActivePin.classList.remove('map__pin--active');
+    }
+  }
+
+  /**
+  * Добавление необходимому пину класса-модификатора .map__pin--active.
+  * Применяется при переключение пинов.
+  *
+  * @function setPinActivityModifier
+  * @param {node} pin — DOM элемент
+  */
+  function setPinActivityModifier(pin) {
+    pin.classList.add('map__pin--active');
+  }
+
+  /**
+  * Удаление ненужного объявления, отлова его событий,
+  * а также модификатора активности у соответствующего пина.
+  * Вызывается нажатием на кнопку ЗАКРЫТЬ в объявлении.
+  *
+  * @function onOfferCloseButtonPress
+  */
+  function onOfferCloseButtonPress() {
     removeUselessOffer();
     removeUselessPinActivityModifier();
   }
-}
 
-/**
-* Удаление ненужного объявления и отлова его событий.
-*
-* @function removeUselessOffer
-*/
-function removeUselessOffer() {
-  var uselessOffer = MAP.querySelector('.popup');
-
-  if (uselessOffer) {
-    var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
-
-    uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
-    window.removeEventListener('keydown', onOfferEscPress);
-
-    uselessOffer.parentNode.removeChild(uselessOffer);
-  }
-}
-
-/**
-* Добавление необходимому пину класса-модификатора .map__pin--active.
-* Применяется при переключение пинов.
-*
-* @function setPinActivityModifier
-* @param {node} pin — DOM элемент
-*/
-function setPinActivityModifier(pin) {
-  pin.classList.add('map__pin--active');
-}
-
-/**
-* Удаление класса-модификатора .map__pin--active у ненужного пина
-* Применяется при переключении пинов.
-*
-* @function removeUselessPinActivityModifier
-*/
-function removeUselessPinActivityModifier() {
-  var uselessActivePin = MAP.querySelector('.map__pin--active');
-
-  if (uselessActivePin) {
-    uselessActivePin.classList.remove('map__pin--active');
-  }
-}
-
-
-/*
-***********************************************************************************
-***********************************************************************************
-***
-***                       РАЗМЕТКА + ОТРИСОВКА НА КАРТЕ ПИНОВ
-***
-***********************************************************************************
-***********************************************************************************
-*/
-
-/**
-* Создание и отрисовка пользовательских пинов.
-*
-* Создается Document Fragment, заполняется разметкой и внедряется на страницу.
-* Информационная составляющая снимается с объектов-объявлений массива offers[].
-* Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
-*
-* @function renderPins
-* @param {number} expectedNumber — необходимое число отрисованных пинов
-* @param {array} sourceOffers — массив объектов-объявлений для снятия данных.
-*/
-function renderPins(expectedNumber, sourceOffers) {
-  var pinArea = MAP.querySelector('.map__pins');
-  var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-  var pinsFragment = document.createDocumentFragment();
-
-  for (var i = 0; i < expectedNumber; i++) {
-    var pin = pinTemplate.cloneNode(true);
-    var img = pin.querySelector('img');
-
-    pin.style.left = sourceOffers[i].location.x - PIN_SHIFT_X + 'px';
-    pin.style.top = sourceOffers[i].location.y - PIN_SHIFT_Y + 'px';
-    img.src = sourceOffers[i].author.avatar;
-
-    pinsFragment.appendChild(pin);
-  }
-
-  pinArea.appendChild(pinsFragment);
-}
-
-
-/*
-***********************************************************************************
-***********************************************************************************
-***
-***               РАЗМЕТКА + ОТРИСОВКА НА КАРТЕ ВЫБРАННОГО ОБЪЯВЛЕНИЯ
-***
-***********************************************************************************
-***********************************************************************************
-*/
-
-/**
-* Создание и отрисовка необходимого объявления.
-*
-* Создается Document Fragment, заполняется разметкой и внедряется на страницу.
-* Информационная составляющая снимается с объектов-объявлений массива offers[].
-* Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
-*
-* @function renderNewOffer
-* @param {array} sourceOffers — входной массив с объявлениями для извлечения данных
-* @param {number} index — индекс необходимого объявления
-*/
-function renderNewOffer(sourceOffers, index) {
-  var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
-  var offerFragment = document.createDocumentFragment();
-  var offer = offerTemplate.cloneNode(true);
-
-  var avatar = offer.querySelector('.popup__avatar');
-  var title = offer.querySelector('h3');
-  var address = offer.querySelector('small');
-  var price = offer.querySelector('.popup__price');
-  var type = offer.querySelector('h4');
-  var capacity = offer.querySelector('h4 + p');
-  var stayTime = offer.querySelector('h4 + p + p');
-  var description = offer.querySelector('ul + p');
-  var featuresList = offer.querySelector('.popup__features');
-
-  var source = sourceOffers[index];
-
-  avatar.src = source.author.avatar;
-  title.textContent = source.offer.title;
-  address.textContent = source.offer.address;
-  price.textContent = source.offer.price + '\u20bd / ночь';
-  type.textContent = decodePropertyType(source.offer.type, OFFERS_PROPERTY_TYPES);
-  capacity.textContent = source.offer.rooms + ' комнаты для ' + source.offer.guests + ' гостей';
-  stayTime.textContent = 'Заезд после ' + source.offer.checkin + ', выезд до ' + source.offer.checkout;
-  description.textContent = source.offer.description;
-  featuresList.innerHTML = '';
-  featuresList.appendChild(createFeaturesMarkup(source.offer.features));
-
-  offerFragment.appendChild(offer);
-
-  var offerInsertPoint = MAP.querySelector('.map__filters-container');
-  MAP.insertBefore(offerFragment, offerInsertPoint);
-}
-
-/**
-* Расшифровка типа недвижимости для выдачи клиентской стороне.
-* Обозначения flat, house etc. русифицируются (квартира, дом, и тд).
-*
-* @function decodePropertyType
-* @param {string} currentType — на вход принимается ключ для расшифровки
-* @param {object} sourceTypes — входной объект с библиотекой ключей/значений
-* @return {string} — конвертированное значение
-*/
-function decodePropertyType(currentType, sourceTypes) {
-  var requestedDefinition = 'Тип недвижимости не определен';
-
-  for (var key in sourceTypes) {
-    if (currentType === key) {
-      requestedDefinition = sourceTypes[key];
-
-      return requestedDefinition;
+  /**
+  * Удаление ненужного объявления, отлова его событий,
+  * а также модификатора активности у соответствующего пина.
+  * Вызывается нажатием на ESC при открытом объявлении.
+  *
+  * @function onOfferEscPress
+  * @param {object} evt — объект события
+  */
+  function onOfferEscPress(evt) {
+    if (evt.keyCode === window.constants.ESC_KEYCODE) {
+      removeUselessOffer();
+      removeUselessPinActivityModifier();
     }
   }
-
-  return requestedDefinition;
-}
-
-/**
-* Создание на основе массива преимуществ соответствующей HTML разметки.
-*
-* @param {array} sourceFeatures — входной массив со списком преимуществ
-* @return {object} — фрагмент с готовой HTML разметкой
-*/
-function createFeaturesMarkup(sourceFeatures) {
-  var featuresFragment = document.createDocumentFragment();
-  var featuresNumber = sourceFeatures.length;
-
-  for (var i = 0; i < featuresNumber; i++) {
-    var featureTag = document.createElement('li');
-    featureTag.className = 'feature  feature--' + sourceFeatures[i];
-
-    featuresFragment.appendChild(featureTag);
-  }
-
-  return featuresFragment;
-}
-
-/*
-***********************************************************************************
-***********************************************************************************
-***
-***             ФОРМА СОЗДАНИЯ ОБЪЯВЛЕНИЙ: СИНХРОНИЗАЦИЯ И ВАЛИДАЦИЯ
-***
-***********************************************************************************
-***********************************************************************************
-*/
-
-/**
-* Синхронизация опций селектов "Время заезда и выезда" в форме создания объявлений.
-* Одним из параметров передается объект события (в каком селекте изменения),
-* с учетом чего изменяется противоположный селект.
-*
-* @function syncFormTimes
-* @param {node} selectCheckin — <select> #timein в форме .notice__form
-* @param {node} selectCheckout — <select> #timeout
-* @param {object} evt — объект события, объект изменений
-*/
-function syncFormTimes(selectCheckin, selectCheckout, evt) {
-  if (evt.target === selectCheckin) {
-    selectCheckout.selectedIndex = selectCheckin.selectedIndex;
-  } else if (evt.target === selectCheckout) {
-    selectCheckin.selectedIndex = selectCheckout.selectedIndex;
-  }
-}
-
-/**
-* Синхронизация опций селекта "Тип жилья" с подсказкой и ограничениями в "Цена за ночь".
-*
-* @function syncFormPropertyPrice
-* @param {node} selectPropertyType — <select> #type в форме .notice__form
-* @param {node} inputPropertyPrice — <input> #price
-*/
-function syncFormPropertyPrice(selectPropertyType, inputPropertyPrice) {
-  switch (selectPropertyType.selectedIndex) {
-    case 0: // Лачуга
-      inputPropertyPrice.placeholder = '0'; // Стоимость 0
-      inputPropertyPrice.min = '0';
-      break;
-    case 1: // Квартира
-      inputPropertyPrice.placeholder = '1000'; // Стоимость 1.000
-      inputPropertyPrice.min = '1000';
-      break;
-    case 2: // Дом
-      inputPropertyPrice.placeholder = '5000'; // Стоимость 5.000
-      inputPropertyPrice.min = '5000';
-      break;
-    case 3: // Дворец
-      inputPropertyPrice.placeholder = '10000'; // Стоимость 10.000
-      inputPropertyPrice.min = '10000';
-      break;
-  }
-}
-
-/**
-* Синхронизация опций селектов "Количество комнат" и "Количество мест".
-*
-* @function syncFormPropertyCapacity
-* @param {node} selectRoomsNumber — <select> #room_number в форме .notice__form
-* @param {node} selectPropertyCapacity — <select> #capacity
-*/
-function syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity) {
-  switch (selectRoomsNumber.selectedIndex) {
-    case 0: // 1 комната
-      selectPropertyCapacity.selectedIndex = 2; // для 1 гостя
-      break;
-    case 1: // 2 комнаты
-      selectPropertyCapacity.selectedIndex = 1; // для 2-х гостей
-      break;
-    case 2: // 3 комнаты
-      selectPropertyCapacity.selectedIndex = 0; // для 3-х гостей
-      break;
-    case 3: // 100 комнат
-      selectPropertyCapacity.selectedIndex = 3; // не для гостей
-      break;
-  }
-}
-
-/**
-* Контроль валидности объекта события.
-* Выдача custom-ошибок и подсветка поля красным цветом.
-*
-* @function onInvalidInput
-* @param {object} evt — объект события
-*/
-function onInvalidInput(evt) {
-  var target = evt.target;
-
-  var currentValueLength = target.value.length; // Текущая длина значения
-  var minLength = target.minLength; // Ограничение минимальной длины
-  var maxLength = target.maxLength; // Ограничение максимальной длины
-  var isMinLengthExist = minLength > 0; // Проверка есть ли вообще ограничение длины
-  var isMaxLengthExist = minLength > 0;
-
-  if (target.validity.valueMissing) {
-    if (target.validity.badInput) {
-      var message = inputErrors.badInput;
-    } else {
-      message = inputErrors.valueMissing;
-    }
-  } else if (target.validity.tooShort || (isMinLengthExist && currentValueLength < minLength)) {
-    message = inputErrors.getValueShortDynamicError(currentValueLength);
-  } else if (target.validity.tooLong || (isMaxLengthExist && currentValueLength > maxLength)) {
-    message = inputErrors.getValueLongDynamicError(currentValueLength);
-  } else if (target.validity.rangeUnderflow) {
-    var minRange = target.min;
-    message = inputErrors.getRangeUnderflowDynamicError(minRange);
-  } else if (target.validity.rangeOverflow) {
-    var maxRange = target.max;
-    message = inputErrors.getRangeOverflowDynamicError(maxRange);
-  } else {
-    message = '';
-  }
-
-  target.setCustomValidity(message);
-
-  if (message === '') {
-    target.style.border = '';
-  } else {
-    target.style.border = '2px solid crimson';
-  }
-}
+})();
