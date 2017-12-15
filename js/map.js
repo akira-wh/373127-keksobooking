@@ -41,7 +41,7 @@
   */
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
-    window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinDragStart);
+    window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
     window.render.renderPins(8, window.data.offers);
     window.form.activateForm();
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
@@ -62,10 +62,10 @@
   * Фиксирование координат в момент начала драга на управляющем пине,
   * вызов вспомогательных функций для основного процесса перемещения.
   *
-  * @function onControlPinDragStart
+  * @function onControlPinMousedown
   * @param {object} downEvt — объект события, зажатие ЛКМ
   */
-  function onControlPinDragStart(downEvt) {
+  function onControlPinMousedown(downEvt) {
     downEvt.preventDefault();
 
     var startCoords = {
@@ -73,18 +73,18 @@
       y: downEvt.clientY
     };
 
-    document.addEventListener('mousemove', onControlPinDrag);
-    document.addEventListener('mouseup', onControlPinDragEnd);
+    document.addEventListener('mousemove', onControlPinMousemove);
+    document.addEventListener('mouseup', onControlPinMouseup);
 
     /**
     * Перемещение управляющего пина.
     * Смещение курсора мыши вызывает соразмерное смещение пина.
     * Новые координаты пина передаются в графу "адрес" формы объявлений.
     *
-    * @function onControlPinDrag
+    * @function onControlPinMousemove
     * @param {object} moveEvt — объект события, перемещение мыши
     */
-    function onControlPinDrag(moveEvt) {
+    function onControlPinMousemove(moveEvt) {
       moveEvt.preventDefault();
 
       var shiftDistance = {
@@ -97,36 +97,72 @@
         y: moveEvt.clientY
       };
 
-      var newCoordsX = window.constants.CONTROL_PIN.offsetLeft - shiftDistance.x;
-      var newCoordsY = window.constants.CONTROL_PIN.offsetTop - shiftDistance.y;
-
-      if (newCoordsY < window.constants.COORDS_MIN_LIMIT_Y) {
-        newCoordsY = window.constants.COORDS_MIN_LIMIT_Y;
-      } else if (newCoordsY > window.constants.COORDS_MAX_LIMIT_Y) {
-        newCoordsY = window.constants.COORDS_MAX_LIMIT_Y;
-      }
-
-      window.constants.CONTROL_PIN.style.left = newCoordsX + 'px';
-      window.constants.CONTROL_PIN.style.top = newCoordsY + 'px';
-
-      var inputAddress = window.constants.FORM.querySelector('input#address');
-      inputAddress.value =
-        'x: ' + newCoordsX + ', ' +
-        'y: ' + (newCoordsY + window.constants.CONTROL_PIN_SHIFT_Y);
+      var newCoords = getNewCoords(shiftDistance.x, shiftDistance.y);
+      changeControlPinPosition(newCoords);
+      changeAddressValue(newCoords);
     }
 
     /**
     * Завершение драга на управляющем пине — удаление слушателей.
     * Хендлер прекращает контроль за перемещением мыши и удаляет сам себя.
     *
-    * @function onControlPinDragEnd
-    * @param {object} endEvt — объект события, отжатие ЛКМ
+    * @function onControlPinMouseup
+    * @param {object} upEvt — объект события, отжатие ЛКМ
     */
-    function onControlPinDragEnd(endEvt) {
-      endEvt.preventDefault();
-      document.removeEventListener('mousemove', onControlPinDrag);
-      document.removeEventListener('mouseup', onControlPinDragEnd);
+    function onControlPinMouseup(upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onControlPinMousemove);
+      document.removeEventListener('mouseup', onControlPinMouseup);
     }
+  }
+
+  /**
+  * Обновление координат управляющего пина.
+  * Координаты ограничены рамками: не менее 100 по X, не более 500 по Y
+  *
+  * @function getNewCoords
+  * @param {number} shiftX — число, разница в расстоянии от стартовых координат по X
+  * @param {number} shiftY — число, разница в расстоянии от стартовых координат по Y
+  * @return {object} — объект с новыми координатами
+  */
+  function getNewCoords(shiftX, shiftY) {
+    var newCoords = {
+      x: window.constants.CONTROL_PIN.offsetLeft - shiftX,
+      y: window.constants.CONTROL_PIN.offsetTop - shiftY
+    };
+
+    if (newCoords.y < window.constants.COORDS_MIN_LIMIT_Y) {
+      newCoords.y = window.constants.COORDS_MIN_LIMIT_Y;
+    } else if (newCoords.y > window.constants.COORDS_MAX_LIMIT_Y) {
+      newCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
+    }
+
+    return newCoords;
+  }
+
+  /**
+  * Перемещение управляющего пина на странице на заданные координаты.
+  *
+  * @function changeControlPinPosition
+  * @param {object} newCoords — объект с новыми координатами для пина
+  */
+  function changeControlPinPosition(newCoords) {
+    window.constants.CONTROL_PIN.style.left = newCoords.x + 'px';
+    window.constants.CONTROL_PIN.style.top = newCoords.y + 'px';
+  }
+
+  /**
+  * Обновление координат недвижимости в поле формы "Адрес".
+  *
+  * @function changeAddressValue
+  * @param {object} newCoords — объект с новыми координатами адреса недвижимости
+  */
+  function changeAddressValue(newCoords) {
+    var inputAddress = window.constants.FORM.querySelector('input#address');
+
+    inputAddress.value =
+      'x: ' + newCoords.x + ', ' +
+      'y: ' + (newCoords.y + window.constants.CONTROL_PIN_SHIFT_Y);
   }
 
   /*
