@@ -38,6 +38,9 @@ window.constants = {
   // Форма создания объявлений
   FORM: document.querySelector('.notice__form'),
 
+  // Form Action Url
+  FORM_ACTION_URL: 'https://js.dump.academy/keksobooking',
+
   // Массив — Заголовки объявлений
   OFFERS_TITLES: [
     'Большая уютная квартира',

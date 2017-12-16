@@ -18,7 +18,7 @@
 * @function setFormDefaults
 */
 (function setFormDefaults() {
-  window.constants.FORM.action = 'https://js.dump.academy/keksobooking';
+  window.constants.FORM.action = window.constants.FORM_ACTION_URL;
 
   var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
   var fieldsetsNumber = fieldsets.length;
