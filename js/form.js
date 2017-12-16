@@ -16,15 +16,52 @@
   window.form = {
 
     /**
+    * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
+    * fieldset'ы формы заблокированы, форме установлен ACTION="" и другие default атрибуты
+    *
+    * @function setDefaults
+    */
+    setDefaults: function () {
+      window.constants.FORM.action = window.constants.FORM_ACTION_URL;
+
+      var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
+      var fieldsetsNumber = fieldsets.length;
+
+      for (var i = 0; i < fieldsetsNumber; i++) {
+        fieldsets[i].disabled = true;
+      }
+
+      var inputTitle = window.constants.FORM.querySelector('input#title');
+      inputTitle.minLength = '30';
+      inputTitle.maxLength = '100';
+      inputTitle.required = true;
+
+      var inputAddress = window.constants.FORM.querySelector('input#address');
+      // default координаты управляющего пина (центр, указательная пика)
+      inputAddress.value = 'x: 600, y: 420';
+      inputAddress.readOnly = true;
+      inputAddress.tabIndex = -1;
+
+      var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
+      inputPropertyPrice.placeholder = '1000';
+      inputPropertyPrice.min = '1000';
+      inputPropertyPrice.max = '1000000';
+      inputPropertyPrice.required = true;
+
+      var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
+      selectPropertyCapacity.selectedIndex = 2;
+    },
+
+    /**
     * Активация формы создания объявлений, контроль синхронизации и валидности.
     *
     * Удаление у <form> блокирующего класса .notice__form--disabled,
     * а у всех <fieldset> — блокирующего атрибута disabled.
     * По синхронизации и валидации см.документацию связанных функций ниже.
     *
-    * @function activateForm
+    * @function activate
     */
-    activateForm: function () {
+    activate: function () {
       // Активация формы и fieldset'ов
       var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
       var fieldsetsNumber = fieldsets.length;
@@ -66,6 +103,9 @@
       inputPrice.addEventListener('invalid', onInvalidInput);
     }
   };
+
+  // Приведение формы к состоянию по умолчанию при загрузке страницы.
+  window.form.setDefaults();
 
   /*
   ***********************************************************************************

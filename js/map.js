@@ -43,7 +43,7 @@
     window.constants.MAP.classList.remove('map--faded');
     window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
     window.render.renderPins(8, window.data.offers);
-    window.form.activateForm();
+    window.form.activate();
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
   }
 
@@ -131,16 +131,16 @@
       y: window.constants.CONTROL_PIN.offsetTop - shiftY
     };
 
-    if (newCoords.y < window.constants.COORDS_MIN_LIMIT_Y) {
-      newCoords.y = window.constants.COORDS_MIN_LIMIT_Y;
-    } else if (newCoords.y > window.constants.COORDS_MAX_LIMIT_Y) {
-      newCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
-    }
-
     if (newCoords.x < window.constants.COORDS_MIN_LIMIT_X) {
       newCoords.x = window.constants.COORDS_MIN_LIMIT_X;
     } else if (newCoords.x > window.constants.COORDS_MAX_LIMIT_X) {
       newCoords.x = window.constants.COORDS_MAX_LIMIT_X;
+    }
+
+    if (newCoords.y < window.constants.COORDS_MIN_LIMIT_Y) {
+      newCoords.y = window.constants.COORDS_MIN_LIMIT_Y;
+    } else if (newCoords.y > window.constants.COORDS_MAX_LIMIT_Y) {
+      newCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
     }
 
     return newCoords;
