@@ -32,6 +32,8 @@ window.constants = {
   CONTROL_PIN_SHIFT_Y: 45,
 
   // Ограничения координат управляющего пина
+  COORDS_MIN_LIMIT_X: 0,
+  COORDS_MAX_LIMIT_X: 1200,
   COORDS_MIN_LIMIT_Y: 55,
   COORDS_MAX_LIMIT_Y: 455,
 

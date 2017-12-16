@@ -137,6 +137,12 @@
       newCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
     }
 
+    if (newCoords.x < window.constants.COORDS_MIN_LIMIT_X) {
+      newCoords.x = window.constants.COORDS_MIN_LIMIT_X;
+    } else if (newCoords.x > window.constants.COORDS_MAX_LIMIT_X) {
+      newCoords.x = window.constants.COORDS_MAX_LIMIT_X;
+    }
+
     return newCoords;
   }
 
