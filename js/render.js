@@ -22,7 +22,7 @@
     * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
     * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
     *
-    * @function renderPins
+    * @method renderPins
     * @param {number} expectedNumber — необходимое число отрисованных пинов
     * @param {array} sourceOffers — массив объектов-объявлений для съема данных
     */
@@ -51,7 +51,7 @@
     * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
     * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
     *
-    * @function renderOffer
+    * @method renderOffer
     * @param {array} sourceOffers — входной массив с объявлениями для съема данных
     * @param {number} index — индекс необходимого объявления
     */

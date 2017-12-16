@@ -17,11 +17,12 @@
 
     /**
     * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
-    * fieldset'ы формы заблокированы, форме установлен ACTION="" и другие default атрибуты
+    * fieldset'ы формы заблокированы, форме установлен ACTION="" и другие default атрибуты.
+    * Метод самозапускается при загрузке сайта.
     *
-    * @function setDefaults
+    * @method setDefaults
     */
-    setDefaults: function () {
+    setDefaults: (function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
 
       var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
@@ -50,7 +51,7 @@
 
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
       selectPropertyCapacity.selectedIndex = 2;
-    },
+    })(),
 
     /**
     * Активация формы создания объявлений, контроль синхронизации и валидности.
@@ -59,7 +60,7 @@
     * а у всех <fieldset> — блокирующего атрибута disabled.
     * По синхронизации и валидации см.документацию связанных функций ниже.
     *
-    * @function activate
+    * @method activate
     */
     activate: function () {
       // Активация формы и fieldset'ов
@@ -103,9 +104,6 @@
       inputPrice.addEventListener('invalid', onInvalidInput);
     }
   };
-
-  // Приведение формы к состоянию по умолчанию при загрузке страницы.
-  window.form.setDefaults();
 
   /*
   ***********************************************************************************

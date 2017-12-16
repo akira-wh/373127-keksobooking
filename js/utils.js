@@ -15,7 +15,7 @@ window.utils = {
   /**
   * Генерация случайного числа в указанном диапазоне (minValue и maxValue участвуют).
   *
-  * @function getRandomInteger
+  * @method getRandomInteger
   * @param {number} minValue — минимально допустимое число
   * @param {number} maxValue — максимально допустимое число
   * @return {number} — искомое случайное число
@@ -30,7 +30,7 @@ window.utils = {
   /**
   * Выбор из входного массива рандомного элемента и возвращение его значения.
   *
-  * @function getRandomElementFromArray
+  * @method getRandomElementFromArray
   * @param {array} sourceElements — входной массив с элементами на выбор
   * @return {string} — значение рандомного элемента
   */
@@ -52,7 +52,7 @@ window.utils = {
   * 5. Копируем выбранные элементы.
   * 6. Отдаем подборку.
   *
-  * @function generateUniqueCollection
+  * @method generateUniqueCollection
   * @param {array} sourceElements — входной массив с вариантами для перекомпоновки
   * @return {array} — новая подборка
   */
@@ -73,7 +73,7 @@ window.utils = {
   /**
   * Генерация массива неповторяющихся целых чисел в заданном диапазоне и заданной длины.
   *
-  * @function getNonrepeatingIntegers
+  * @method getNonrepeatingIntegers
   * @param {number} minValue — минимально допустимое число
   * @param {number} maxValue — максимально допустимое число
   * @param {number} expectedLength — ожидаемая длина выходного массива
