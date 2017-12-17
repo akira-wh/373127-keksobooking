@@ -25,12 +25,7 @@
     setDefaults: (function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
 
-      var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
-      var fieldsetsNumber = fieldsets.length;
-
-      for (var i = 0; i < fieldsetsNumber; i++) {
-        fieldsets[i].disabled = true;
-      }
+      setFieldsetsAvailability(false);
 
       var inputTitle = window.constants.FORM.querySelector('input#title');
       inputTitle.minLength = 30;
@@ -64,14 +59,9 @@
      */
     activate: function () {
       // Активация формы и fieldset'ов
-      var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
-      var fieldsetsNumber = fieldsets.length;
-
       window.constants.FORM.classList.remove('notice__form--disabled');
 
-      for (var i = 0; i < fieldsetsNumber; i++) {
-        fieldsets[i].disabled = false;
-      }
+      setFieldsetsAvailability(true);
 
       // Контроль синхронизации необходимых полей
       var selectCheckin = window.constants.FORM.querySelector('select#timein');
@@ -115,6 +105,20 @@
   ***********************************************************************************
   ***********************************************************************************
   */
+  /**
+   * Активация/деактивация всех fieldset формы.
+   *
+   * @function setFieldsetsAvailability
+   * @param {boolean} booleanStatus — true, чтобы включить / false, чтобы выключить
+   */
+  function setFieldsetsAvailability(booleanStatus) {
+    var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
+    var fieldsetsNumber = fieldsets.length;
+
+    for (var i = 0; i < fieldsetsNumber; i++) {
+      fieldsets[i].disabled = !booleanStatus;
+    }
+  }
 
   /**
    * Синхронизация опций селектов "Время заезда и выезда" в форме создания объявлений.
