@@ -214,7 +214,7 @@
     var minLength = target.minLength; // Ограничение минимальной длины
     var maxLength = target.maxLength; // Ограничение максимальной длины
     var isMinLengthExist = minLength > 0; // Проверка есть ли вообще ограничение длины
-    var isMaxLengthExist = minLength > 0;
+    var isMaxLengthExist = maxLength > 0;
 
     if (target.validity.valueMissing) {
       if (target.validity.badInput) {
