@@ -18,12 +18,12 @@
   };
 
   /**
-  * Создание и заполнение массива объектами-объявлениями.
-  *
-  * @function generateOffers
-  * @param {number} expectedNumber — необходимое количество объектов-объявлений
-  * @return {array} — заполненный массив
-  */
+   * Создание и заполнение массива объектами-объявлениями.
+   *
+   * @function generateOffers
+   * @param {number} expectedNumber — необходимое количество объектов-объявлений
+   * @return {array} — заполненный массив
+   */
   function generateOffers(expectedNumber) {
     var requestedOffers = [];
 
@@ -63,13 +63,13 @@
   }
 
   /**
-  * Определение по заголовку объявления соответствующий ему тип недвижимости.
-  * Определение происходит по ключевым словам, например "..квартира.." -> flat etc.
-  *
-  * @function determinePropertyType
-  * @param {string} title — входной заголовок объявления для анализа
-  * @return {string} — тип недвижимости, подходящий заголовку объявления
-  */
+   * Определение по заголовку объявления соответствующий ему тип недвижимости.
+   * Определение происходит по ключевым словам, например "..квартира.." -> flat etc.
+   *
+   * @function determinePropertyType
+   * @param {string} title — входной заголовок объявления для анализа
+   * @return {string} — тип недвижимости, подходящий заголовку объявления
+   */
   function determinePropertyType(title) {
     title = title.toLowerCase();
 

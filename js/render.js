@@ -16,16 +16,16 @@
   window.render = {
 
     /**
-    * Создание и отрисовка пользовательских пинов.
-    *
-    * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
-    * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
-    * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
-    *
-    * @method renderPins
-    * @param {number} expectedNumber — необходимое число отрисованных пинов
-    * @param {array} sourceOffers — массив объектов-объявлений для съема данных
-    */
+     * Создание и отрисовка пользовательских пинов.
+     *
+     * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
+     * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
+     * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
+     *
+     * @method renderPins
+     * @param {number} expectedNumber — необходимое число отрисованных пинов
+     * @param {array} sourceOffers — массив объектов-объявлений для съема данных
+     */
     renderPins: function (expectedNumber, sourceOffers) {
       var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
       var pinsFragment = document.createDocumentFragment();
@@ -45,16 +45,16 @@
     },
 
     /**
-    * Создание и отрисовка необходимого объявления.
-    *
-    * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
-    * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
-    * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
-    *
-    * @method renderOffer
-    * @param {array} sourceOffers — входной массив с объявлениями для съема данных
-    * @param {number} index — индекс необходимого объявления
-    */
+     * Создание и отрисовка необходимого объявления.
+     *
+     * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
+     * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
+     * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
+     *
+     * @method renderOffer
+     * @param {array} sourceOffers — входной массив с объявлениями для съема данных
+     * @param {number} index — индекс необходимого объявления
+     */
     renderOffer: function (sourceOffers, index) {
       var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
       var offerFragment = document.createDocumentFragment();
@@ -101,14 +101,14 @@
   */
 
   /**
-  * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
-  * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
-  *
-  * @function decodePropertyType
-  * @param {string} currentType — ключ для расшифровки
-  * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
-  * @return {string} — расшифрованное значение
-  */
+   * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
+   * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
+   *
+   * @function decodePropertyType
+   * @param {string} currentType — ключ для расшифровки
+   * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
+   * @return {string} — расшифрованное значение
+   */
   function decodePropertyType(currentType, sourceTypes) {
     var requestedDefinition = 'Тип недвижимости не определен';
 
@@ -124,11 +124,11 @@
   }
 
   /**
-  * Создание на основе списка преимуществ объекта — соответствующей HTML разметки.
-  *
-  * @param {array} sourceFeatures — входной массив со списком преимуществ
-  * @return {object} — фрагмент документа с готовой HTML разметкой
-  */
+   * Создание на основе списка преимуществ объекта — соответствующей HTML разметки.
+   *
+   * @param {array} sourceFeatures — входной массив со списком преимуществ
+   * @return {object} — фрагмент документа с готовой HTML разметкой
+   */
   function createFeaturesMarkup(sourceFeatures) {
     var featuresFragment = document.createDocumentFragment();
     var featuresNumber = sourceFeatures.length;

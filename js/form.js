@@ -16,12 +16,12 @@
   window.form = {
 
     /**
-    * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
-    * fieldset'ы формы заблокированы, форме установлен ACTION="" и другие default атрибуты.
-    * Метод самозапускается при загрузке сайта.
-    *
-    * @method setDefaults
-    */
+     * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
+     * fieldset'ы формы заблокированы, форме установлен ACTION="" и другие default атрибуты.
+     * Метод самозапускается при загрузке сайта.
+     *
+     * @method setDefaults
+     */
     setDefaults: (function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
 
@@ -54,14 +54,14 @@
     })(),
 
     /**
-    * Активация формы создания объявлений, контроль синхронизации и валидности.
-    *
-    * Удаление у <form> блокирующего класса .notice__form--disabled,
-    * а у всех <fieldset> — блокирующего атрибута disabled.
-    * По синхронизации и валидации см.документацию связанных функций ниже.
-    *
-    * @method activate
-    */
+     * Активация формы создания объявлений, контроль синхронизации и валидности.
+     *
+     * Удаление у <form> блокирующего класса .notice__form--disabled,
+     * а у всех <fieldset> — блокирующего атрибута disabled.
+     * По синхронизации и валидации см.документацию связанных функций ниже.
+     *
+     * @method activate
+     */
     activate: function () {
       // Активация формы и fieldset'ов
       var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
@@ -117,15 +117,15 @@
   */
 
   /**
-  * Синхронизация опций селектов "Время заезда и выезда" в форме создания объявлений.
-  * Одним из параметров передается объект события (в каком селекте изменения),
-  * с учетом которого изменяется противоположный селект.
-  *
-  * @function syncFormTimes
-  * @param {node} selectCheckin — <select> #timein
-  * @param {node} selectCheckout — <select> #timeout
-  * @param {object} evt — объект события, объект случившихся изменений
-  */
+   * Синхронизация опций селектов "Время заезда и выезда" в форме создания объявлений.
+   * Одним из параметров передается объект события (в каком селекте изменения),
+   * с учетом которого изменяется противоположный селект.
+   *
+   * @function syncFormTimes
+   * @param {node} selectCheckin — <select> #timein
+   * @param {node} selectCheckout — <select> #timeout
+   * @param {object} evt — объект события, объект случившихся изменений
+   */
   function syncFormTimes(selectCheckin, selectCheckout, evt) {
     if (evt.target === selectCheckin) {
       selectCheckout.selectedIndex = selectCheckin.selectedIndex;
@@ -135,12 +135,12 @@
   }
 
   /**
-  * Синхронизация опций селекта "Тип жилья" с подсказкой и ограничениями в "Цена за ночь".
-  *
-  * @function syncFormPropertyPrice
-  * @param {node} selectPropertyType — <select> #type
-  * @param {node} inputPropertyPrice — <input> #price
-  */
+   * Синхронизация опций селекта "Тип жилья" с подсказкой и ограничениями в "Цена за ночь".
+   *
+   * @function syncFormPropertyPrice
+   * @param {node} selectPropertyType — <select> #type
+   * @param {node} inputPropertyPrice — <input> #price
+   */
   function syncFormPropertyPrice(selectPropertyType, inputPropertyPrice) {
     switch (selectPropertyType.selectedIndex) {
       case 0: // Лачуга
@@ -163,12 +163,12 @@
   }
 
   /**
-  * Синхронизация опций селектов "Количество комнат" и "Количество мест".
-  *
-  * @function syncFormPropertyCapacity
-  * @param {node} selectRoomsNumber — <select> #room_number
-  * @param {node} selectPropertyCapacity — <select> #capacity
-  */
+   * Синхронизация опций селектов "Количество комнат" и "Количество мест".
+   *
+   * @function syncFormPropertyCapacity
+   * @param {node} selectRoomsNumber — <select> #room_number
+   * @param {node} selectPropertyCapacity — <select> #capacity
+   */
   function syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity) {
     switch (selectRoomsNumber.selectedIndex) {
       case 0: // 1 комната
@@ -197,12 +197,12 @@
   */
 
   /**
-  * Контроль валидности объекта события.
-  * Выдача custom-ошибок и подсветка полей красным цветом.
-  *
-  * @function onInvalidInput
-  * @param {object} evt — объект события
-  */
+   * Контроль валидности объекта события.
+   * Выдача custom-ошибок и подсветка полей красным цветом.
+   *
+   * @function onInvalidInput
+   * @param {object} evt — объект события
+   */
   function onInvalidInput(evt) {
     var target = evt.target;
 
