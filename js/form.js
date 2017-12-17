@@ -63,25 +63,26 @@
 
       setFieldsetsAvailability(true);
 
-      // Контроль синхронизации необходимых полей
+      // Контроль синхронизации полей:
+      // "Тип жилья", "Цена за ночь", "Время заезда и выезда", "Количество комнат и мест"
       var selectCheckin = window.constants.FORM.querySelector('select#timein');
       var selectCheckout = window.constants.FORM.querySelector('select#timeout');
-      selectCheckin.addEventListener('input', function (evt) {
+      selectCheckin.addEventListener('change', function (evt) {
         syncFormTimes(selectCheckin, selectCheckout, evt);
       });
-      selectCheckout.addEventListener('input', function (evt) {
+      selectCheckout.addEventListener('change', function (evt) {
         syncFormTimes(selectCheckin, selectCheckout, evt);
       });
 
       var selectPropertyType = window.constants.FORM.querySelector('select#type');
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
-      selectPropertyType.addEventListener('input', function () {
+      selectPropertyType.addEventListener('change', function () {
         syncFormPropertyPrice(selectPropertyType, inputPropertyPrice);
       });
 
       var selectRoomsNumber = window.constants.FORM.querySelector('select#room_number');
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
-      selectRoomsNumber.addEventListener('input', function () {
+      selectRoomsNumber.addEventListener('change', function () {
         syncFormPropertyCapacity(selectRoomsNumber, selectPropertyCapacity);
       });
 
