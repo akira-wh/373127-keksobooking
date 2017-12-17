@@ -33,8 +33,8 @@
       }
 
       var inputTitle = window.constants.FORM.querySelector('input#title');
-      inputTitle.minLength = '30';
-      inputTitle.maxLength = '100';
+      inputTitle.minLength = 30;
+      inputTitle.maxLength = 100;
       inputTitle.required = true;
 
       var inputAddress = window.constants.FORM.querySelector('input#address');
@@ -44,9 +44,9 @@
       inputAddress.tabIndex = -1;
 
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
-      inputPropertyPrice.placeholder = '1000';
-      inputPropertyPrice.min = '1000';
-      inputPropertyPrice.max = '1000000';
+      inputPropertyPrice.placeholder = 1000;
+      inputPropertyPrice.min = 1000;
+      inputPropertyPrice.max = 1000000;
       inputPropertyPrice.required = true;
 
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
@@ -144,20 +144,20 @@
   function syncFormPropertyPrice(selectPropertyType, inputPropertyPrice) {
     switch (selectPropertyType.selectedIndex) {
       case 0: // Лачуга
-        inputPropertyPrice.placeholder = '0'; // Стоимость 0
-        inputPropertyPrice.min = '0';
+        inputPropertyPrice.placeholder = 0; // Стоимость 0
+        inputPropertyPrice.min = 0;
         break;
       case 1: // Квартира
-        inputPropertyPrice.placeholder = '1000'; // Стоимость 1.000
-        inputPropertyPrice.min = '1000';
+        inputPropertyPrice.placeholder = 1000; // Стоимость 1.000
+        inputPropertyPrice.min = 1000;
         break;
       case 2: // Дом
-        inputPropertyPrice.placeholder = '5000'; // Стоимость 5.000
-        inputPropertyPrice.min = '5000';
+        inputPropertyPrice.placeholder = 5000; // Стоимость 5.000
+        inputPropertyPrice.min = 5000;
         break;
       case 3: // Дворец
-        inputPropertyPrice.placeholder = '10000'; // Стоимость 10.000
-        inputPropertyPrice.min = '10000';
+        inputPropertyPrice.placeholder = 10000; // Стоимость 10.000
+        inputPropertyPrice.min = 10000;
         break;
     }
   }
