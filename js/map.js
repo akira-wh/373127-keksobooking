@@ -52,11 +52,16 @@
   ***********************************************************************************
   ***
   ***                             ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ:
-  ***      ПЕРЕМЕЩЕНИЕ УПРАВЛЯЮЩЕГО ПИНА + ИЗМЕНЕНИЕ КООРДИНАТ АДРЕСА В ФОРМЕ
+  ***       ПЕРЕМЕЩЕНИЕ УПРАВЛЯЮЩЕГО ПИНА + ИЗМЕНЕНИЕ КООРДИНАТ АДРЕСА В ФОРМЕ
   ***
   ***********************************************************************************
   ***********************************************************************************
   */
+
+  var startCoords = {
+    x: null,
+    y: null
+  };
 
   /**
   * Фиксирование координат в момент начала драга на управляющем пине,
@@ -68,57 +73,65 @@
   function onControlPinMousedown(downEvt) {
     downEvt.preventDefault();
 
-    var startCoords = {
-      x: downEvt.clientX,
-      y: downEvt.clientY
-    };
+    rewriteStartCoords(downEvt);
 
     document.addEventListener('mousemove', onControlPinMousemove);
     document.addEventListener('mouseup', onControlPinMouseup);
+  }
 
-    /**
-    * Перемещение управляющего пина.
-    * Смещение курсора мыши вызывает соразмерное смещение пина.
-    * Новые координаты пина передаются в графу "адрес" формы объявлений.
-    *
-    * @function onControlPinMousemove
-    * @param {object} moveEvt — объект события, перемещение мыши
-    */
-    function onControlPinMousemove(moveEvt) {
-      moveEvt.preventDefault();
+  /**
+  * Равнозначное смещение пина вслед за смещением курсора мыши.
+  * Новые координаты пина передаются в графу "адрес" формы объявлений.
+  *
+  * @function onControlPinMousemove
+  * @param {object} moveEvt — объект события, перемещение мыши
+  */
+  function onControlPinMousemove(moveEvt) {
+    moveEvt.preventDefault();
 
-      var shiftDistance = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
-      };
+    var shiftDistance = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
 
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
+    rewriteStartCoords(moveEvt);
 
-      var newCoords = getNewCoords(shiftDistance.x, shiftDistance.y);
-      changeControlPinPosition(newCoords);
-      changeAddressValue(newCoords);
-    }
+    var newCoords = getNewCoords(shiftDistance.x, shiftDistance.y);
+    changeControlPinPosition(newCoords);
+    changePropertyAddress(newCoords);
+  }
 
-    /**
-    * Завершение драга на управляющем пине — удаление слушателей.
-    * Хендлер прекращает контроль за перемещением мыши и удаляет сам себя.
-    *
-    * @function onControlPinMouseup
-    * @param {object} upEvt — объект события, отжатие ЛКМ
-    */
-    function onControlPinMouseup(upEvt) {
-      upEvt.preventDefault();
-      document.removeEventListener('mousemove', onControlPinMousemove);
-      document.removeEventListener('mouseup', onControlPinMouseup);
-    }
+  /**
+  * Завершение драга на управляющем пине — удаление слушателей.
+  * Хендлер прекращает контроль за перемещением мыши и удаляет сам себя.
+  *
+  * @function onControlPinMouseup
+  * @param {object} upEvt — объект события, отжатие ЛКМ
+  */
+  function onControlPinMouseup(upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onControlPinMousemove);
+    document.removeEventListener('mouseup', onControlPinMouseup);
+  }
+
+  /**
+  * Запись/обновление стартовых координат события.
+  *
+  * @function rewriteStartCoords
+  * @param {object} evt — объект события
+  */
+  function rewriteStartCoords(evt) {
+    startCoords.x = evt.clientX;
+    startCoords.y = evt.clientY;
   }
 
   /**
   * Обновление координат управляющего пина.
-  * Координаты ограничены рамками: не менее 100 по X, не более 500 по Y
+  *
+  * Координаты ограничены лимитом:
+  * не менее 100 по Y min, не более 500 по Y max,
+  * не менее 0 по X min, не более 1200 по X max.
   *
   * @function getNewCoords
   * @param {number} shiftX — число, разница в расстоянии от стартовых координат по X
@@ -147,7 +160,7 @@
   }
 
   /**
-  * Перемещение управляющего пина на странице на заданные координаты.
+  * Перемещение управляющего пина на заданные координаты.
   *
   * @function changeControlPinPosition
   * @param {object} newCoords — объект с новыми координатами для пина
@@ -160,10 +173,10 @@
   /**
   * Обновление координат недвижимости в поле формы "Адрес".
   *
-  * @function changeAddressValue
+  * @function changePropertyAddress
   * @param {object} newCoords — объект с новыми координатами адреса недвижимости
   */
-  function changeAddressValue(newCoords) {
+  function changePropertyAddress(newCoords) {
     var inputAddress = window.constants.FORM.querySelector('input#address');
 
     inputAddress.value =
