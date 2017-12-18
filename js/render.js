@@ -53,9 +53,9 @@
      *
      * @method renderOffer
      * @param {array} sourceOffers — входной массив с объявлениями для съема данных
-     * @param {number} index — индекс необходимого объявления
+     * @param {number} offerIndex — индекс необходимого объявления
      */
-    renderOffer: function (sourceOffers, index) {
+    renderOffer: function (sourceOffers, offerIndex) {
       var offerTemplate = document.querySelector('template').content.querySelector('.map__card');
       var offerFragment = document.createDocumentFragment();
       var offer = offerTemplate.cloneNode(true);
@@ -70,7 +70,7 @@
       var description = offer.querySelector('ul + p');
       var featuresList = offer.querySelector('.popup__features');
 
-      var source = sourceOffers[index];
+      var source = sourceOffers[offerIndex];
 
       avatar.src = source.author.avatar;
       title.textContent = source.offer.title;

@@ -1,3 +1,5 @@
+- **`4.39`** Параметр index в `renderOffer()` переименован в offerIndex.
+
 - **`4.38`** Теперь ВСЕ модули обёрнуты в `IIFE`.
 
 - **`4.37`** Хендлер `onOfferEscPress` переименован точнее: `onWindowEscPress`.
