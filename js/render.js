@@ -76,7 +76,7 @@
       title.textContent = source.offer.title;
       address.textContent = source.offer.address;
       price.textContent = source.offer.price + '\u20bd / ночь';
-      type.textContent = decodePropertyType(source.offer.type, window.constants.OFFERS_PROPERTY_TYPES);
+      type.textContent = window.data.decodePropertyType(source.offer.type, window.constants.OFFERS_PROPERTY_TYPES);
       capacity.textContent = source.offer.rooms + ' комнаты для ' + source.offer.guests + ' гостей';
       stayTime.textContent = 'Заезд после ' + source.offer.checkin + ', выезд до ' + source.offer.checkout;
       description.textContent = source.offer.description;
@@ -99,29 +99,6 @@
   ***********************************************************************************
   ***********************************************************************************
   */
-
-  /**
-   * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
-   * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
-   *
-   * @function decodePropertyType
-   * @param {string} currentType — ключ для расшифровки
-   * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
-   * @return {string} — расшифрованное значение
-   */
-  function decodePropertyType(currentType, sourceTypes) {
-    var requestedDefinition = 'Тип недвижимости не определен';
-
-    for (var key in sourceTypes) {
-      if (currentType === key) {
-        requestedDefinition = sourceTypes[key];
-
-        return requestedDefinition;
-      }
-    }
-
-    return requestedDefinition;
-  }
 
   /**
    * Создание на основе списка преимуществ объекта — соответствующей HTML разметки.

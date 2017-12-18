@@ -1,3 +1,5 @@
+- **`4.40`** Функция `decodePropertyType` перенесена из модуля RENDER в DATA.
+
 - **`4.39`** Параметр index в `renderOffer()` переименован в offerIndex.
 
 - **`4.38`** Теперь ВСЕ модули обёрнуты в `IIFE`.

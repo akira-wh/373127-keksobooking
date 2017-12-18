@@ -14,7 +14,30 @@
 
   // Создание и заполнение глобального массива объявлений.
   window.data = {
-    offers: generateOffers(8)
+    offers: generateOffers(8),
+
+    /**
+     * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
+     * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
+     *
+     * @method decodePropertyType
+     * @param {string} currentType — ключ для расшифровки
+     * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
+     * @return {string} — расшифрованное значение
+     */
+    decodePropertyType: function (currentType, sourceTypes) {
+      var requestedDefinition = 'Тип недвижимости не определен';
+
+      for (var key in sourceTypes) {
+        if (currentType === key) {
+          requestedDefinition = sourceTypes[key];
+
+          return requestedDefinition;
+        }
+      }
+
+      return requestedDefinition;
+    }
   };
 
   /**
