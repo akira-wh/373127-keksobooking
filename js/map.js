@@ -58,14 +58,21 @@
   ***********************************************************************************
   */
 
-  // Буфер для хранения начальных координат при перетаскивании управляющего пина
-  var startCoords = {
+  // Буфер координат мыши в процессе перетаскивания управляющего пина
+  var mouseCoords = {
+    x: null,
+    y: null
+  };
+
+  // Буфер хранения сдвига (пиксельной разницы) между мышью и управляющим пином
+  var mouseOnControlPinShift = {
     x: null,
     y: null
   };
 
   /**
-   * Фиксирование координат в момент начала драга на управляющем пине,
+   * Фиксирование координат мыши в момент начала драга на управляющем пине,
+   * фиксирование сдвига между мышью и управляющим пином,
    * вызов вспомогательных функций для основного процесса перемещения.
    *
    * @function onControlPinMousedown
@@ -74,14 +81,15 @@
   function onControlPinMousedown(downEvt) {
     downEvt.preventDefault();
 
-    rewriteStartCoords(downEvt);
+    fixMouseCoords(downEvt);
+    fixMouseOnControlPinShift();
 
     document.addEventListener('mousemove', onControlPinMousemove);
     document.addEventListener('mouseup', onControlPinMouseup);
   }
 
   /**
-   * Равнозначное смещение пина вслед за смещением курсора мыши.
+   * Смещение пина вслед за смещением курсора мыши (с учетом сдвига).
    * Новые координаты пина передаются в графу "адрес" формы объявлений.
    *
    * @function onControlPinMousemove
@@ -90,16 +98,11 @@
   function onControlPinMousemove(moveEvt) {
     moveEvt.preventDefault();
 
-    var shiftDistance = {
-      x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
-    };
+    fixMouseCoords(moveEvt);
 
-    rewriteStartCoords(moveEvt);
-
-    var newCoords = getNewCoords(shiftDistance.x, shiftDistance.y);
-    changeControlPinPosition(newCoords);
-    changePropertyAddress(newCoords);
+    var newControlPinCoords = getNewControlPinCoords(mouseCoords, mouseOnControlPinShift);
+    changeControlPinPosition(newControlPinCoords);
+    changePropertyAddress(newControlPinCoords);
   }
 
   /**
@@ -117,14 +120,25 @@
   }
 
   /**
-   * Запись/обновление стартовых координат события.
+   * Запись/обновление начальных координат события.
    *
-   * @function rewriteStartCoords
+   * @function fixMouseCoords
    * @param {object} evt — объект события
    */
-  function rewriteStartCoords(evt) {
-    startCoords.x = evt.clientX;
-    startCoords.y = evt.clientY;
+  function fixMouseCoords(evt) {
+    mouseCoords.x = evt.clientX;
+    mouseCoords.y = evt.clientY;
+  }
+
+  /**
+   * Фиксирование сдвига между мышью и управляющим пином.
+   * Используются, чтобы во время драга мышь всегда оставалась на точке зажатия пина.
+   *
+   * @function fixMouseOnControlPinShift
+   */
+  function fixMouseOnControlPinShift() {
+    mouseOnControlPinShift.x = mouseCoords.x - window.constants.CONTROL_PIN.offsetLeft;
+    mouseOnControlPinShift.y = mouseCoords.y - window.constants.CONTROL_PIN.offsetTop;
   }
 
   /**
@@ -134,55 +148,55 @@
    * не менее 100 по Y min, не более 500 по Y max,
    * не менее 0 по X min, не более 1200 по X max.
    *
-   * @function getNewCoords
-   * @param {number} shiftX — число, разница в расстоянии от стартовых координат по X
-   * @param {number} shiftY — число, разница в расстоянии от стартовых координат по Y
+   * @function getNewControlPinCoords
+   * @param {object} mouseCoordinates — X/Y координаты драга
+   * @param {object} mouseOnPinShift — X/Y сдвиг мыши на управляющем пине
    * @return {object} — объект с новыми координатами
    */
-  function getNewCoords(shiftX, shiftY) {
-    var newCoords = {
-      x: window.constants.CONTROL_PIN.offsetLeft - shiftX,
-      y: window.constants.CONTROL_PIN.offsetTop - shiftY
+  function getNewControlPinCoords(mouseCoordinates, mouseOnPinShift) {
+    var newControlPinCoords = {
+      x: mouseCoordinates.x - mouseOnPinShift.x,
+      y: mouseCoordinates.y - mouseOnPinShift.y
     };
 
-    if (newCoords.x < window.constants.COORDS_MIN_LIMIT_X) {
-      newCoords.x = window.constants.COORDS_MIN_LIMIT_X;
-    } else if (newCoords.x > window.constants.COORDS_MAX_LIMIT_X) {
-      newCoords.x = window.constants.COORDS_MAX_LIMIT_X;
+    if (newControlPinCoords.x < window.constants.COORDS_MIN_LIMIT_X) {
+      newControlPinCoords.x = window.constants.COORDS_MIN_LIMIT_X;
+    } else if (newControlPinCoords.x > window.constants.COORDS_MAX_LIMIT_X) {
+      newControlPinCoords.x = window.constants.COORDS_MAX_LIMIT_X;
     }
 
-    if (newCoords.y < window.constants.COORDS_MIN_LIMIT_Y) {
-      newCoords.y = window.constants.COORDS_MIN_LIMIT_Y;
-    } else if (newCoords.y > window.constants.COORDS_MAX_LIMIT_Y) {
-      newCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
+    if (newControlPinCoords.y < window.constants.COORDS_MIN_LIMIT_Y) {
+      newControlPinCoords.y = window.constants.COORDS_MIN_LIMIT_Y;
+    } else if (newControlPinCoords.y > window.constants.COORDS_MAX_LIMIT_Y) {
+      newControlPinCoords.y = window.constants.COORDS_MAX_LIMIT_Y;
     }
 
-    return newCoords;
+    return newControlPinCoords;
   }
 
   /**
    * Перемещение управляющего пина на заданные координаты.
    *
    * @function changeControlPinPosition
-   * @param {object} newCoords — объект с новыми координатами для пина
+   * @param {object} newControlPinCoords — объект с новыми координатами для пина
    */
-  function changeControlPinPosition(newCoords) {
-    window.constants.CONTROL_PIN.style.left = newCoords.x + 'px';
-    window.constants.CONTROL_PIN.style.top = newCoords.y + 'px';
+  function changeControlPinPosition(newControlPinCoords) {
+    window.constants.CONTROL_PIN.style.left = newControlPinCoords.x + 'px';
+    window.constants.CONTROL_PIN.style.top = newControlPinCoords.y + 'px';
   }
 
   /**
    * Обновление координат недвижимости в поле формы "Адрес".
    *
    * @function changePropertyAddress
-   * @param {object} newCoords — объект с новыми координатами адреса недвижимости
+   * @param {object} newControlPinCoords — объект с новыми координатами адреса недвижимости
    */
-  function changePropertyAddress(newCoords) {
+  function changePropertyAddress(newControlPinCoords) {
     var inputAddress = window.constants.FORM.querySelector('input#address');
 
     inputAddress.value =
-      'x: ' + newCoords.x + ', ' +
-      'y: ' + (newCoords.y + window.constants.CONTROL_PIN_SHIFT_Y);
+      'x: ' + newControlPinCoords.x + ', ' +
+      'y: ' + (newControlPinCoords.y + window.constants.CONTROL_PIN_SHIFT_Y);
   }
 
   /*
