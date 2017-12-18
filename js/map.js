@@ -243,7 +243,7 @@
             // Здесь регистрируется отлов событий для закрытия объявления.
             var offerCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
             offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
-            window.addEventListener('keydown', onOfferEscPress);
+            window.addEventListener('keydown', onWindowEscPress);
 
             return;
           }
@@ -270,7 +270,7 @@
       var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
 
       uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
-      window.removeEventListener('keydown', onOfferEscPress);
+      window.removeEventListener('keydown', onWindowEscPress);
 
       uselessOffer.parentNode.removeChild(uselessOffer);
     }
@@ -318,10 +318,10 @@
    * а также модификатора активности у соответствующего пина.
    * Вызывается нажатием на ESC при открытом объявлении.
    *
-   * @function onOfferEscPress
+   * @function onWindowEscPress
    * @param {object} evt — объект события
    */
-  function onOfferEscPress(evt) {
+  function onWindowEscPress(evt) {
     if (evt.keyCode === window.constants.ESC_KEYCODE) {
       removeUselessOffer();
       removeUselessPinActivityModifier();
