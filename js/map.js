@@ -42,7 +42,7 @@
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
     window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
-    window.render.renderPins(8, window.data.offers);
+    window.showPins(8, window.data.offers);
     window.form.activate();
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
   }
@@ -64,7 +64,7 @@
     y: null
   };
 
-  // Буфер хранения сдвига (пиксельной разницы) между мышью и управляющим пином
+  // Буфер хранения сдвига (расстояния в px) мыши относительно left/top края управляющего пина
   var mouseOnControlPinShift = {
     x: null,
     y: null
@@ -89,8 +89,8 @@
   }
 
   /**
-   * Смещение пина вслед за смещением курсора мыши (с учетом сдвига).
-   * Новые координаты пина передаются в графу "адрес" формы объявлений.
+   * Перемещение пина вслед за перемещением курсора мыши (с учетом сдвига).
+   * Новые координаты пина также передаются в графу "адрес" формы объявлений.
    *
    * @function onControlPinMousemove
    * @param {object} moveEvt — объект события, перемещение мыши
@@ -120,10 +120,10 @@
   }
 
   /**
-   * Запись/обновление начальных координат события.
+   * Запись/обновление координат события (драга).
    *
    * @function fixMouseCoords
-   * @param {object} evt — объект события
+   * @param {object} evt — объект события, движение зажатой ЛКМ
    */
   function fixMouseCoords(evt) {
     mouseCoords.x = evt.clientX;
@@ -131,8 +131,8 @@
   }
 
   /**
-   * Фиксирование сдвига между мышью и управляющим пином.
-   * Используются, чтобы во время драга мышь всегда оставалась на точке зажатия пина.
+   * Фиксирование сдвига/расстояния между мышью и left-top краем управляющего пина.
+   * Используются для сохранения точки зажатия пина мышью.
    *
    * @function fixMouseOnControlPinShift
    */
@@ -144,7 +144,7 @@
   /**
    * Обновление координат управляющего пина.
    *
-   * Координаты ограничены лимитом:
+   * Координаты лимитированы:
    * не менее 100 по Y min, не более 500 по Y max,
    * не менее 0 по X min, не более 1200 по X max.
    *
@@ -186,10 +186,10 @@
   }
 
   /**
-   * Обновление координат недвижимости в поле формы "Адрес".
+   * Обновление адреса недвижимости в форме согласно новым координатам управляющего пина.
    *
    * @function changePropertyAddress
-   * @param {object} newControlPinCoords — объект с новыми координатами адреса недвижимости
+   * @param {object} newControlPinCoords — объект с новыми координатами пина
    */
   function changePropertyAddress(newControlPinCoords) {
     var inputAddress = window.constants.FORM.querySelector('input#address');
@@ -233,16 +233,16 @@
         for (var i = 0; i < pinsNumber; i++) {
           if (pins[i] === target) {
 
-            removeUselessOffer();
+            removeUselessCard();
             removeUselessPinActivityModifier();
 
             var referenceIndex = i;
-            window.render.renderOffer(window.data.offers, referenceIndex);
+            window.showCard(window.data.offers, referenceIndex);
             setPinActivityModifier(target);
 
             // Здесь регистрируется отлов событий для закрытия объявления.
-            var offerCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
-            offerCloseButton.addEventListener('click', onOfferCloseButtonPress);
+            var cardCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
+            cardCloseButton.addEventListener('click', onCardCloseButtonPress);
             window.addEventListener('keydown', onWindowEscPress);
 
             return;
@@ -261,18 +261,18 @@
   /**
    * Удаление ненужного объявления и отлова его событий.
    *
-   * @function removeUselessOffer
+   * @function removeUselessCard
    */
-  function removeUselessOffer() {
-    var uselessOffer = window.constants.MAP.querySelector('.popup');
+  function removeUselessCard() {
+    var uselessCard = window.constants.MAP.querySelector('.popup');
 
-    if (uselessOffer) {
-      var uselessOfferCloseButton = uselessOffer.querySelector('.popup__close');
+    if (uselessCard) {
+      var uselessCardCloseButton = uselessCard.querySelector('.popup__close');
 
-      uselessOfferCloseButton.removeEventListener('click', onOfferCloseButtonPress);
+      uselessCardCloseButton.removeEventListener('click', onCardCloseButtonPress);
       window.removeEventListener('keydown', onWindowEscPress);
 
-      uselessOffer.parentNode.removeChild(uselessOffer);
+      uselessCard.parentNode.removeChild(uselessCard);
     }
   }
 
@@ -306,10 +306,10 @@
    * а также модификатора активности у соответствующего пина.
    * Вызывается нажатием на кнопку ЗАКРЫТЬ в объявлении.
    *
-   * @function onOfferCloseButtonPress
+   * @function onCardCloseButtonPress
    */
-  function onOfferCloseButtonPress() {
-    removeUselessOffer();
+  function onCardCloseButtonPress() {
+    removeUselessCard();
     removeUselessPinActivityModifier();
   }
 
@@ -323,7 +323,7 @@
    */
   function onWindowEscPress(evt) {
     if (evt.keyCode === window.constants.ESC_KEYCODE) {
-      removeUselessOffer();
+      removeUselessCard();
       removeUselessPinActivityModifier();
     }
   }

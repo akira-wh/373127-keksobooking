@@ -1,3 +1,5 @@
+- **`4.41`** Модуль render раздроблен на showCard и showPins. Перелинковка.
+
 - **`4.40`** Функция `decodePropertyType` перенесена из модуля RENDER в DATA.
 
 - **`4.39`** Параметр index в `renderOffer()` переименован в offerIndex.
