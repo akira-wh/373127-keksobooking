@@ -4,7 +4,8 @@
 ***********************************************************************************
 ***********************************************************************************
 ***
-***     ГЕНЕРАЦИЯ ОБЪЕКТОВ-ОБЪЯВЛЕНИЙ В ГЛОБАЛЬНЫЙ МАССИВ window.data.offers[]
+***                     ПОЛУЧЕНИЕ ДАННЫХ ОБЪЯВЛЕНИЙ С СЕРВЕРА
+***         СОХРАНЕНИЕ ДАННЫХ В ГЛОБАЛЬНЫЙ МАССИВ window.data.offers[]
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -12,100 +13,129 @@
 
 (function () {
 
-  // Создание и заполнение глобального массива объявлений.
-  window.data = {
-    offers: generateOffers(8),
-
-    /**
-     * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
-     * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
-     *
-     * @method decodePropertyType
-     * @param {string} currentType — ключ для расшифровки
-     * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
-     * @return {string} — расшифрованное значение
-     */
-    decodePropertyType: function (currentType, sourceTypes) {
-      var requestedDefinition = 'Тип недвижимости не определен';
-
-      for (var key in sourceTypes) {
-        if (currentType === key) {
-          requestedDefinition = sourceTypes[key];
-
-          return requestedDefinition;
-        }
-      }
-
-      return requestedDefinition;
-    }
-  };
+  // Запрос объявлений с сервера
+  window.backend.load(onLoad, onError);
 
   /**
-   * Создание и заполнение массива объектами-объявлениями.
+   * Callback для получения данных и передачи в массив window.data.offers[] .
    *
-   * @function generateOffers
-   * @param {number} expectedNumber — необходимое количество объектов-объявлений
-   * @return {array} — заполненный массив
+   * @function onLoad
+   * @param {object} receivedData — полученные данные
    */
-  function generateOffers(expectedNumber) {
-    var requestedOffers = [];
-
-    for (var i = 0; i < expectedNumber; i++) {
-      var avatarSerial = i + 1; // Нумерация аватаров начинаются с 1, а не 0
-      var selectedLocationX = window.utils.getRandomInteger(300, 900);
-      var selectedLocationY = window.utils.getRandomInteger(100, 500);
-      var selectedTitle = window.constants.OFFERS_TITLES[i];
-
-      requestedOffers[i] = {
-        author: {
-          avatar: 'img/avatars/user0' + avatarSerial + '.png'
-        },
-
-        offer: {
-          title: selectedTitle,
-          price: window.utils.getRandomInteger(1000, 1000000),
-          type: determinePropertyType(selectedTitle),
-          rooms: window.utils.getRandomInteger(1, 5),
-          guests: window.utils.getRandomInteger(0, 20),
-          checkin: window.utils.getRandomElementFromArray(window.constants.OFFERS_TIMES),
-          checkout: window.utils.getRandomElementFromArray(window.constants.OFFERS_TIMES),
-          features: window.utils.generateUniqueCollection(window.constants.OFFERS_FEATURES),
-          description: '',
-          photos: [],
-          address: selectedLocationX + ', ' + selectedLocationY
-        },
-
-        location: {
-          x: selectedLocationX,
-          y: selectedLocationY
-        }
-      };
-    }
-
-    return requestedOffers;
+  function onLoad(receivedData) {
+    window.data = {
+      offers: receivedData
+    };
   }
 
   /**
-   * Определение по заголовку объявления соответствующий ему тип недвижимости.
-   * Определение происходит по ключевым словам, например "..квартира.." -> flat etc.
-   *
-   * @function determinePropertyType
-   * @param {string} title — входной заголовок объявления для анализа
-   * @return {string} — тип недвижимости, подходящий заголовку объявления
-   */
-  function determinePropertyType(title) {
-    title = title.toLowerCase();
+  * Callback для получения кода HTTP ошибки и оповещения клиента
+  *
+  * @function onError
+  * @param {number} errorCode — HTTP код ошибки
+  */
+  function onError(errorCode) {
+    var errorModal = document.createElement('div');
+    errorModal.className = 'error-modal';
+    errorModal.style.width = '200px';
+    errorModal.style.padding = '30px';
+    errorModal.style.position = 'absolute';
+    errorModal.style.left = '50%';
+    errorModal.style.top = '50%';
+    errorModal.style.border = 'solid 5px ' + window.constants.COLOR_ORANGE;
+    errorModal.style.borderRadius = '5px';
+    errorModal.style.transform = 'translate(-50%, -50%)';
+    errorModal.style.zIndex = '100';
+    errorModal.style.backgroundColor = 'white';
+    errorModal.style.textAlign = 'center';
+    errorModal.style.fontWeight = 'bold';
 
-    if (title.indexOf('квартира') !== -1) {
-      var requestedType = 'flat';
-    } else if (title.indexOf('дворец') !== -1 || title.indexOf('домик') !== -1) {
-      requestedType = 'house';
-    } else if (title.indexOf('бунгало') !== -1) {
-      requestedType = 'bungalo';
-    } else {
-      requestedType = 'Тип недвижимости неопределен';
+    var errorText = document.createElement('p');
+    errorText.textContent = decodeHttpError(errorCode);
+    errorText.style.padding = '0';
+    errorText.style.margin = '0 0 25px 0';
+
+    var errorCloseButton = document.createElement('button');
+    errorCloseButton.type = 'button';
+    errorCloseButton.textContent = 'Закрыть';
+    errorCloseButton.style.width = '100px';
+    errorCloseButton.style.padding = '5px 10px 5px 10px';
+    errorCloseButton.style.border = '0';
+    errorCloseButton.style.backgroundColor = window.constants.COLOR_ORANGE;
+    errorCloseButton.style.textAlign = 'center';
+    errorCloseButton.style.color = 'white';
+    errorCloseButton.style.cursor = 'pointer';
+
+    errorModal.appendChild(errorText);
+    errorModal.appendChild(errorCloseButton);
+    window.constants.MAP.appendChild(errorModal);
+
+    errorCloseButton.addEventListener('click', onErrorModalCloseButtonPress);
+  }
+
+  /**
+  * Расшифровка HTTP ошибок.
+  *
+  * @function decodeHttpError
+  * @param {number} errorCode — код ошибки
+  * @return {string} — расшифрованное сообщение об ошибке
+  */
+  function decodeHttpError(errorCode) {
+    switch (errorCode) {
+      case 0:
+        var message = window.constants.HTTP_ERRORS.unreachable;
+        break;
+      case 400:
+        message = window.constants.HTTP_ERRORS.badRequest;
+        break;
+      case 401:
+        message = window.constants.HTTP_ERRORS.unauthorized;
+        break;
+      case 403:
+        message = window.constants.HTTP_ERRORS.forbidden;
+        break;
+      case 404:
+        message = window.constants.HTTP_ERRORS.notFound;
+        break;
+      case 408:
+        message = window.constants.HTTP_ERRORS.requestTimeout;
+        break;
+      case 429:
+        message = window.constants.HTTP_ERRORS.tooManyRequests;
+        break;
+      case 500:
+        message = window.constants.HTTP_ERRORS.internalServerError;
+        break;
+      case 502:
+        message = window.constants.HTTP_ERRORS.badGateway;
+        break;
+      case 503:
+        message = window.constants.HTTP_ERRORS.serviceUnavailable;
+        break;
+      case 504:
+        message = window.constants.HTTP_ERRORS.gatewayTimeout;
+        break;
+      case 524:
+        message = window.constants.HTTP_ERRORS.aTimeoutOccured;
+        break;
+      default:
+        message = 'Неизвестная ошибка. HTTP код: ' + errorCode;
+        break;
     }
 
-    return requestedType;
+    return message;
+  }
+
+  /**
+  * Закрытие (удаление) модального окна с HTTP ошибкой и отключение связанных слушателей.
+  *
+  * @function onErrorModalCloseButtonPress
+  */
+  function onErrorModalCloseButtonPress() {
+    var errorModal = window.constants.MAP.querySelector('.error-modal');
+    var errorCloseButton = errorModal.querySelector('button');
+
+    errorModal.parentNode.removeChild(errorModal);
+    errorCloseButton.removeEventListener('click', onErrorModalCloseButtonPress);
   }
 })();

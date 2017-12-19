@@ -38,19 +38,23 @@
     var stayTime = card.querySelector('h4 + p + p');
     var description = card.querySelector('ul + p');
     var featuresList = card.querySelector('.popup__features');
+    var photosList = card.querySelector('.popup__pictures');
 
     var source = sourceOffers[offerIndex];
 
+    card.style.zIndex = '20';
     avatar.src = source.author.avatar;
     title.textContent = source.offer.title;
     address.textContent = source.offer.address;
     price.textContent = source.offer.price + '\u20bd / ночь';
-    type.textContent = window.data.decodePropertyType(source.offer.type, window.constants.OFFERS_PROPERTY_TYPES);
+    type.textContent = decodePropertyType(source.offer.type, window.constants.OFFERS_PROPERTY_TYPES);
     capacity.textContent = source.offer.rooms + ' комнаты для ' + source.offer.guests + ' гостей';
     stayTime.textContent = 'Заезд после ' + source.offer.checkin + ', выезд до ' + source.offer.checkout;
     description.textContent = source.offer.description;
     featuresList.innerHTML = '';
     featuresList.appendChild(createFeaturesMarkup(source.offer.features));
+    photosList.innerHTML = '';
+    photosList.appendChild(createPhotosMarkup(source.offer.photos));
 
     cardFragment.appendChild(card);
 
@@ -69,6 +73,29 @@
   */
 
   /**
+   * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
+   * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
+   *
+   * @function decodePropertyType
+   * @param {string} currentType — ключ для расшифровки
+   * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
+   * @return {string} — расшифрованное значение
+   */
+  function decodePropertyType(currentType, sourceTypes) {
+    var requestedDefinition = 'Тип недвижимости не определен';
+
+    for (var key in sourceTypes) {
+      if (currentType === key) {
+        requestedDefinition = sourceTypes[key];
+
+        return requestedDefinition;
+      }
+    }
+
+    return requestedDefinition;
+  }
+
+  /**
    * Создание на основе списка преимуществ объекта — соответствующей HTML разметки.
    *
    * @param {array} sourceFeatures — входной массив со списком преимуществ
@@ -79,12 +106,37 @@
     var featuresNumber = sourceFeatures.length;
 
     for (var i = 0; i < featuresNumber; i++) {
-      var featureTag = document.createElement('li');
-      featureTag.className = 'feature  feature--' + sourceFeatures[i];
+      var featuresListItem = document.createElement('li');
+      featuresListItem.className = 'feature  feature--' + sourceFeatures[i];
 
-      featuresFragment.appendChild(featureTag);
+      featuresFragment.appendChild(featuresListItem);
     }
 
     return featuresFragment;
+  }
+
+  /**
+  * Создание на основе списка src фотографий - соответствующей HTML разметки.
+  *
+  * @function createPhotosMarkup
+  * @param {array} sourcePhotos — входной массив с src фотографий
+  * @return {object} — фрагмент документа с готовой HTML разметкой
+  */
+  function createPhotosMarkup(sourcePhotos) {
+    var photosFragment = document.createDocumentFragment();
+    var photosNumber = sourcePhotos.length;
+
+    for (var i = 0; i < photosNumber; i++) {
+      var photosListItem = document.createElement('li');
+      var photo = document.createElement('img');
+
+      photo.src = sourcePhotos[i];
+      photo.width = '70';
+
+      photosListItem.appendChild(photo);
+      photosFragment.appendChild(photosListItem);
+    }
+
+    return photosFragment;
   }
 })();

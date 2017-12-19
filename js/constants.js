@@ -14,6 +14,9 @@
 
   window.constants = {
 
+    // Цвета
+    COLOR_ORANGE: '#ff5635',
+
     // Коды клавиш
     ESC_KEYCODE: 27,
 
@@ -115,6 +118,22 @@
       getRangeOverflowDynamicError: function (currentLimit) {
         return this.rangeOverflow + currentLimit + '.';
       }
+    },
+
+    // Библиотека HTTP ошибок
+    HTTP_ERRORS: {
+      unreachable: 'Невозможно установить соединение с сервером.',
+      badRequest: 'Неверный запрос.',
+      unauthorized: 'Пользователь не авторизован.',
+      forbidden: 'Запрос отклонен (запрещено).',
+      notFound: 'Данные не найдены.',
+      requestTimeout: 'Истекло время ожидания ответа.',
+      tooManyRequests: 'Слишком много запросов.',
+      internalServerError: 'Внутренняя ошибка сервера.',
+      badGateway: 'Неверный шлюз.',
+      serviceUnavailable: 'Сервис недоступен.',
+      gatewayTimeout: 'Шлюз не отвечает.',
+      aTimeoutOccured: 'Время ожидания истекло.'
     }
   };
 })();

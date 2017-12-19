@@ -26,19 +26,18 @@
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
-      xhr.open('GET', window.constants.SERVER_DOWNLOAD_URL, true);
-      xhr.send();
-
       xhr.addEventListener('load', function () {
         if (xhr.status === window.constants.HTTP_STATUS_OK) {
-          onLoad(xhr.responseText);
+          onLoad(xhr.response);
         }
       });
 
       xhr.addEventListener('error', function () {
-        var errorMessage = 'Ошибка ' + xhr.status + ': ' + xhr.statusText;
-        onError(errorMessage);
+        onError(xhr.status);
       });
+
+      xhr.open('GET', window.constants.SERVER_DOWNLOAD_URL, true);
+      xhr.send();
     },
 
     /**
@@ -53,19 +52,18 @@
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
 
-      xhr.open('POST', window.constants.SERVER_UPLOAD_URL, true);
-      xhr.send(data);
-
       xhr.addEventListener('load', function () {
         if (xhr.status === window.constants.HTTP_STATUS_OK) {
-          onLoad(xhr.responseText);
+          onLoad(xhr.response);
         }
       });
 
       xhr.addEventListener('error', function () {
-        var errorMessage = 'Ошибка ' + xhr.status + ': ' + xhr.statusText;
-        onError(errorMessage);
+        onError(xhr.status);
       });
+
+      xhr.open('POST', window.constants.SERVER_UPLOAD_URL, true);
+      xhr.send(data);
     }
   };
 })();
