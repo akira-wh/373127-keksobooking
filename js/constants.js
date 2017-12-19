@@ -93,7 +93,7 @@
       'conditioner'
     ],
 
-    // Библиотека ошибок валидации формы
+    // Библиотека и методы расшифровки ошибок валидации формы
     INPUT_ERRORS: {
       valueMissing: 'Это поле не должно быть пустым.',
       valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
@@ -120,7 +120,7 @@
       }
     },
 
-    // Библиотека HTTP ошибок
+    // Библиотека и метод расшифровки HTTP ошибок
     HTTP_ERRORS: {
       unreachable: 'Невозможно установить соединение с сервером.',
       badRequest: 'Неверный запрос.',
@@ -133,7 +133,61 @@
       badGateway: 'Неверный шлюз.',
       serviceUnavailable: 'Сервис недоступен.',
       gatewayTimeout: 'Шлюз не отвечает.',
-      aTimeoutOccured: 'Время ожидания истекло.'
+      aTimeoutOccured: 'Время ожидания истекло.',
+      default: 'Неизвестная ошибка. HTTP код: ',
+
+      /**
+      * Расшифровка HTTP ошибок.
+      *
+      * @method decode
+      * @param {number} errorCode — код ошибки
+      * @return {string} — расшифрованное сообщение об ошибке
+      */
+      decode: function (errorCode) {
+        switch (errorCode) {
+          case 0:
+            var message = this.unreachable;
+            break;
+          case 400:
+            message = this.badRequest;
+            break;
+          case 401:
+            message = this.unauthorized;
+            break;
+          case 403:
+            message = this.forbidden;
+            break;
+          case 404:
+            message = this.notFound;
+            break;
+          case 408:
+            message = this.requestTimeout;
+            break;
+          case 429:
+            message = this.tooManyRequests;
+            break;
+          case 500:
+            message = this.internalServerError;
+            break;
+          case 502:
+            message = this.badGateway;
+            break;
+          case 503:
+            message = this.serviceUnavailable;
+            break;
+          case 504:
+            message = this.gatewayTimeout;
+            break;
+          case 524:
+            message = this.aTimeoutOccured;
+            break;
+          default:
+            message = this.default + errorCode;
+            break;
+        }
+
+        return message;
+      }
     }
   };
 })();

@@ -51,7 +51,7 @@
     errorModal.style.fontWeight = 'bold';
 
     var errorText = document.createElement('p');
-    errorText.textContent = decodeHttpError(errorCode);
+    errorText.textContent = window.constants.HTTP_ERRORS.decode(errorCode);
     errorText.style.padding = '0';
     errorText.style.margin = '0 0 25px 0';
 
@@ -71,59 +71,6 @@
     window.constants.MAP.appendChild(errorModal);
 
     errorCloseButton.addEventListener('click', onErrorModalCloseButtonPress);
-  }
-
-  /**
-  * Расшифровка HTTP ошибок.
-  *
-  * @function decodeHttpError
-  * @param {number} errorCode — код ошибки
-  * @return {string} — расшифрованное сообщение об ошибке
-  */
-  function decodeHttpError(errorCode) {
-    switch (errorCode) {
-      case 0:
-        var message = window.constants.HTTP_ERRORS.unreachable;
-        break;
-      case 400:
-        message = window.constants.HTTP_ERRORS.badRequest;
-        break;
-      case 401:
-        message = window.constants.HTTP_ERRORS.unauthorized;
-        break;
-      case 403:
-        message = window.constants.HTTP_ERRORS.forbidden;
-        break;
-      case 404:
-        message = window.constants.HTTP_ERRORS.notFound;
-        break;
-      case 408:
-        message = window.constants.HTTP_ERRORS.requestTimeout;
-        break;
-      case 429:
-        message = window.constants.HTTP_ERRORS.tooManyRequests;
-        break;
-      case 500:
-        message = window.constants.HTTP_ERRORS.internalServerError;
-        break;
-      case 502:
-        message = window.constants.HTTP_ERRORS.badGateway;
-        break;
-      case 503:
-        message = window.constants.HTTP_ERRORS.serviceUnavailable;
-        break;
-      case 504:
-        message = window.constants.HTTP_ERRORS.gatewayTimeout;
-        break;
-      case 524:
-        message = window.constants.HTTP_ERRORS.aTimeoutOccured;
-        break;
-      default:
-        message = 'Неизвестная ошибка. HTTP код: ' + errorCode;
-        break;
-    }
-
-    return message;
   }
 
   /**
