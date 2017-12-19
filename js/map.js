@@ -42,8 +42,8 @@
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
     window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
-    window.showPins(10, window.data.offers);
     window.form.activate();
+    window.showPins(10, window.data.offers);
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
   }
 

@@ -17,17 +17,16 @@
 
     /**
      * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
-     * fieldset'ы формы блокируются, форме устанавливается action url и другие default атрибуты.
-     * Метод самозапускается при загрузке сайта.
+     * Форме устанавливается action url и прочие default атрибуты.
+     * Метод запускается при загрузке сайта и при обнулении формы после отправки.
      *
      * @method setDefaults
      */
-    setDefaults: (function () {
+    setDefaults: function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
 
-      setFieldsetsAvailability(false);
-
       var inputTitle = window.constants.FORM.querySelector('input#title');
+      inputTitle.value = '';
       inputTitle.minLength = 30;
       inputTitle.maxLength = 100;
       inputTitle.required = true;
@@ -38,6 +37,7 @@
       inputAddress.tabIndex = -1;
 
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
+      inputPropertyPrice.value = '';
       inputPropertyPrice.placeholder = 1000;
       inputPropertyPrice.min = 1000;
       inputPropertyPrice.max = 1000000;
@@ -45,7 +45,11 @@
 
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
       selectPropertyCapacity.selectedIndex = 2;
-    })(),
+
+      var textareaDescription = window.constants.FORM.querySelector('textarea#description');
+      textareaDescription.value = '';
+      textareaDescription.placeholder = 'Здесь расскажите о том, какое ваше жилье замечательное и вообще';
+    },
 
     /**
      * Активация формы создания объявлений, контроль синхронизации и валидности.
@@ -90,8 +94,25 @@
       inputTitle.addEventListener('invalid', window.validation.onInvalidInput);
       inputPrice.addEventListener('input', window.validation.onInvalidInput);
       inputPrice.addEventListener('invalid', window.validation.onInvalidInput);
+
+      // Отправка данных формы на сервер
+      window.constants.FORM.addEventListener('submit', onFormSubmit);
     }
   };
+
+  /*
+  ***********************************************************************************
+  ***********************************************************************************
+  ***
+  ***                    ПРИВЕДЕНИЕ ФОРМЫ К СОСТОЯНИЮ ПО УМОЛЧАНИЮ
+  ***                             НА МОМЕНТ ЗАГРУЗКИ САЙТА
+  ***
+  ***********************************************************************************
+  ***********************************************************************************
+  */
+
+  setFieldsetsAvailability(false);
+  window.form.setDefaults();
 
   /*
   ***********************************************************************************
@@ -179,5 +200,38 @@
         syncTarget.selectedIndex = 3; // не для гостей
         break;
     }
+  }
+
+  /**
+   * Альтернативный вариант отправки данных формы на сервер.
+   *
+   * @function onFormSubmit
+   * @param {object} evt — объект события, submit
+   */
+  function onFormSubmit(evt) {
+    evt.preventDefault();
+
+    var formData = new FormData(window.constants.FORM);
+    window.backend.save(formData, onLoad, onError);
+  }
+
+  /**
+   * Callback при успешной отправке данных формы на сервер:
+   * Возвращение к значениям по умолчанию.
+   *
+   * @function onLoad
+   */
+  function onLoad() {
+    window.form.setDefaults();
+  }
+
+  /**
+   * Callback при получении HTTP ошибки: расшифровка и оповещения клиента.
+   *
+   * @function onError
+   * @param {number} errorCode — HTTP код ошибки
+   */
+  function onError(errorCode) {
+    window.constants.HTTP_ERRORS.showModal(errorCode);
   }
 })();

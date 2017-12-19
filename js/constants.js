@@ -111,12 +111,60 @@
       default: 'Неизвестная ошибка. HTTP код: ',
 
       /**
-      * Расшифровка HTTP ошибок.
-      *
-      * @method decode
-      * @param {number} errorCode — код ошибки
-      * @return {string} — расшифрованное сообщение об ошибке
-      */
+       * Сборка и показ модального окна с сообщением о HTTP ошибке.
+       * Добавление слушателя на кнопку ЗАКРЫТЬ.
+       *
+       * @method showModal
+       * @param {number} errorCode — код HTTP ошибки
+       */
+      showModal: function (errorCode) {
+        var errorModal = document.createElement('div');
+        errorModal.className = 'error-modal';
+        errorModal.style.width = '200px';
+        errorModal.style.padding = '30px';
+        errorModal.style.position = 'fixed';
+        errorModal.style.left = '50%';
+        errorModal.style.top = '50%';
+        errorModal.style.border = 'solid 5px ' + window.constants.COLOR_ORANGE;
+        errorModal.style.borderRadius = '5px';
+        errorModal.style.transform = 'translate(-50%, -50%)';
+        errorModal.style.zIndex = '100';
+        errorModal.style.backgroundColor = 'white';
+        errorModal.style.textAlign = 'center';
+        errorModal.style.fontWeight = 'bold';
+        errorModal.style.boxShadow = '0px 4px 20px 0px rgba(0,0,0,0.7)';
+
+        var errorText = document.createElement('p');
+        errorText.textContent = this.decode(errorCode);
+        errorText.style.padding = '0';
+        errorText.style.margin = '0 0 25px 0';
+
+        var errorCloseButton = document.createElement('button');
+        errorCloseButton.type = 'button';
+        errorCloseButton.textContent = 'Закрыть';
+        errorCloseButton.style.width = '100px';
+        errorCloseButton.style.padding = '5px 10px 5px 10px';
+        errorCloseButton.style.border = '0';
+        errorCloseButton.style.backgroundColor = window.constants.COLOR_ORANGE;
+        errorCloseButton.style.textAlign = 'center';
+        errorCloseButton.style.color = 'white';
+        errorCloseButton.style.cursor = 'pointer';
+
+        errorModal.appendChild(errorText);
+        errorModal.appendChild(errorCloseButton);
+
+        var body = document.querySelector('body');
+        body.appendChild(errorModal);
+        errorCloseButton.addEventListener('click', this.onErrorModalCloseButtonPress);
+      },
+
+      /**
+       * Расшифровка кода HTTP ошибок.
+       *
+       * @method decode
+       * @param {number} errorCode — код ошибки
+       * @return {string} — расшифрованное сообщение об ошибке
+       */
       decode: function (errorCode) {
         switch (errorCode) {
           case 0:
@@ -161,6 +209,19 @@
         }
 
         return message;
+      },
+
+      /**
+       * Закрытие (удаление) модального окна с HTTP ошибкой и отключение связанных слушателей.
+       *
+       * @method onErrorModalCloseButtonPress
+       */
+      onErrorModalCloseButtonPress: function () {
+        var errorModal = document.querySelector('.error-modal');
+        var errorCloseButton = errorModal.querySelector('button');
+
+        errorModal.parentNode.removeChild(errorModal);
+        errorCloseButton.removeEventListener('click', this.onErrorModalCloseButtonPress);
       }
     }
   };
