@@ -131,7 +131,7 @@
       var photo = document.createElement('img');
 
       photo.src = sourcePhotos[i];
-      photo.width = '70';
+      photo.width = '70'; // чтобы в ряд умещалось ровно 3 фотографии
 
       photosListItem.appendChild(photo);
       photosFragment.appendChild(photosListItem);

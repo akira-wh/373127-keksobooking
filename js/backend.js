@@ -25,6 +25,7 @@
     load: function (onLoad, onError) {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
+      xhr.timeout = window.constants.HTTP_TIMEOUT_LIMIT;
 
       xhr.addEventListener('load', function () {
         if (xhr.status === window.constants.HTTP_STATUS_OK) {
@@ -51,6 +52,7 @@
     save: function (data, onLoad, onError) {
       var xhr = new XMLHttpRequest();
       xhr.responseType = 'json';
+      xhr.timeout = window.constants.HTTP_TIMEOUT_LIMIT;
 
       xhr.addEventListener('load', function () {
         if (xhr.status === window.constants.HTTP_STATUS_OK) {

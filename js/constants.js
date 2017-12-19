@@ -20,15 +20,6 @@
     // Коды клавиш
     ESC_KEYCODE: 27,
 
-    // Коды ответа сервера
-    HTTP_STATUS_OK: 200,
-
-    // URL сервера для получения данных объявлений
-    SERVER_DOWNLOAD_URL: 'https://1510.dump.academy/keksobooking/data',
-
-    // URL сервера для отправки данных из формы
-    SERVER_UPLOAD_URL: 'https://1510.dump.academy/keksobooking',
-
     // Смещение всех пинов (кроме управляющего) по X и Y (в px)
     PIN_SHIFT_X: 5,
     PIN_SHIFT_Y: 37,
@@ -57,41 +48,12 @@
     // Form Action Url
     FORM_ACTION_URL: 'https://js.dump.academy/keksobooking',
 
-    // Массив — Заголовки объявлений
-    OFFERS_TITLES: [
-      'Большая уютная квартира',
-      'Маленькая неуютная квартира',
-      'Огромный прекрасный дворец',
-      'Маленький ужасный дворец',
-      'Красивый гостевой домик',
-      'Некрасивый негостеприимный домик',
-      'Уютное бунгало далеко от моря',
-      'Неуютное бунгало по колено в воде'
-    ],
-
     // Объект — Типы жилья (ключи и расшифровки)
     OFFERS_PROPERTY_TYPES: {
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'
     },
-
-    // Массив — Время checkin и checkout
-    OFFERS_TIMES: [
-      '12:00',
-      '13:00',
-      '14:00'
-    ],
-
-    // Массив — Преимущества жилья
-    OFFERS_FEATURES: [
-      'wifi',
-      'dishwasher',
-      'parking',
-      'washer',
-      'elevator',
-      'conditioner'
-    ],
 
     // Библиотека и методы расшифровки ошибок валидации формы
     INPUT_ERRORS: {
@@ -119,6 +81,18 @@
         return this.rangeOverflow + currentLimit + '.';
       }
     },
+
+    // HTTP код SUCCESS/УСПЕХ
+    HTTP_STATUS_OK: 200,
+
+    // Предел ожидания ответа от сервера (10 секунд)
+    HTTP_TIMEOUT_LIMIT: 10000,
+
+    // URL сервера для получения данных объявлений
+    SERVER_DOWNLOAD_URL: 'https://1510.dump.academy/keksobooking/data',
+
+    // URL сервера для отправки данных из формы
+    SERVER_UPLOAD_URL: 'https://1510.dump.academy/keksobooking',
 
     // Библиотека и метод расшифровки HTTP ошибок
     HTTP_ERRORS: {
