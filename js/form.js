@@ -25,17 +25,23 @@
     setDefaults: function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
 
+      // default для поля "Заголовок объявления"
       var inputTitle = window.constants.FORM.querySelector('input#title');
       inputTitle.value = '';
       inputTitle.minLength = 30;
       inputTitle.maxLength = 100;
       inputTitle.required = true;
 
+      // default для поля "Адрес"
+      // сброс адреса также ведет к возвращению управляющего пина на исходную позицию
       var inputAddress = window.constants.FORM.querySelector('input#address');
       inputAddress.value = 'x: 600, y: 420';
       inputAddress.readOnly = true;
       inputAddress.tabIndex = -1;
+      window.constants.CONTROL_PIN.style.left = '600px';
+      window.constants.CONTROL_PIN.style.top = '375px';
 
+      // default для поля "Цена за ночь"
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
       inputPropertyPrice.value = '';
       inputPropertyPrice.placeholder = 1000;
@@ -43,9 +49,11 @@
       inputPropertyPrice.max = 1000000;
       inputPropertyPrice.required = true;
 
+      // default для поля "Количество мест"
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
       selectPropertyCapacity.selectedIndex = 2;
 
+      // default для поля "Описание"
       var textareaDescription = window.constants.FORM.querySelector('textarea#description');
       textareaDescription.value = '';
       textareaDescription.placeholder = 'Здесь расскажите о том, какое ваше жилье замечательное и вообще';
@@ -97,6 +105,15 @@
 
       // Отправка данных формы на сервер
       window.constants.FORM.addEventListener('submit', onFormSubmit);
+
+      // Обнуление формы до необходимых default-значений
+      var resetButton = window.constants.FORM.querySelector('button.form__reset');
+      resetButton.addEventListener('click', function (evt) {
+        evt.preventDefault();
+
+        window.constants.FORM.reset();
+        window.form.setDefaults();
+      });
     }
   };
 
