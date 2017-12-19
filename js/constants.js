@@ -17,6 +17,15 @@
     // Коды клавиш
     ESC_KEYCODE: 27,
 
+    // Коды ответа сервера
+    HTTP_STATUS_OK: 200,
+
+    // URL сервера для получения данных объявлений
+    SERVER_DOWNLOAD_URL: 'https://1510.dump.academy/keksobooking/data',
+
+    // URL сервера для отправки данных из формы
+    SERVER_UPLOAD_URL: 'https://1510.dump.academy/keksobooking',
+
     // Смещение всех пинов (кроме управляющего) по X и Y (в px)
     PIN_SHIFT_X: 5,
     PIN_SHIFT_Y: 37,
