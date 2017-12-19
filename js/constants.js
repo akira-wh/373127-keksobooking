@@ -39,8 +39,8 @@
     // Ограничения координат управляющего пина
     COORDS_MIN_LIMIT_X: 0,
     COORDS_MAX_LIMIT_X: 1200,
-    COORDS_MIN_LIMIT_Y: 55,
-    COORDS_MAX_LIMIT_Y: 455,
+    COORDS_MIN_LIMIT_Y: 110,
+    COORDS_MAX_LIMIT_Y: 655,
 
     // Форма создания объявлений
     FORM: document.querySelector('.notice__form'),
