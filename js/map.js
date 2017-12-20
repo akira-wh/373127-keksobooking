@@ -42,9 +42,32 @@
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
     window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
+    window.backend.load(onLoad, onError);
     window.form.activate();
-    window.showPins(10, window.data.offers);
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
+  }
+
+  /**
+   * Callback при успешном получении данных с сервера:
+   * сохранение данных в глобальный массив window.data[] и отрисовка пинов.
+   *
+   * @function onLoad
+   * @param {object} receivedData — полученные данные
+   */
+  function onLoad(receivedData) {
+    window.data = receivedData;
+
+    window.showPins(5, window.data);
+  }
+
+  /**
+   * Callback при получении HTTP ошибки: расшифровка и оповещения клиента.
+   *
+   * @function onError
+   * @param {number} errorCode — HTTP код ошибки
+   */
+  function onError(errorCode) {
+    window.constants.HTTP_ERRORS.showModal(errorCode);
   }
 
   /*
@@ -237,7 +260,7 @@
             removeUselessPinActivityModifier();
 
             var referenceIndex = i;
-            window.showCard(window.data.offers, referenceIndex);
+            window.showCard(window.data, referenceIndex);
             setPinActivityModifier(target);
 
             // Здесь регистрируется отлов событий для закрытия объявления.
