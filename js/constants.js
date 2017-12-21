@@ -30,6 +30,9 @@
     // Контейнер пинов
     PINS_CONTAINER: document.querySelector('.map__pins'),
 
+    // Максимальное количество выводимых на страницу пинов-объявлений
+    PINS_MAX_LIMIT: 5,
+
     // Управляющий пользовательский пин
     CONTROL_PIN: document.querySelector('.map__pin--main'),
 
@@ -41,6 +44,13 @@
     COORDS_MAX_LIMIT_X: 1200,
     COORDS_MIN_LIMIT_Y: 110,
     COORDS_MAX_LIMIT_Y: 655,
+
+    // Фильтры объявлений
+    FILTERS: document.querySelectorAll('.map__filters select, .map__filters input'),
+
+    // Количество ненужных символов (префикс) в строке с названием ключа объекта
+    // Используется при .substring, чтобы привести, например, "housing-type" к "type"
+    USELESS_PREFIX_CHARS: 8,
 
     // Форма создания объявлений
     FORM: document.querySelector('.notice__form'),

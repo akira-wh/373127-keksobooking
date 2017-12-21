@@ -58,6 +58,7 @@
     window.data = receivedData;
 
     window.showPins(5, window.data);
+    window.filters.activate();
   }
 
   /**
