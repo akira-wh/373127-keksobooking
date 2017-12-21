@@ -106,7 +106,7 @@
   function comparePrice(priceNumber, priceCondition) {
     if (priceCondition === 'low' && priceNumber < 10000) {
       return true;
-    } else if (priceCondition === 'middle' && (10000 < priceNumber < 50000) {
+    } else if (priceCondition === 'middle' && ((priceNumber > 10000) && (priceNumber < 50000))) {
       return true;
     } else if (priceCondition === 'hign' && priceNumber > 50000) {
       return true;
