@@ -47,7 +47,6 @@
    * @return {object} — объект с ключами и значениями искомых объявлений
    */
   function determineCriteria() {
-
     // Объект-буфер, заполняется по ходу итераций forEach
     var criteriaList = {
       features: []
@@ -69,9 +68,9 @@
   }
 
   /**
-   * Сравнение и отбор объявлений согласно переданным критериям.
-   * Сравнение происходит с глобальной базой window.data[].
-   * На выходе - массив скопированных подходящих объявлений.
+   * Сравнение и отбор объявлений согласно установленным критериям.
+   * Отбор происходит из глобальной базы window.data[].
+   * На выходе — массив подходящих объявлений.
    *
    * @function filterData
    * @param {object} criteriaList — объект с критериями отбора
@@ -84,7 +83,8 @@
       if ((card.offer.type === criteriaList.type || criteriaList.type === 'any') &&
           (card.offer.rooms === criteriaList.rooms || criteriaList.rooms === 'any') &&
           (card.offer.guests === criteriaList.guests || criteriaList.guests === 'any') &&
-          (comparePrice(card.offer.price, criteriaList.price))) {
+          (comparePrice(card.offer.price, criteriaList.price)) &&
+          (compareFeatures(card.offer.features, criteriaList.features))) {
 
         // Если объявление удовлетворяет условиям — добавляется в новый массив
         return true;
@@ -119,6 +119,36 @@
     } else if (priceCondition === 'high' && comparedPrice > 50000) {
       return true;
     } else if (priceCondition === 'any') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Сравнение проверяемого массива преимуществ
+   * с условием по преимуществам, заданным фильтрацией.
+   *
+   * @function comparePrice
+   * @param {number} comparedFeatures — преимущества сравниваемого элемента
+   * @param {string} requestedFeatures — запрос по преимуществам согласно фильтру
+   * @return {boolean} — подходит/не подходит
+   */
+  function compareFeatures(comparedFeatures, requestedFeatures) {
+    var requestedFeaturesNumber = requestedFeatures.length;
+    var matches = 0;
+
+    if (requestedFeaturesNumber === 0) {
+      return true;
+    }
+
+    for (var i = 0; i < requestedFeaturesNumber; i++) {
+      if (comparedFeatures.indexOf(requestedFeatures[i] !== -1)) {
+        matches++;
+      }
+    }
+
+    if (matches === requestedFeaturesNumber) {
       return true;
     } else {
       return false;
