@@ -245,8 +245,6 @@
    * @param {object} evt — объект события
    */
   function onPinClick(evt) {
-    var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
-    var pinsNumber = pins.length;
     var target = evt.target;
 
     // Проверка на то, что вызванный элемент — пин.
