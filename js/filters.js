@@ -25,14 +25,11 @@
       for (var i = 0; i < filtersNumber; i++) {
         window.constants.FILTERS[i].addEventListener('change', function () {
           var criteriaList = determineCriteria();
-          var chosenCards = choseCards(criteriaList);
+          var filtredData = filterData(criteriaList);
+          var pinsNumber = filtredData.length;
 
-          var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
-          for (var j = 0; j < pins.length; j++) {
-            pins[j].parentNode.removeChild(pins[j]);
-          }
-
-          window.showPins(chosenCards.length, chosenCards);
+          removeUselessPins();
+          window.showPins(pinsNumber, filtredData);
         });
       }
     }
@@ -69,11 +66,11 @@
   /**
    * Сравнение и отбор объявлений согласно переданным критериям.
    *
-   * @function choseCards
+   * @function filterData
    * @param {object} criteriaList — объект с критериями отбора
    * @return {array} — массив с избранными объявлениями
    */
-  function choseCards(criteriaList) {
+  function filterData(criteriaList) {
     var data = window.data;
 
     var filtredData = data.filter(function (card) {
@@ -110,12 +107,26 @@
       return true;
     } else if (priceCondition === 'middle' && ((priceNumber > 10000) && (priceNumber < 50000))) {
       return true;
-    } else if (priceCondition === 'hign' && priceNumber > 50000) {
+    } else if (priceCondition === 'high' && priceNumber > 50000) {
       return true;
     } else if (priceCondition === 'any') {
       return true;
     } else {
       return false;
+    }
+  }
+
+  /**
+  * Удаление пинов с карты перед отрисовкой новых при фильтрации
+  *
+  * @function removeUselessPins
+  */
+  function removeUselessPins() {
+    var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
+    var pinsNumber = pins.length;
+
+    for (var i = 0; i < pinsNumber; i++) {
+      pins[i].parentNode.removeChild(pins[i]);
     }
   }
 })();
