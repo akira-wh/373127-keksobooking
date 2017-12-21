@@ -57,6 +57,10 @@
   function onLoad(receivedData) {
     window.data = receivedData;
 
+    for (var i = 0; i < window.data.length; i++) {
+      window.data[i]['data-serial'] = i;
+    }
+
     window.showPins(5, window.data);
     window.filters.activate();
   }
@@ -249,29 +253,23 @@
     // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
     while (target !== window.constants.PINS_CONTAINER) {
 
-      // Если target — искомый пин...
       if (target.className === 'map__pin') {
+        removeUselessCard();
+        removeUselessPinActivityModifier();
 
-        // Определяется его порядковый индекс (индекс в массиве пинов).
-        // Когда индекс установлен — вызывается соответствующее этому индексу объявление (старое удаляется).
-        for (var i = 0; i < pinsNumber; i++) {
-          if (pins[i] === target) {
+        // Здесь у пина определяется порядковый номер по атрибуту data-serial
+        // Данный data-serial соответствует номеру объявления по базе
+        // Вызывается отрисовка объявления с соответствующим индексом.
+        var referenceSerial = target.dataset.serial;
+        window.showCard(window.data, referenceSerial);
+        setPinActivityModifier(target);
 
-            removeUselessCard();
-            removeUselessPinActivityModifier();
+        // Здесь регистрируется отлов событий для закрытия объявления.
+        var cardCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
+        cardCloseButton.addEventListener('click', onCardCloseButtonPress);
+        window.addEventListener('keydown', onWindowEscPress);
 
-            var referenceIndex = i;
-            window.showCard(window.data, referenceIndex);
-            setPinActivityModifier(target);
-
-            // Здесь регистрируется отлов событий для закрытия объявления.
-            var cardCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
-            cardCloseButton.addEventListener('click', onCardCloseButtonPress);
-            window.addEventListener('keydown', onWindowEscPress);
-
-            return;
-          }
-        }
+        return;
       } else {
         // Если target НЕ искомый элемент — проверяется родительский узел.
         target = target.parentNode;

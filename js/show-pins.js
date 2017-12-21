@@ -34,6 +34,7 @@
 
       pin.style.left = sourceOffers[i].location.x - window.constants.PIN_SHIFT_X + 'px';
       pin.style.top = sourceOffers[i].location.y - window.constants.PIN_SHIFT_Y + 'px';
+      pin.dataset.serial = sourceOffers[i]['data-serial'];
       img.src = sourceOffers[i].author.avatar;
 
       pinsFragment.appendChild(pin);
