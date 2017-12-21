@@ -16,9 +16,10 @@
   window.form = {
 
     /**
-     * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
+     * Приведение формы к необходимомму состоянию по умолчанию.
      * Форме устанавливается action url и прочие default атрибуты.
-     * Метод запускается при загрузке сайта и при обнулении формы после отправки.
+     * Данный метод запускается при загрузке сайта, а также
+     * после отправки формы на сервер (сброс).
      *
      * @method setDefaults
      */
@@ -33,7 +34,7 @@
       inputTitle.required = true;
 
       // default для поля "Адрес"
-      // сброс адреса также ведет к возвращению управляющего пина на исходную позицию
+      // сброс адреса ведет к возвращению управляющего пина на исходные координаты
       var inputAddress = window.constants.FORM.querySelector('input#address');
       inputAddress.value = 'x: 600, y: 420';
       inputAddress.readOnly = true;
@@ -60,20 +61,22 @@
     },
 
     /**
-     * Активация формы создания объявлений, контроль синхронизации и валидности.
+     * Активация формы, контроль синхронизации и валидности.
      *
-     * Удаление у <form> блокирующего класса .notice__form--disabled, активация fieldset.
-     * По синхронизации и валидации см.документацию связанных функций.
+     * Удаление блокирующего класса .notice__form--disabled,
+     * снятие у всех fieldset флага disabled.
+     * По синхронизации и валидации см.их комментарии к ним.
      *
      * @method activate
      */
     activate: function () {
+
       // Активация формы и fieldset'ов
       window.constants.FORM.classList.remove('notice__form--disabled');
       setFieldsetsAvailability(true);
 
       // Контроль синхронизации между зависимыми полями:
-      // "Тип жилья", "Цена за ночь", "Время заезда и выезда", "Количество комнат и мест"
+      // "Время заезда и выезда"
       var selectCheckin = window.constants.FORM.querySelector('select#timein');
       var selectCheckout = window.constants.FORM.querySelector('select#timeout');
       selectCheckin.addEventListener('change', function () {
@@ -83,12 +86,14 @@
         window.synchronizeFields(selectCheckout, selectCheckin, syncTimes);
       });
 
+      // "Тип жилья", "Цена за ночь"
       var selectPropertyType = window.constants.FORM.querySelector('select#type');
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
       selectPropertyType.addEventListener('change', function () {
         window.synchronizeFields(selectPropertyType, inputPropertyPrice, syncPropertyPrice);
       });
 
+      // "Количество комнат и мест"
       var selectRoomsNumber = window.constants.FORM.querySelector('select#room_number');
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
       selectRoomsNumber.addEventListener('change', function () {
@@ -220,7 +225,7 @@
   }
 
   /**
-   * Альтернативный вариант отправки данных формы на сервер.
+   * Альтернативный метод отправки данных формы на сервер.
    *
    * @function onFormSubmit
    * @param {object} evt — объект события, submit
@@ -234,7 +239,7 @@
 
   /**
    * Callback при успешной отправке данных формы на сервер:
-   * Возвращение к значениям по умолчанию.
+   * возвращение к значениям по умолчанию.
    *
    * @function onLoad
    */
@@ -243,7 +248,8 @@
   }
 
   /**
-   * Callback при получении HTTP ошибки: расшифровка и оповещения клиента.
+   * Callback при получении HTTP ошибки:
+   * расшифровка ошибки и оповещения клиента.
    *
    * @function onError
    * @param {number} errorCode — HTTP код ошибки

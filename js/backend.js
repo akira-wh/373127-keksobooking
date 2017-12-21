@@ -19,8 +19,8 @@
      * Получение данных (объявлений) с сервера.
      *
      * @method load
-     * @param {callback} onLoad — коллбэк, забирающий данные
-     * @param {callback} onError — коллбэк, забирающий ошибки
+     * @param {callback} onLoad — callback, обрабатывающий данные
+     * @param {callback} onError — callback, обрабатывающий ошибки
      */
     load: function (onLoad, onError) {
       var xhr = new XMLHttpRequest();
@@ -46,8 +46,8 @@
      *
      * @method save
      * @param {object} data — объект с данными формы
-     * @param {callback} onLoad — коллбэк, забирающий данные
-     * @param {callback} onError — коллбэк, забирающий ошибки
+     * @param {callback} onLoad — callback, обрабатывающий данные
+     * @param {callback} onError — callback, обрабатывающий ошибки
      */
     save: function (data, onLoad, onError) {
       var xhr = new XMLHttpRequest();

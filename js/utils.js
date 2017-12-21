@@ -4,7 +4,7 @@
 ***********************************************************************************
 ***********************************************************************************
 ***
-***                   ВСПОМОГАТЕЛЬНЫЕ УТИЛИТЫ ОБЩЕГО НАЗНАЧЕНИЯ
+***                             УТИЛИТЫ ОБЩЕГО НАЗНАЧЕНИЯ
 ***
 ***********************************************************************************
 ***********************************************************************************
@@ -15,7 +15,7 @@
   window.utils = {
 
     /**
-     * Генерация случайного числа в указанном диапазоне (minValue и maxValue участвуют).
+     * Генерация случайного числа в диапазоне (minValue и maxValue участвуют).
      *
      * @method getRandomInteger
      * @param {number} minValue — минимально допустимое число
@@ -30,7 +30,7 @@
     },
 
     /**
-     * Выбор из входного массива рандомного элемента и возвращение его значения.
+     * Выбор из массива рандомного элемента и возвращение его значения.
      *
      * @method getRandomElementFromArray
      * @param {array} sourceElements — входной массив с элементами на выбор
@@ -42,34 +42,6 @@
       var requestedElement = sourceElements[randomIndex];
 
       return requestedElement;
-    },
-
-    /**
-     * Создание нового набора элементов на основе вариантов из входного массива.
-     * Элементы не повторяются, а их количество не превышает объем входного массива.
-     * 1. Узнаем пороговую длину входного массива.
-     * 2. Генерируем длину новой коллекции (не менее 1 элемента, не более длины входного массива).
-     * 3. Создаем временно пустую коллекцию.
-     * 4. Рандомно выбираем из входного массива элементы для новой коллекции.
-     * 5. Копируем выбранные элементы.
-     * 6. Отдаем подборку.
-     *
-     * @method generateUniqueCollection
-     * @param {array} sourceElements — входной массив с вариантами для перекомпоновки
-     * @return {array} — новая подборка
-     */
-    generateUniqueCollection: function (sourceElements) {
-      var maxValue = sourceElements.length - 1;
-      var newCollectionLength = this.getRandomInteger(1, maxValue);
-      var selectedElements = this.getNonrepeatingIntegers(0, maxValue, newCollectionLength);
-
-      var requestedCollection = [];
-
-      for (var i = 0; i < newCollectionLength; i++) {
-        requestedCollection.push(sourceElements[selectedElements[i]]);
-      }
-
-      return requestedCollection;
     },
 
     /**

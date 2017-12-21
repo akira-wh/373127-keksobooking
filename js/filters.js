@@ -16,6 +16,11 @@
 
     /**
      * Глобальный метод, активирущий работу фильтров.
+     * Проходами собирает со всех фильтров актуальную информацию,
+     * формирует список пользовательских критериев,
+     * собирает массив подходящих объявлений,
+     * удаляет со страницы старые объявления,
+     * отрисовывает новые.
      *
      * @method activate
      */
@@ -36,14 +41,14 @@
   };
 
   /**
-   * Определение критериев фильтрации — с ними позже сравниваются объявления.
+   * Определение списка критериев фильтрации — заполнение специального объекта.
    *
    * @function determineCriteria
-   * @return {object} — объект с ключами и значениями требуемых критериев
+   * @return {object} — объект с ключами и значениями искомых объявлений
    */
   function determineCriteria() {
 
-    // Объект-буфер, в который собираются требования к фильтруемым объявлениям
+    // Объект-буфер, заполняется по ходу итераций forEach
     var criteriaList = {
       features: []
     };
@@ -65,6 +70,8 @@
 
   /**
    * Сравнение и отбор объявлений согласно переданным критериям.
+   * Сравнение происходит с глобальной базой window.data[].
+   * На выходе - массив скопированных подходящих объявлений.
    *
    * @function filterData
    * @param {object} criteriaList — объект с критериями отбора
@@ -79,14 +86,16 @@
           (card.offer.guests === criteriaList.guests || criteriaList.guests === 'any') &&
           (comparePrice(card.offer.price, criteriaList.price))) {
 
-        // Объявление подходит и добавляется в новый массив
+        // Если объявление удовлетворяет условиям — добавляется в новый массив
         return true;
       } else {
         return false;
       }
     });
 
-    // Если длина отфильтрованного массива больше
+    // Если длина отфильтрованного массива оказывается больше,
+    // чем допустимое количество одновременно находящихся на странице
+    // объявлений (5) — избыточные элементы удаляются
     if (filtredData.length > window.constants.PINS_MAX_LIMIT) {
       filtredData.splice(window.constants.PINS_MAX_LIMIT);
     }
@@ -95,19 +104,19 @@
   }
 
   /**
-   * Сравнение цены с ценовым условием, заданным при фильтрации.
+   * Сравнение проверяемой цены с ценовым условием, заданным фильтрацией.
    *
    * @function comparePrice
-   * @param {number} priceNumber — цена сравниваемого элемента
-   * @param {*} priceCondition — условие цены согласно фильтру
-   * @return {boolean} — ответ подходит цена или нет
+   * @param {number} comparedPrice — цена сравниваемого элемента
+   * @param {string} priceCondition — условие цены согласно фильтру
+   * @return {boolean} — подходит/не подходит
    */
-  function comparePrice(priceNumber, priceCondition) {
-    if (priceCondition === 'low' && priceNumber < 10000) {
+  function comparePrice(comparedPrice, priceCondition) {
+    if (priceCondition === 'low' && comparedPrice < 10000) {
       return true;
-    } else if (priceCondition === 'middle' && ((priceNumber > 10000) && (priceNumber < 50000))) {
+    } else if (priceCondition === 'middle' && ((comparedPrice > 10000) && (comparedPrice < 50000))) {
       return true;
-    } else if (priceCondition === 'high' && priceNumber > 50000) {
+    } else if (priceCondition === 'high' && comparedPrice > 50000) {
       return true;
     } else if (priceCondition === 'any') {
       return true;
@@ -117,7 +126,8 @@
   }
 
   /**
-  * Удаление пинов с карты перед отрисовкой новых при фильтрации
+  * Очистка карты пинов.
+  * Применяется перед отрисовкой новых.
   *
   * @function removeUselessPins
   */

@@ -93,6 +93,7 @@
   };
 
   // Буфер хранения сдвига (расстояния в px) мыши относительно left/top края управляющего пина
+  // Данный буфер помогает удерживать мышь на определенной точке пина всегда
   var mouseOnControlPinShift = {
     x: null,
     y: null
@@ -255,8 +256,8 @@
         removeUselessCard();
         removeUselessPinActivityModifier();
 
-        // Здесь у пина определяется порядковый номер по атрибуту data-serial
-        // Данный data-serial соответствует номеру объявления по базе
+        // Здесь у пина считывается порядковый номер по доп.атрибуту data-serial
+        // Определенный data-serial соответствует определенному индексу объявления в базе
         // Вызывается отрисовка объявления с соответствующим индексом.
         var referenceSerial = target.dataset.serial;
         window.showCard(window.data, referenceSerial);
