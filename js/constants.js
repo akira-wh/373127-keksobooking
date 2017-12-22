@@ -88,11 +88,14 @@
     FORM_DEFAULT_PRICE_MAX_VALUE: 1000000,
     FORM_DEFAULT_CAPACITY_OPTION: 2,
 
-    // Аватар пользователя в форме
+    // Аватар и изображения жилья пользователя в форме
     USER_AVATAR_INPUT: document.querySelector('input#avatar'),
     USER_AVATAR_DROPZONE: document.querySelector('.notice__photo .drop-zone'),
     USER_AVATAR_PREVIEW: document.querySelector('.notice__preview img'),
     USER_AVATAR_DEFAULT_PREVIEW: 'img/muffin.png',
+    USER_PROPERTY_IMAGE_INPUT: document.querySelector('input#images'),
+    USER_PROPERTY_IMAGE_CONTAINER: document.querySelector('.form__photo-container'),
+    USER_PROPERTY_IMAGE_WIDTH: 140,
     IMAGE_TYPES: ['jpg', 'jpeg', 'gif', 'png'],
 
     // Объект — Типы жилья (ключи и расшифровки)
