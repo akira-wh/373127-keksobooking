@@ -14,10 +14,11 @@
 
   window.constants = {
 
-    // Стандартная задерка для дебаунса (милисекунды)
+    // Стандартная задерка для дебаунса (в милисекундах)
     DEBOUNCE_DELAY: 500,
 
-    // Цвета
+    // Один из фирменных цветов сайта,
+    // используется при отрисовке сообщения о HTTP ошибке
     COLOR_ORANGE: '#ff5635',
 
     // Коды клавиш
@@ -26,7 +27,7 @@
     // Карта пинов и объявлений
     MAP: document.querySelector('.map'),
 
-    // Контейнер пинов
+    // Контейнер, содержащий все пины
     PINS_CONTAINER: document.querySelector('.map__pins'),
 
     // Центровка пинов (кроме управляющего) по X и Y (в px)
@@ -41,32 +42,51 @@
 
     // Центровка управляющего пина по Y (в px)
     CONTROL_PIN_SHIFT_Y: 45,
+    CONTROL_PIN_BASE_COORDS_X: '600px',
+    CONTROL_PIN_BASE_COORDS_Y: '375px',
 
-    // Ограничения координат управляющего пина
+    // Ограничение координат управляющего пина
     // Необходимо во избежание вылета пина за пределы карты
     COORDS_MIN_LIMIT_X: 0,
     COORDS_MAX_LIMIT_X: 1200,
     COORDS_MIN_LIMIT_Y: 110,
     COORDS_MAX_LIMIT_Y: 655,
 
+    // z-index для открытых объявлений,
+    // исключающий наслоение на них других элементов
+    CARD_SUPERIORITY_Z_INDEX: 100,
+
     // Ограничение ширины фотографий в объявлениях
-    // Необходимо, чтобы фото не вываливались при кривой разметке
+    // Необходимо, чтобы фото не вываливались из контейнера
     PHOTOS_MAX_WIDTH: 70,
 
-    // Фильтры объявлений
+    // Фильтры объявлений (10 шт.)
     FILTERS: document.querySelectorAll('.map__filters select, .map__filters input'),
 
     // Количество лишних первых символов (лишний префикс)
-    // в строке с названием ключа объекта.
-    // Используется при .substring, чтобы привести,
+    // в строке с названием ID объекта.
+    // Используется при substring(), чтобы привести,
     // например, "housing-type" к "type".
+    // Используется при фильтрации.
     ID_USELESS_PREFIX: 8,
 
     // Форма создания объявлений
     FORM: document.querySelector('.notice__form'),
 
-    // Form Action Url
+    // Action URL формы
     FORM_ACTION_URL: 'https://js.dump.academy/keksobooking',
+
+    // tabindex, при котором поле "адрес" становится недоступным для фокуса
+    FORM_EXCLUDING_TABINDEX: -1,
+
+    // Базовые значения элементов формы
+    FORM_DEFAULT_TITLE_MIN_LENGTH: 30,
+    FORM_DEFAULT_TITLE_MAX_LENGTH: 100,
+    FORM_DEFAULT_ADDRESS: 'x: 600, y: 420',
+    FORM_DEFAULT_PRICE_PLACEHOLDER: 1000,
+    FORM_DEFAULT_PRICE_MIN_VALUE: 1000,
+    FORM_DEFAULT_PRICE_MAX_VALUE: 1000000,
+    FORM_DEFAULT_CAPACITY_OPTION: 2,
 
     // Аватар пользователя в форме
     USER_AVATAR_INPUT: document.querySelector('input#avatar'),
@@ -76,13 +96,14 @@
     IMAGE_TYPES: ['jpg', 'jpeg', 'gif', 'png'],
 
     // Объект — Типы жилья (ключи и расшифровки)
+    // Используется для русификации типа жилья при отрисовке карт
     OFFERS_PROPERTY_TYPES: {
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'
     },
 
-    // Библиотека ошибок валидации формы и методы их расшифровки
+    // Библиотека ошибок валидации формы и методы работы с ними
     INPUT_ERRORS: {
       valueMissing: 'Это поле не должно быть пустым.',
       valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
@@ -109,7 +130,7 @@
       }
     },
 
-    // HTTP код SUCCESS/УСПЕХ
+    // HTTP код SUCCESS/OK/УСПЕХ
     HTTP_STATUS_OK: 200,
 
     // Лимит ожидания ответа от сервера (10 секунд)
@@ -121,7 +142,7 @@
     // URL сервера для отправки данных
     SERVER_UPLOAD_URL: 'https://1510.dump.academy/keksobooking',
 
-    // Библиотека HTTP ошибок и методы их расшифровки
+    // Библиотека HTTP ошибок и методы работы с ними
     HTTP_ERRORS: {
       unreachable: 'Невозможно установить соединение с сервером.',
       badRequest: 'Неверный запрос.',

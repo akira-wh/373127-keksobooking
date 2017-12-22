@@ -13,6 +13,14 @@
 
 (function () {
 
+  /**
+  * Синхронизация полей формы.
+  *
+  * @method synchronizeFields
+  * @param {node} syncSource — элемент, в котором произошли изменения
+  * @param {node} syncTarget — элемент, который приводится в соответствие с изменениями
+  * @param {callback} callback — функция, выполняющая основную логику синхронизации
+  */
   window.synchronizeFields = function (syncSource, syncTarget, callback) {
     callback(syncSource, syncTarget);
   };

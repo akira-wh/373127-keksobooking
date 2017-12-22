@@ -16,7 +16,7 @@
   var lastTimeout = null;
 
   /**
-  * Дебанус для переданной в качестве callback операции.
+  * Дебанус для переданной в качестве callback функции.
   *
   * @function debounce
   * @param {function} callback — функция, к которой применяется дебанус

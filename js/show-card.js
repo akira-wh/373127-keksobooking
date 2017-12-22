@@ -42,7 +42,7 @@
 
     var source = sourceOffers[offerIndex];
 
-    card.style.zIndex = '20';
+    card.style.zIndex = window.constants.CARD_SUPERIORITY_Z_INDEX;
     avatar.src = source.author.avatar;
     title.textContent = source.offer.title;
     address.textContent = source.offer.address;

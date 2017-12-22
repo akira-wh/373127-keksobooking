@@ -31,30 +31,30 @@
       // default для поля "Заголовок объявления"
       var inputTitle = window.constants.FORM.querySelector('input#title');
       inputTitle.value = '';
-      inputTitle.minLength = 30;
-      inputTitle.maxLength = 100;
+      inputTitle.minLength = window.constants.FORM_DEFAULT_TITLE_MIN_LENGTH;
+      inputTitle.maxLength = window.constants.FORM_DEFAULT_TITLE_MAX_LENGTH;
       inputTitle.required = true;
 
       // default для поля "Адрес"
       // сброс адреса ведет к возвращению управляющего пина на исходные координаты
       var inputAddress = window.constants.FORM.querySelector('input#address');
-      inputAddress.value = 'x: 600, y: 420';
+      inputAddress.value = window.constants.FORM_DEFAULT_ADDRESS;
       inputAddress.readOnly = true;
-      inputAddress.tabIndex = -1;
-      window.constants.CONTROL_PIN.style.left = '600px';
-      window.constants.CONTROL_PIN.style.top = '375px';
+      inputAddress.tabIndex = window.constants.FORM_EXCLUDING_TABINDEX;
+      window.constants.CONTROL_PIN.style.left = window.constants.CONTROL_PIN_BASE_COORDS_X;
+      window.constants.CONTROL_PIN.style.top = window.constants.CONTROL_PIN_BASE_COORDS_Y;
 
       // default для поля "Цена за ночь"
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
       inputPropertyPrice.value = '';
-      inputPropertyPrice.placeholder = 1000;
-      inputPropertyPrice.min = 1000;
-      inputPropertyPrice.max = 1000000;
+      inputPropertyPrice.placeholder = window.constants.FORM_DEFAULT_PRICE_PLACEHOLDER;
+      inputPropertyPrice.min = window.constants.FORM_DEFAULT_PRICE_MIN_VALUE;
+      inputPropertyPrice.max = window.constants.FORM_DEFAULT_PRICE_MAX_VALUE;
       inputPropertyPrice.required = true;
 
       // default для поля "Количество мест"
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
-      selectPropertyCapacity.selectedIndex = 2;
+      selectPropertyCapacity.selectedIndex = window.constants.FORM_DEFAULT_CAPACITY_OPTION;
 
       // default для поля "Описание"
       var textareaDescription = window.constants.FORM.querySelector('textarea#description');
