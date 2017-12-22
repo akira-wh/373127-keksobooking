@@ -29,16 +29,25 @@
 
       for (var i = 0; i < filtersNumber; i++) {
         window.constants.FILTERS[i].addEventListener('change', function () {
-          var criteriaList = determineCriteria();
-          var filtredData = filterData(criteriaList);
-          var pinsNumber = filtredData.length;
-
-          removeUselessPins();
-          window.showPins(pinsNumber, filtredData);
+          window.debounce(applyFiltering);
         });
       }
     }
   };
+
+  /**
+   * Основная механика фильтрации объявлений
+   *
+   * @function applyFiltering
+   */
+  function applyFiltering() {
+    var criteriaList = determineCriteria();
+    var filtredData = filterData(criteriaList);
+    var pinsNumber = filtredData.length;
+
+    removeUselessPins();
+    window.showPins(pinsNumber, filtredData);
+  }
 
   /**
    * Определение списка критериев фильтрации — заполнение специального объекта.
@@ -166,11 +175,11 @@
   }
 
   /**
-  * Очистка карты пинов.
-  * Применяется перед отрисовкой новых.
-  *
-  * @function removeUselessPins
-  */
+   * Очистка карты пинов.
+   * Применяется перед отрисовкой новых.
+   *
+   * @function removeUselessPins
+   */
   function removeUselessPins() {
     var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
     var pinsNumber = pins.length;
