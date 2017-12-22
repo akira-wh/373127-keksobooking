@@ -105,6 +105,7 @@
       var inputPrice = window.constants.FORM.querySelector('input#price');
       inputTitle.addEventListener('invalid', function (evt) {
         window.validation.onInvalidInput(evt);
+        inputTitle.addEventListener('input', window.validation.onInvalidInput);
       });
       inputPrice.addEventListener('invalid', function (evt) {
         window.validation.onInvalidInput(evt);
