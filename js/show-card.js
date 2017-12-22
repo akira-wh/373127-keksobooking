@@ -17,7 +17,7 @@
    * Создание и отрисовка необходимого объявления.
    *
    * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
-   * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
+   * Информационная составляющая снимается с объявлений window.data[].
    * Разметка основывается на шаблоне <article class="map__card"> из списка <template>.
    *
    * @method showCard
@@ -42,7 +42,7 @@
 
     var source = sourceOffers[offerIndex];
 
-    card.style.zIndex = '20';
+    card.style.zIndex = window.constants.CARD_SUPERIORITY_Z_INDEX;
     avatar.src = source.author.avatar;
     title.textContent = source.offer.title;
     address.textContent = source.offer.address;
@@ -74,11 +74,11 @@
 
   /**
    * Расшифровка типа недвижимости для удобочитаемости на клиентской стороне.
-   * Обозначения "flat", "house" etc. русифицируются в "квартира", "дом", и тд.
+   * Обозначения "flat", "house" etc. переводятся в "квартира", "дом", и тд.
    *
    * @function decodePropertyType
    * @param {string} currentType — ключ для расшифровки
-   * @param {object} sourceTypes — входной объект с библиотекой ключей/значений
+   * @param {object} sourceTypes — объект с библиотекой ключей/расшифровок
    * @return {string} — расшифрованное значение
    */
   function decodePropertyType(currentType, sourceTypes) {
@@ -116,7 +116,7 @@
   }
 
   /**
-  * Создание на основе списка src фотографий - соответствующей HTML разметки.
+  * Создание на основе списка SRC фотографий — соответствующей HTML разметки.
   *
   * @function createPhotosMarkup
   * @param {array} sourcePhotos — входной массив с src фотографий
@@ -131,7 +131,7 @@
       var photo = document.createElement('img');
 
       photo.src = sourcePhotos[i];
-      photo.width = '70'; // чтобы в ряд умещалось ровно 3 фотографии
+      photo.width = window.constants.PHOTOS_MAX_WIDTH;
 
       photosListItem.appendChild(photo);
       photosFragment.appendChild(photosListItem);

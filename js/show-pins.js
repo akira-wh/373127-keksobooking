@@ -17,7 +17,7 @@
    * Создание и отрисовка пользовательских пинов.
    *
    * Создается Document Fragment, заполняется разметкой и внедряется на страницу.
-   * Информационная составляющая снимается с объектов-объявлений массива window.data.offers[].
+   * Информационная составляющая снимается с объявлений window.data[].
    * Разметка каждого пина основана на шаблоне <button class="map__pin"> из списка <template>.
    *
    * @method showPins
@@ -34,6 +34,7 @@
 
       pin.style.left = sourceOffers[i].location.x - window.constants.PIN_SHIFT_X + 'px';
       pin.style.top = sourceOffers[i].location.y - window.constants.PIN_SHIFT_Y + 'px';
+      pin.dataset.serial = sourceOffers[i]['data-serial'];
       img.src = sourceOffers[i].author.avatar;
 
       pinsFragment.appendChild(pin);

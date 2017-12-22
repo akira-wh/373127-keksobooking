@@ -42,9 +42,40 @@
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
     window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
+    window.backend.load(onLoad, onError);
     window.form.activate();
-    window.showPins(10, window.data.offers);
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
+  }
+
+  /**
+   * Callback при успешном получении данных с сервера:
+   * сохранение данных в глобальный массив window.data[],
+   * проставление объявлениям идентифицирующего серийного номера,
+   * отрисовка пинов с соответствующими серийными номерами,
+   * запуск работы фильтров.
+   *
+   * @function onLoad
+   * @param {object} receivedData — полученные данные
+   */
+  function onLoad(receivedData) {
+    window.data = receivedData;
+
+    for (var i = 0; i < window.data.length; i++) {
+      window.data[i]['data-serial'] = i;
+    }
+
+    window.showPins(5, window.data);
+    window.filters.activate();
+  }
+
+  /**
+   * Callback при получении HTTP ошибки: расшифровка и оповещения клиента.
+   *
+   * @function onError
+   * @param {number} errorCode — HTTP код ошибки
+   */
+  function onError(errorCode) {
+    window.constants.HTTP_ERRORS.showModal(errorCode);
   }
 
   /*
@@ -64,7 +95,9 @@
     y: null
   };
 
-  // Буфер хранения сдвига (расстояния в px) мыши относительно left/top края управляющего пина
+  // Буфер хранения сдвига (расстояния в px) мыши относительно left/top
+  // края управляющего пина. Данный буфер помогает удерживать
+  // зажатую мышь на определенной точке пина всегда.
   var mouseOnControlPinShift = {
     x: null,
     y: null
@@ -90,7 +123,7 @@
 
   /**
    * Перемещение пина вслед за перемещением курсора мыши (с учетом сдвига).
-   * Новые координаты пина также передаются в графу "адрес" формы объявлений.
+   * Новые координаты пина передаются в графу "адрес" формы объявлений.
    *
    * @function onControlPinMousemove
    * @param {object} moveEvt — объект события, перемещение мыши
@@ -131,7 +164,7 @@
   }
 
   /**
-   * Фиксирование сдвига/расстояния между мышью и left-top краем управляющего пина.
+   * Фиксирование сдвига/расстояния между мышью и left/top краем управляющего пина.
    * Используются для сохранения точки зажатия пина мышью.
    *
    * @function fixMouseOnControlPinShift
@@ -145,7 +178,7 @@
    * Обновление координат управляющего пина.
    *
    * Координаты лимитированы:
-   * не менее 100 по Y min, не более 500 по Y max,
+   * не менее 110 по Y min, не более 655 по Y max,
    * не менее 0 по X min, не более 1200 по X max.
    *
    * @function getNewControlPinCoords
@@ -217,37 +250,29 @@
    * @param {object} evt — объект события
    */
   function onPinClick(evt) {
-    var pins = window.constants.PINS_CONTAINER.querySelectorAll('button:not(.map__pin--main)');
-    var pinsNumber = pins.length;
     var target = evt.target;
 
     // Проверка на то, что вызванный элемент — пин.
-    // Проверка идет от самых глубоких элементов наверх, пока evt.target не всплывет до currentTarget
+    // Проверка идет от глубоких элементов наверх, пока evt.target не всплывет до currentTarget
     while (target !== window.constants.PINS_CONTAINER) {
 
-      // Если target — искомый пин...
       if (target.className === 'map__pin') {
+        removeUselessCard();
+        removeUselessPinActivityModifier();
 
-        // Определяется его порядковый индекс (индекс в массиве пинов).
-        // Когда индекс установлен — вызывается соответствующее этому индексу объявление (старое удаляется).
-        for (var i = 0; i < pinsNumber; i++) {
-          if (pins[i] === target) {
+        // Здесь у пина считывается порядковый номер по доп.идентификатору data-serial.
+        // Определенный data-serial соответствует определенному индексу объявления по базе
+        // Вызывается отрисовка объявления с соответствующим индексом.
+        var referenceSerial = target.dataset.serial;
+        window.showCard(window.data, referenceSerial);
+        setPinActivityModifier(target);
 
-            removeUselessCard();
-            removeUselessPinActivityModifier();
+        // Здесь регистрируется отлов событий для закрытия объявления.
+        var cardCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
+        cardCloseButton.addEventListener('click', onCardCloseButtonPress);
+        window.addEventListener('keydown', onWindowEscPress);
 
-            var referenceIndex = i;
-            window.showCard(window.data.offers, referenceIndex);
-            setPinActivityModifier(target);
-
-            // Здесь регистрируется отлов событий для закрытия объявления.
-            var cardCloseButton = window.constants.MAP.querySelector('.popup .popup__close');
-            cardCloseButton.addEventListener('click', onCardCloseButtonPress);
-            window.addEventListener('keydown', onWindowEscPress);
-
-            return;
-          }
-        }
+        return;
       } else {
         // Если target НЕ искомый элемент — проверяется родительский узел.
         target = target.parentNode;

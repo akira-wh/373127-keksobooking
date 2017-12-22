@@ -14,48 +14,100 @@
 
   window.constants = {
 
-    // Цвета
+    // Стандартная задерка для дебаунса (в милисекундах)
+    DEBOUNCE_DELAY: 500,
+
+    // Один из фирменных цветов сайта,
+    // используется при отрисовке сообщения о HTTP ошибке
     COLOR_ORANGE: '#ff5635',
 
     // Коды клавиш
     ESC_KEYCODE: 27,
 
-    // Смещение всех пинов (кроме управляющего) по X и Y (в px)
-    PIN_SHIFT_X: 5,
-    PIN_SHIFT_Y: 37,
-
     // Карта пинов и объявлений
     MAP: document.querySelector('.map'),
 
-    // Контейнер пинов
+    // Контейнер, содержащий все пины
     PINS_CONTAINER: document.querySelector('.map__pins'),
+
+    // Центровка пинов (кроме управляющего) по X и Y (в px)
+    PIN_SHIFT_X: 5,
+    PIN_SHIFT_Y: 37,
+
+    // Максимальное количество выводимых на страницу пинов
+    PINS_MAX_LIMIT: 5,
 
     // Управляющий пользовательский пин
     CONTROL_PIN: document.querySelector('.map__pin--main'),
 
-    // Смещение управляющего пина по Y (в px)
+    // Центровка управляющего пина по Y (в px)
     CONTROL_PIN_SHIFT_Y: 45,
+    CONTROL_PIN_BASE_COORDS_X: '600px',
+    CONTROL_PIN_BASE_COORDS_Y: '375px',
 
-    // Ограничения координат управляющего пина
+    // Ограничение координат управляющего пина
+    // Необходимо во избежание вылета пина за пределы карты
     COORDS_MIN_LIMIT_X: 0,
     COORDS_MAX_LIMIT_X: 1200,
-    COORDS_MIN_LIMIT_Y: 55,
-    COORDS_MAX_LIMIT_Y: 455,
+    COORDS_MIN_LIMIT_Y: 110,
+    COORDS_MAX_LIMIT_Y: 655,
+
+    // z-index для открытых объявлений,
+    // исключающий наслоение на них других элементов
+    CARD_SUPERIORITY_Z_INDEX: 100,
+
+    // Ограничение ширины фотографий в объявлениях
+    // Необходимо, чтобы фото не вываливались из контейнера
+    PHOTOS_MAX_WIDTH: 70,
+
+    // Фильтры объявлений (10 шт.)
+    FILTERS: document.querySelectorAll('.map__filters select, .map__filters input'),
+
+    // Количество лишних первых символов (лишний префикс)
+    // в строке с названием ID объекта.
+    // Используется при substring(), чтобы привести,
+    // например, "housing-type" к "type".
+    // Используется при фильтрации.
+    ID_USELESS_PREFIX: 8,
 
     // Форма создания объявлений
     FORM: document.querySelector('.notice__form'),
 
-    // Form Action Url
+    // Action URL формы
     FORM_ACTION_URL: 'https://js.dump.academy/keksobooking',
 
+    // tabindex, при котором поле "адрес" становится недоступным для фокуса
+    FORM_EXCLUDING_TABINDEX: -1,
+
+    // Базовые значения элементов формы
+    FORM_DEFAULT_TITLE_MIN_LENGTH: 30,
+    FORM_DEFAULT_TITLE_MAX_LENGTH: 100,
+    FORM_DEFAULT_ADDRESS: 'x: 600, y: 420',
+    FORM_DEFAULT_PRICE_PLACEHOLDER: 1000,
+    FORM_DEFAULT_PRICE_MIN_VALUE: 1000,
+    FORM_DEFAULT_PRICE_MAX_VALUE: 1000000,
+    FORM_DEFAULT_CAPACITY_OPTION: 2,
+
+    // Аватар и изображения жилья пользователя в форме
+    USER_AVATAR_INPUT: document.querySelector('input#avatar'),
+    USER_AVATAR_DROPZONE: document.querySelector('.notice__photo .drop-zone'),
+    USER_AVATAR_PREVIEW: document.querySelector('.notice__preview img'),
+    USER_AVATAR_DEFAULT_PREVIEW: 'img/muffin.png',
+    USER_PROPERTY_IMAGE_INPUT: document.querySelector('input#images'),
+    USER_PROPERTY_IMAGE_CONTAINER: document.querySelector('.form__photo-container'),
+    USER_PROPERTY_IMAGE_WIDTH: 140,
+    IMAGE_TYPES: ['jpg', 'jpeg', 'gif', 'png'],
+    IMAGE_MIME_TYPES: 'image/jpeg,image/png,image/gif',
+
     // Объект — Типы жилья (ключи и расшифровки)
+    // Используется для русификации типа жилья при отрисовке карт
     OFFERS_PROPERTY_TYPES: {
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'
     },
 
-    // Библиотека и методы расшифровки ошибок валидации формы
+    // Библиотека ошибок валидации формы и методы работы с ними
     INPUT_ERRORS: {
       valueMissing: 'Это поле не должно быть пустым.',
       valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
@@ -64,37 +116,37 @@
       rangeOverflow: 'Максимально допустимое значение: ',
       badInput: 'Неверный формат ввода: допустимы только числа.',
 
-      // Выдача динамически составленной ошибки "Значение слишком короткое"
+      // Возврат динамически составленной ошибки "Значение слишком короткое"
       getValueShortDynamicError: function (currentLength) {
         return this.valueShort + currentLength + '.';
       },
-      // Выдача динамически составленной ошибки "Значение слишком длинное"
+      // Возврат динамически составленной ошибки "Значение слишком длинное"
       getValueLongDynamicError: function (currentLength) {
         return this.valueLong + currentLength + '.';
       },
-      // Выдача динамически составленной ошибки "Число меньше допустимого минимума"
+      // Возврат динамически составленной ошибки "Число меньше допустимого минимума"
       getRangeUnderflowDynamicError: function (currentLimit) {
         return this.rangeUnderflow + currentLimit + '.';
       },
-      // Выдача динамически составленной ошибки "Число больше допустимого максимума"
+      // Возврат динамически составленной ошибки "Число больше допустимого максимума"
       getRangeOverflowDynamicError: function (currentLimit) {
         return this.rangeOverflow + currentLimit + '.';
       }
     },
 
-    // HTTP код SUCCESS/УСПЕХ
+    // HTTP код SUCCESS/OK/УСПЕХ
     HTTP_STATUS_OK: 200,
 
-    // Предел ожидания ответа от сервера (10 секунд)
+    // Лимит ожидания ответа от сервера (10 секунд)
     HTTP_TIMEOUT_LIMIT: 10000,
 
-    // URL сервера для получения данных объявлений
+    // URL сервера для получения данных
     SERVER_DOWNLOAD_URL: 'https://1510.dump.academy/keksobooking/data',
 
-    // URL сервера для отправки данных из формы
+    // URL сервера для отправки данных
     SERVER_UPLOAD_URL: 'https://1510.dump.academy/keksobooking',
 
-    // Библиотека и метод расшифровки HTTP ошибок
+    // Библиотека HTTP ошибок и методы работы с ними
     HTTP_ERRORS: {
       unreachable: 'Невозможно установить соединение с сервером.',
       badRequest: 'Неверный запрос.',
@@ -111,8 +163,8 @@
       default: 'Неизвестная ошибка. HTTP код: ',
 
       /**
-       * Сборка и показ модального окна с сообщением о HTTP ошибке.
-       * Добавление слушателя на кнопку ЗАКРЫТЬ.
+       * Сборка и отображение модального окна с сообщением о HTTP ошибке.
+       * Добавление слушателя на кнопку ЗАКРЫТЬ (закрытие).
        *
        * @method showModal
        * @param {number} errorCode — код HTTP ошибки
@@ -162,8 +214,8 @@
        * Расшифровка кода HTTP ошибок.
        *
        * @method decode
-       * @param {number} errorCode — код ошибки
-       * @return {string} — расшифрованное сообщение об ошибке
+       * @param {number} errorCode — код HTTP ошибки
+       * @return {string} — расшифрованное и русифицированное сообщение об ошибке
        */
       decode: function (errorCode) {
         switch (errorCode) {
@@ -212,7 +264,8 @@
       },
 
       /**
-       * Закрытие (удаление) модального окна с HTTP ошибкой и отключение связанных слушателей.
+       * Закрытие (удаление) модального окна с HTTP ошибкой,
+       * отключение связанных слушателей (нажатие кнопки "Закрыть").
        *
        * @method onErrorModalCloseButtonPress
        */

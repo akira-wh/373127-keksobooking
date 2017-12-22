@@ -16,42 +16,45 @@
   window.form = {
 
     /**
-     * Приведение формы создания объявлений к необходимомму состоянию по умолчанию.
+     * Приведение формы к необходимомму состоянию по умолчанию.
      * Форме устанавливается action url и прочие default атрибуты.
-     * Метод запускается при загрузке сайта и при обнулении формы после отправки.
+     * Данный метод запускается при загрузке сайта, а также
+     * после отправки формы на сервер (сброс).
      *
      * @method setDefaults
      */
     setDefaults: function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
+      window.constants.USER_AVATAR_INPUT.accept = window.constants.IMAGE_MIME_TYPES;
+      window.constants.USER_PROPERTY_IMAGE_INPUT.accept = window.constants.IMAGE_MIME_TYPES;
 
       // default для поля "Заголовок объявления"
       var inputTitle = window.constants.FORM.querySelector('input#title');
       inputTitle.value = '';
-      inputTitle.minLength = 30;
-      inputTitle.maxLength = 100;
+      inputTitle.minLength = window.constants.FORM_DEFAULT_TITLE_MIN_LENGTH;
+      inputTitle.maxLength = window.constants.FORM_DEFAULT_TITLE_MAX_LENGTH;
       inputTitle.required = true;
 
       // default для поля "Адрес"
-      // сброс адреса также ведет к возвращению управляющего пина на исходную позицию
+      // сброс адреса ведет к возвращению управляющего пина на исходные координаты
       var inputAddress = window.constants.FORM.querySelector('input#address');
-      inputAddress.value = 'x: 600, y: 420';
+      inputAddress.value = window.constants.FORM_DEFAULT_ADDRESS;
       inputAddress.readOnly = true;
-      inputAddress.tabIndex = -1;
-      window.constants.CONTROL_PIN.style.left = '600px';
-      window.constants.CONTROL_PIN.style.top = '375px';
+      inputAddress.tabIndex = window.constants.FORM_EXCLUDING_TABINDEX;
+      window.constants.CONTROL_PIN.style.left = window.constants.CONTROL_PIN_BASE_COORDS_X;
+      window.constants.CONTROL_PIN.style.top = window.constants.CONTROL_PIN_BASE_COORDS_Y;
 
       // default для поля "Цена за ночь"
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
       inputPropertyPrice.value = '';
-      inputPropertyPrice.placeholder = 1000;
-      inputPropertyPrice.min = 1000;
-      inputPropertyPrice.max = 1000000;
+      inputPropertyPrice.placeholder = window.constants.FORM_DEFAULT_PRICE_PLACEHOLDER;
+      inputPropertyPrice.min = window.constants.FORM_DEFAULT_PRICE_MIN_VALUE;
+      inputPropertyPrice.max = window.constants.FORM_DEFAULT_PRICE_MAX_VALUE;
       inputPropertyPrice.required = true;
 
       // default для поля "Количество мест"
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
-      selectPropertyCapacity.selectedIndex = 2;
+      selectPropertyCapacity.selectedIndex = window.constants.FORM_DEFAULT_CAPACITY_OPTION;
 
       // default для поля "Описание"
       var textareaDescription = window.constants.FORM.querySelector('textarea#description');
@@ -60,20 +63,22 @@
     },
 
     /**
-     * Активация формы создания объявлений, контроль синхронизации и валидности.
+     * Активация формы, контроль синхронизации и валидности.
      *
-     * Удаление у <form> блокирующего класса .notice__form--disabled, активация fieldset.
-     * По синхронизации и валидации см.документацию связанных функций.
+     * Удаление блокирующего класса .notice__form--disabled,
+     * снятие у всех fieldset флага disabled.
+     * По синхронизации и валидации см.их комментарии к ним.
      *
      * @method activate
      */
     activate: function () {
+
       // Активация формы и fieldset'ов
       window.constants.FORM.classList.remove('notice__form--disabled');
       setFieldsetsAvailability(true);
 
       // Контроль синхронизации между зависимыми полями:
-      // "Тип жилья", "Цена за ночь", "Время заезда и выезда", "Количество комнат и мест"
+      // "Время заезда и выезда"
       var selectCheckin = window.constants.FORM.querySelector('select#timein');
       var selectCheckout = window.constants.FORM.querySelector('select#timeout');
       selectCheckin.addEventListener('change', function () {
@@ -83,12 +88,14 @@
         window.synchronizeFields(selectCheckout, selectCheckin, syncTimes);
       });
 
+      // "Тип жилья", "Цена за ночь"
       var selectPropertyType = window.constants.FORM.querySelector('select#type');
       var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
       selectPropertyType.addEventListener('change', function () {
         window.synchronizeFields(selectPropertyType, inputPropertyPrice, syncPropertyPrice);
       });
 
+      // "Количество комнат и мест"
       var selectRoomsNumber = window.constants.FORM.querySelector('select#room_number');
       var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
       selectRoomsNumber.addEventListener('change', function () {
@@ -98,10 +105,13 @@
       // Контроль вводимых данных на валидность
       var inputTitle = window.constants.FORM.querySelector('input#title');
       var inputPrice = window.constants.FORM.querySelector('input#price');
-      inputTitle.addEventListener('input', window.validation.onInvalidInput);
-      inputTitle.addEventListener('invalid', window.validation.onInvalidInput);
-      inputPrice.addEventListener('input', window.validation.onInvalidInput);
-      inputPrice.addEventListener('invalid', window.validation.onInvalidInput);
+      inputTitle.addEventListener('invalid', function (evt) {
+        window.validation.onInvalidInput(evt);
+        inputTitle.addEventListener('input', window.validation.onInvalidInput);
+      });
+      inputPrice.addEventListener('invalid', function (evt) {
+        window.validation.onInvalidInput(evt);
+      });
 
       // Отправка данных формы на сервер
       window.constants.FORM.addEventListener('submit', onFormSubmit);
@@ -111,6 +121,7 @@
       resetButton.addEventListener('click', function (evt) {
         evt.preventDefault();
 
+        cleanupUserImages();
         window.constants.FORM.reset();
         window.form.setDefaults();
       });
@@ -220,7 +231,22 @@
   }
 
   /**
-   * Альтернативный вариант отправки данных формы на сервер.
+  * Очистка загруженных пользователем фотографий
+  *
+  * @function cleanupUserImages
+  */
+  function cleanupUserImages() {
+    window.constants.USER_AVATAR_PREVIEW.src = window.constants.USER_AVATAR_DEFAULT_PREVIEW;
+
+    var propertyImages = window.constants.USER_PROPERTY_IMAGE_CONTAINER.querySelectorAll('img');
+    var propertyImagesNumber = propertyImages.length;
+    for (var i = 0; i < propertyImagesNumber; i++) {
+      propertyImages[i].parentNode.removeChild(propertyImages[i]);
+    }
+  }
+
+  /**
+   * Альтернативный метод отправки данных формы на сервер.
    *
    * @function onFormSubmit
    * @param {object} evt — объект события, submit
@@ -234,16 +260,19 @@
 
   /**
    * Callback при успешной отправке данных формы на сервер:
-   * Возвращение к значениям по умолчанию.
+   * возвращение к значениям по умолчанию.
    *
    * @function onLoad
    */
   function onLoad() {
+    cleanupUserImages();
+    window.constants.FORM.reset();
     window.form.setDefaults();
   }
 
   /**
-   * Callback при получении HTTP ошибки: расшифровка и оповещения клиента.
+   * Callback при получении HTTP ошибки:
+   * расшифровка ошибки и оповещения клиента.
    *
    * @function onError
    * @param {number} errorCode — HTTP код ошибки
