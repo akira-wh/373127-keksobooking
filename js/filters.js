@@ -58,7 +58,13 @@
         var prefix = window.constants.USELESS_PREFIX_CHARS;
         var currentType = currentFilter.id.substring(prefix);
 
-        criteriaList[currentType] = currentFilter.value;
+        if ((currentType === 'rooms' && currentFilter.value !== 'any') ||
+          (currentType === 'guests' && currentFilter.value !== 'any')) {
+          criteriaList[currentType] = Number(currentFilter.value);
+        } else {
+          criteriaList[currentType] = currentFilter.value;
+        }
+
       } else if (currentFilter.checked === true && criteriaList.features.indexOf(currentFilter.value) === -1) {
         criteriaList.features.push(currentFilter.value);
       }
