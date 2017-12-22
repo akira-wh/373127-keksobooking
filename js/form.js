@@ -103,10 +103,12 @@
       // Контроль вводимых данных на валидность
       var inputTitle = window.constants.FORM.querySelector('input#title');
       var inputPrice = window.constants.FORM.querySelector('input#price');
-      inputTitle.addEventListener('input', window.validation.onInvalidInput);
-      inputTitle.addEventListener('invalid', window.validation.onInvalidInput);
-      inputPrice.addEventListener('input', window.validation.onInvalidInput);
-      inputPrice.addEventListener('invalid', window.validation.onInvalidInput);
+      inputTitle.addEventListener('invalid', function (evt) {
+        window.validation.onInvalidInput(evt);
+      });
+      inputPrice.addEventListener('invalid', function (evt) {
+        window.validation.onInvalidInput(evt);
+      });
 
       // Отправка данных формы на сервер
       window.constants.FORM.addEventListener('submit', onFormSubmit);
@@ -244,6 +246,7 @@
    * @function onLoad
    */
   function onLoad() {
+    window.constants.FORM.reset();
     window.form.setDefaults();
   }
 
