@@ -14,6 +14,9 @@
 
   window.constants = {
 
+    // Стандартная задерка для дебаунса (милисекунды)
+    DEBOUNCE_INTERVAL: 500,
+
     // Цвета
     COLOR_ORANGE: '#ff5635',
 

@@ -136,18 +136,22 @@
    */
   function compareFeatures(comparedFeatures, requestedFeatures) {
     var requestedFeaturesNumber = requestedFeatures.length;
+    // Счетчик совпадений по запросу
     var matches = 0;
 
+    // Если не запрошено ничего конкретного — объявление подходит
     if (requestedFeaturesNumber === 0) {
       return true;
     }
 
+    // Если запрошено — проверка
     for (var i = 0; i < requestedFeaturesNumber; i++) {
-      if (comparedFeatures.indexOf(requestedFeatures[i] !== -1)) {
+      if (comparedFeatures.indexOf(requestedFeatures[i]) !== -1) {
         matches++;
       }
     }
 
+    // Если все запрошенные преимущества имеются — объявление подходит
     if (matches === requestedFeaturesNumber) {
       return true;
     } else {
