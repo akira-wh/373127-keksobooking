@@ -44,15 +44,15 @@
   };
 
   /**
-  * Базовая настройка XMLHttpRequest.
-  * Подходит для получения данных и отправки.
-  * Не содержит конечных команд OPEN() и SEND().
-  *
-  * @function getBasicTunedXhr
-  * @param {callback} onLoad — callback, обрабатывающий данные
-  * @param {callback} onError — callback, обрабатывающий ошибки
-  * @return {object} — настроенный XMLHttpRequest объект
-  */
+   * Базовая настройка XMLHttpRequest.
+   * Подходит для получения данных и отправки.
+   * Не содержит конечных команд OPEN() и SEND().
+   *
+   * @function getBasicTunedXhr
+   * @param {callback} onLoad — callback, обрабатывающий данные
+   * @param {callback} onError — callback, обрабатывающий ошибки
+   * @return {object} — настроенный XMLHttpRequest объект
+   */
   function getBasicTunedXhr(onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';

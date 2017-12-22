@@ -15,6 +15,12 @@
 
   var lastTimeout = null;
 
+  /**
+  * Дебанус для переданной в качестве callback операции.
+  *
+  * @function debounce
+  * @param {function} callback — функция, к которой применяется дебанус
+  */
   window.debounce = function (callback) {
 
     if (lastTimeout) {

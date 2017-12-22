@@ -29,7 +29,7 @@
 
       for (var i = 0; i < filtersNumber; i++) {
         window.constants.FILTERS[i].addEventListener('change', function () {
-          window.debounce(applyFiltering);
+          window.debounce(executeRequest);
         });
       }
     }
@@ -38,13 +38,13 @@
   /**
    * Основная механика фильтрации объявлений
    *
-   * @function applyFiltering
+   * @function executeRequest
    */
-  function applyFiltering() {
+  function executeRequest() {
     var criteriaList = determineCriteria();
     var filtredData = filterData(criteriaList);
-    var pinsNumber = filtredData.length;
 
+    var pinsNumber = filtredData.length;
     removeUselessPins();
     window.showPins(pinsNumber, filtredData);
   }
@@ -93,8 +93,8 @@
    */
   function filterData(criteriaList) {
     var data = window.data;
-
     var filtredData = data.filter(function (card) {
+
       if ((card.offer.type === criteriaList.type || criteriaList.type === 'any') &&
           (card.offer.rooms === criteriaList.rooms || criteriaList.rooms === 'any') &&
           (card.offer.guests === criteriaList.guests || criteriaList.guests === 'any') &&
@@ -144,7 +144,7 @@
    * Сравнение проверяемого массива преимуществ
    * с условием по преимуществам, заданным фильтрацией.
    *
-   * @function comparePrice
+   * @function compareFeatures
    * @param {number} comparedFeatures — преимущества сравниваемого элемента
    * @param {string} requestedFeatures — запрос по преимуществам согласно фильтру
    * @return {boolean} — подходит/не подходит
