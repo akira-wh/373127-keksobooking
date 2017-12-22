@@ -25,6 +25,8 @@
      */
     setDefaults: function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
+      window.constants.USER_AVATAR_INPUT.accept = 'image/jpeg,image/png,image/gif';
+      window.constants.USER_AVATAR_PREVIEW.src = window.constants.USER_AVATAR_DEFAULT_PREVIEW;
 
       // default для поля "Заголовок объявления"
       var inputTitle = window.constants.FORM.querySelector('input#title');

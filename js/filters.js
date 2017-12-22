@@ -64,7 +64,7 @@
 
     filters.forEach(function (currentFilter) {
       if (currentFilter.tagName.toLowerCase() === 'select') {
-        var prefix = window.constants.USELESS_PREFIX_CHARS;
+        var prefix = window.constants.ID_USELESS_PREFIX;
         var currentType = currentFilter.id.substring(prefix);
 
         if ((currentType === 'rooms' && currentFilter.value !== 'any') ||

@@ -15,7 +15,7 @@
   window.constants = {
 
     // Стандартная задерка для дебаунса (милисекунды)
-    DEBOUNCE_INTERVAL: 500,
+    DEBOUNCE_DELAY: 500,
 
     // Цвета
     COLOR_ORANGE: '#ff5635',
@@ -60,13 +60,20 @@
     // в строке с названием ключа объекта.
     // Используется при .substring, чтобы привести,
     // например, "housing-type" к "type".
-    USELESS_PREFIX_CHARS: 8,
+    ID_USELESS_PREFIX: 8,
 
     // Форма создания объявлений
     FORM: document.querySelector('.notice__form'),
 
     // Form Action Url
     FORM_ACTION_URL: 'https://js.dump.academy/keksobooking',
+
+    // Аватар пользователя в форме
+    USER_AVATAR_INPUT: document.querySelector('input#avatar'),
+    USER_AVATAR_DROPZONE: document.querySelector('.notice__photo .drop-zone'),
+    USER_AVATAR_PREVIEW: document.querySelector('.notice__preview img'),
+    USER_AVATAR_DEFAULT_PREVIEW: 'img/muffin.png',
+    IMAGE_TYPES: ['jpg', 'jpeg', 'gif', 'png'],
 
     // Объект — Типы жилья (ключи и расшифровки)
     OFFERS_PROPERTY_TYPES: {
