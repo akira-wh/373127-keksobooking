@@ -97,6 +97,7 @@
     USER_PROPERTY_IMAGE_CONTAINER: document.querySelector('.form__photo-container'),
     USER_PROPERTY_IMAGE_WIDTH: 140,
     IMAGE_TYPES: ['jpg', 'jpeg', 'gif', 'png'],
+    IMAGE_MIME_TYPES: 'image/jpeg,image/png,image/gif',
 
     // Объект — Типы жилья (ключи и расшифровки)
     // Используется для русификации типа жилья при отрисовке карт

@@ -25,8 +25,8 @@
      */
     setDefaults: function () {
       window.constants.FORM.action = window.constants.FORM_ACTION_URL;
-      window.constants.USER_AVATAR_INPUT.accept = 'image/jpeg,image/png,image/gif';
-      window.constants.USER_AVATAR_PREVIEW.src = window.constants.USER_AVATAR_DEFAULT_PREVIEW;
+      window.constants.USER_AVATAR_INPUT.accept = window.constants.IMAGE_MIME_TYPES;
+      window.constants.USER_PROPERTY_IMAGE_INPUT.accept = window.constants.IMAGE_MIME_TYPES;
 
       // default для поля "Заголовок объявления"
       var inputTitle = window.constants.FORM.querySelector('input#title');
@@ -121,6 +121,7 @@
       resetButton.addEventListener('click', function (evt) {
         evt.preventDefault();
 
+        cleanupUserImages();
         window.constants.FORM.reset();
         window.form.setDefaults();
       });
@@ -230,6 +231,21 @@
   }
 
   /**
+  * Очистка загруженных пользователем фотографий
+  *
+  * @function cleanupUserImages
+  */
+  function cleanupUserImages() {
+    window.constants.USER_AVATAR_PREVIEW.src = window.constants.USER_AVATAR_DEFAULT_PREVIEW;
+
+    var propertyImages = window.constants.USER_PROPERTY_IMAGE_CONTAINER.querySelectorAll('img');
+    var propertyImagesNumber = propertyImages.length;
+    for (var i = 0; i < propertyImagesNumber; i++) {
+      propertyImages[i].parentNode.removeChild(propertyImages[i]);
+    }
+  }
+
+  /**
    * Альтернативный метод отправки данных формы на сервер.
    *
    * @function onFormSubmit
@@ -249,6 +265,7 @@
    * @function onLoad
    */
   function onLoad() {
+    cleanupUserImages();
     window.constants.FORM.reset();
     window.form.setDefaults();
   }
