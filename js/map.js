@@ -31,19 +31,19 @@
   // 4. Когда сайт активен и на пине нажат ENTER:
   // реакции не будет, удалена в пункте 3.
   window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
-  window.constants.CONTROL_PIN.addEventListener('keydown', onControlPinEnterPress);
+  window.constants.CONTROL_PIN.addEventListener('keydown', onControlPinFirstEnterPress);
 
   /**
   * Запуск основного функционала сайта по нажатию ENTER на управляющем пине.
   * После выполнения, обработчик удаляет возможность вызвать себя повторно.
   *
-  * @function onControlPinEnterPress
+  * @function onControlPinFirstEnterPress
   * @param {object} evt — объект события, нажатая клавиша ENTER
   */
-  function onControlPinEnterPress(evt) {
+  function onControlPinFirstEnterPress(evt) {
     if (evt.keyCode === window.constants.ENTER_KEYCODE) {
       activateServices();
-      window.constants.CONTROL_PIN.removeEventListener('keydown', onControlPinEnterPress);
+      window.constants.CONTROL_PIN.removeEventListener('keydown', onControlPinFirstEnterPress);
     }
   }
 
@@ -170,7 +170,7 @@
     if (window.constants.MAP.classList.contains('map--faded') &&
         window.constants.FORM.classList.contains('notice__form--disabled')) {
       activateServices();
-      window.constants.CONTROL_PIN.removeEventListener('keydown', onControlPinEnterPress);
+      window.constants.CONTROL_PIN.removeEventListener('keydown', onControlPinFirstEnterPress);
     }
 
     document.removeEventListener('mousemove', onControlPinMousemove);
