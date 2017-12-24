@@ -64,7 +64,7 @@
       window.data[i]['data-serial'] = i;
     }
 
-    window.showPins(5, window.data);
+    window.showPins(window.constants.PINS_MAX_LIMIT, window.data);
     window.filters.activate();
   }
 
