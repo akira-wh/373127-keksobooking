@@ -271,11 +271,10 @@
         window.addEventListener('keydown', onWindowEscPress);
 
         return;
-      } else {
-        // Если target НЕ искомый элемент — проверяется родительский узел.
-        target = target.parentNode;
       }
 
+      // Если target НЕ искомый элемент — проверяется родительский узел.
+      target = target.parentNode;
     }
 
     return;
@@ -294,7 +293,6 @@
 
       uselessCardCloseButton.removeEventListener('click', onCardCloseButtonPress);
       window.removeEventListener('keydown', onWindowEscPress);
-
       uselessCard.parentNode.removeChild(uselessCard);
     }
   }

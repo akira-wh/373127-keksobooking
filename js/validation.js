@@ -31,11 +31,9 @@
       var isMaxLengthExist = maxLength > 0;
 
       if (target.validity.valueMissing) {
-        if (target.validity.badInput) {
-          var message = window.constants.INPUT_ERRORS.badInput;
-        } else {
-          message = window.constants.INPUT_ERRORS.valueMissing;
-        }
+        var message = (target.validity.badInput) ?
+          window.constants.INPUT_ERRORS.badInput :
+          window.constants.INPUT_ERRORS.valueMissing;
       } else if (target.validity.tooShort || (isMinLengthExist && currentValueLength < minLength)) {
         message = window.constants.INPUT_ERRORS.getValueShortDynamicError(currentValueLength);
       } else if (target.validity.tooLong || (isMaxLengthExist && currentValueLength > maxLength)) {

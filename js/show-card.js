@@ -128,7 +128,7 @@
       var photo = document.createElement('img');
 
       photo.src = sourcePhotos[i];
-      photo.width = window.constants.PHOTOS_MAX_WIDTH;
+      photo.width = window.constants.CARD_PHOTO_WIDTH;
 
       photosListItem.appendChild(photo);
       photosFragment.appendChild(photosListItem);

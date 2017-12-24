@@ -93,7 +93,7 @@
 
     // Ограничение ширины фотографий в объявлениях
     // Необходимо, чтобы фото не вываливались из контейнера
-    PHOTOS_MAX_WIDTH: 70,
+    CARD_PHOTO_WIDTH: 70,
 
     // Фильтры объявлений (10 шт.)
     FILTERS: document.querySelectorAll('.map__filters select, .map__filters input'),
@@ -346,13 +346,11 @@
        * отключение связанных слушателей (нажатие кнопки "Закрыть").
        *
        * @method onErrorModalCloseButtonPress
+       * @param {object} evt — объект события (click)
        */
-      onErrorModalCloseButtonPress: function () {
-        var errorModal = document.querySelector('.error-modal');
-        var errorCloseButton = errorModal.querySelector('button');
-
-        errorModal.parentNode.removeChild(errorModal);
-        errorCloseButton.removeEventListener('click', this.onErrorModalCloseButtonPress);
+      onErrorModalCloseButtonPress: function (evt) {
+        evt.target.parentNode.remove();
+        evt.target.removeEventListener('click', this.onErrorModalCloseButtonPress);
       }
     }
   };

@@ -75,20 +75,36 @@
       // Контроль синхронизации между зависимыми полями:
       // "Время заезда и выезда"
       window.constants.FORM_CHECKIN.addEventListener('change', function () {
-        window.synchronizeFields(window.constants.FORM_CHECKIN, window.constants.FORM_CHECKOUT, syncTimes);
+        window.synchronizeFields(
+            window.constants.FORM_CHECKIN,
+            window.constants.FORM_CHECKOUT,
+            syncTimes
+        );
       });
       window.constants.FORM_CHECKOUT.addEventListener('change', function () {
-        window.synchronizeFields(window.constants.FORM_CHECKOUT, window.constants.FORM_CHECKIN, syncTimes);
+        window.synchronizeFields(
+            window.constants.FORM_CHECKOUT,
+            window.constants.FORM_CHECKIN,
+            syncTimes
+        );
       });
 
       // "Тип жилья", "Цена за ночь"
       window.constants.FORM_TYPE.addEventListener('change', function () {
-        window.synchronizeFields(window.constants.FORM_TYPE, window.constants.FORM_PRICE, syncPropertyPrice);
+        window.synchronizeFields(
+            window.constants.FORM_TYPE,
+            window.constants.FORM_PRICE,
+            syncPropertyPrice
+        );
       });
 
       // "Количество комнат и мест"
       window.constants.FORM_ROOMS_NUMBER.addEventListener('change', function () {
-        window.synchronizeFields(window.constants.FORM_ROOMS_NUMBER, window.constants.FORM_CAPACITY, syncPropertyCapacity);
+        window.synchronizeFields(
+            window.constants.FORM_ROOMS_NUMBER,
+            window.constants.FORM_CAPACITY,
+            syncPropertyCapacity
+        );
       });
 
       // Контроль вводимых данных на валидность
@@ -96,6 +112,7 @@
         window.validation.onInvalidInput(evt);
         window.constants.FORM_TITLE.addEventListener('input', window.validation.onInvalidInput);
       });
+
       window.constants.FORM_PRICE.addEventListener('invalid', function (evt) {
         window.validation.onInvalidInput(evt);
       });
@@ -221,8 +238,10 @@
   * @function cleanupUserImages
   */
   function cleanupUserImages() {
+    // Возвращение SRC у аватара к значению по умолчанию
     window.constants.USER_AVATAR_PREVIEW.src = window.constants.USER_AVATAR_DEFAULT_PREVIEW;
 
+    // Удаление из разметки загруженных фотографий жилища
     var propertyImages = window.constants.USER_PROPERTY_IMAGE_CONTAINER.querySelectorAll('img');
     var propertyImagesNumber = propertyImages.length;
 
