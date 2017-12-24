@@ -51,12 +51,7 @@
       }
 
       target.setCustomValidity(message);
-
-      if (message) {
-        target.style.border = '';
-      } else {
-        target.style.border = '2px solid crimson';
-      }
+      target.style.border = (message) ? '2px solid crimson' : '';
     }
   };
 })();
