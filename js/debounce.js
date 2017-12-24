@@ -22,7 +22,6 @@
   * @param {function} callback — функция, к которой применяется дебанус
   */
   window.debounce = function (callback) {
-
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }

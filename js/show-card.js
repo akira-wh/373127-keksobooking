@@ -25,9 +25,8 @@
    * @param {number} offerIndex — индекс необходимого объявления
    */
   window.showCard = function (sourceOffers, offerIndex) {
-    var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
     var cardFragment = document.createDocumentFragment();
-    var card = cardTemplate.cloneNode(true);
+    var card = window.constants.CARD_TEMPLATE.cloneNode(true);
 
     var avatar = card.querySelector('.popup__avatar');
     var title = card.querySelector('h3');
@@ -42,7 +41,7 @@
 
     var source = sourceOffers[offerIndex];
 
-    card.style.zIndex = window.constants.CARD_SUPERIORITY_Z_INDEX;
+    card.style.zIndex = window.constants.CARD_DOMINANCE_Z_INDEX;
     avatar.src = source.author.avatar;
     title.textContent = source.offer.title;
     address.textContent = source.offer.address;
@@ -57,9 +56,7 @@
     photosList.appendChild(createPhotosMarkup(source.offer.photos));
 
     cardFragment.appendChild(card);
-
-    var cardInsertPoint = window.constants.MAP.querySelector('.map__filters-container');
-    window.constants.MAP.insertBefore(cardFragment, cardInsertPoint);
+    window.constants.MAP.insertBefore(cardFragment, window.constants.CARD_PLACEMENT);
   };
 
   /*
@@ -82,7 +79,7 @@
    * @return {string} — расшифрованное значение
    */
   function decodePropertyType(currentType, sourceTypes) {
-    var requestedDefinition = 'Тип недвижимости не определен';
+    var requestedDefinition = window.constants.CARD_DEFAULT_PROPERTY_TYPE;
 
     for (var key in sourceTypes) {
       if (currentType === key) {
@@ -131,7 +128,7 @@
       var photo = document.createElement('img');
 
       photo.src = sourcePhotos[i];
-      photo.width = window.constants.PHOTOS_MAX_WIDTH;
+      photo.width = window.constants.CARD_PHOTO_WIDTH;
 
       photosListItem.appendChild(photo);
       photosFragment.appendChild(photosListItem);

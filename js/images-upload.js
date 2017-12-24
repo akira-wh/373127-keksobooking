@@ -13,16 +13,12 @@
 
 (function () {
 
-  var avatarInput = window.constants.USER_AVATAR_INPUT;
-  var avatarPreview = window.constants.USER_AVATAR_PREVIEW;
-  avatarInput.addEventListener('change', function () {
-    checkAndRenderImage(avatarInput);
+  // Проверка и отображение фотографий при загрузке
+  window.constants.USER_AVATAR_INPUT.addEventListener('change', function () {
+    checkAndRenderImage(window.constants.USER_AVATAR_INPUT);
   });
-
-  var propertyImageInput = window.constants.USER_PROPERTY_IMAGE_INPUT;
-  var propertyImageContainer = window.constants.USER_PROPERTY_IMAGE_CONTAINER;
-  propertyImageInput.addEventListener('change', function () {
-    checkAndRenderImage(propertyImageInput);
+  window.constants.USER_PROPERTY_IMAGE_INPUT.addEventListener('change', function () {
+    checkAndRenderImage(window.constants.USER_PROPERTY_IMAGE_INPUT);
   });
 
   /**
@@ -30,7 +26,7 @@
   * обработка и отрисовка загруженных изображений на странице.
   *
   * @function checkAndRenderImage
-  * @param {node} target — target type file: avatarInput или propertyImageInput
+  * @param {node} target — target type file: USER_AVATAR_INPUT или USER_PROPERTY_IMAGE_INPUT
   */
   function checkAndRenderImage(target) {
     var image = target.files[0];
@@ -47,19 +43,18 @@
       var fileReader = new FileReader();
 
       fileReader.addEventListener('load', function () {
-
         // Если файл загружен в поле для аватара:
-        if (target === avatarInput) {
-          avatarPreview.src = fileReader.result;
+        if (target === window.constants.USER_AVATAR_INPUT) {
+          window.constants.USER_AVATAR_PREVIEW.src = fileReader.result;
 
-          // Если файл загружен в поле для фотографий жилища
-        } else if (target === propertyImageInput) {
+          // Если файл загружен в поле для фотографий жилища:
+        } else if (target === window.constants.USER_PROPERTY_IMAGE_INPUT) {
           var propertyImagePreview = document.createElement('img');
 
           propertyImagePreview.src = fileReader.result;
           propertyImagePreview.width = window.constants.USER_PROPERTY_IMAGE_WIDTH;
 
-          propertyImageContainer.appendChild(propertyImagePreview);
+          window.constants.USER_PROPERTY_IMAGE_CONTAINER.appendChild(propertyImagePreview);
         }
       });
 

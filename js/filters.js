@@ -67,12 +67,10 @@
     var criteriaList = {
       features: []
     };
-    var filters = Array.from(window.constants.FILTERS);
 
-    filters.forEach(function (currentFilter) {
+    Array.from(window.constants.FILTERS).forEach(function (currentFilter) {
       if (currentFilter.tagName.toLowerCase() === 'select') {
-        var prefix = window.constants.ID_USELESS_PREFIX;
-        var currentType = currentFilter.id.substring(prefix);
+        var currentType = currentFilter.id.substring(window.constants.ID_USELESS_PREFIX);
 
         if ((currentType === 'rooms' && currentFilter.value !== 'any') ||
           (currentType === 'guests' && currentFilter.value !== 'any')) {
@@ -99,8 +97,7 @@
    * @return {array} — массив с избранными объявлениями
    */
   function filterData(criteriaList) {
-    var data = window.data;
-    var filtredData = data.filter(function (card) {
+    var filtredData = window.data.filter(function (card) {
 
       if ((card.offer.type === criteriaList.type || criteriaList.type === 'any') &&
           (card.offer.rooms === criteriaList.rooms || criteriaList.rooms === 'any') &&
@@ -147,9 +144,9 @@
       return true;
     } else if (priceCondition === 'any') {
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   }
 
   /**
@@ -162,7 +159,9 @@
    * @return {boolean} — подходит/не подходит
    */
   function compareFeatures(comparedFeatures, requestedFeatures) {
+    // Количество запрошенных преимуществ
     var requestedFeaturesNumber = requestedFeatures.length;
+
     // Счетчик совпадений по запросу
     // Обновляется по ходу итераций
     var matches = 0;
