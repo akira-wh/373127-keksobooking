@@ -17,7 +17,6 @@
   window.constants.USER_AVATAR_INPUT.addEventListener('change', function () {
     checkAndRenderImage(window.constants.USER_AVATAR_INPUT);
   });
-
   window.constants.USER_PROPERTY_IMAGE_INPUT.addEventListener('change', function () {
     checkAndRenderImage(window.constants.USER_PROPERTY_IMAGE_INPUT);
   });

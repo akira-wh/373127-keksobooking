@@ -63,7 +63,6 @@
    * @return {object} — объект с ключами и значениями искомых объявлений
    */
   function determineCriteria() {
-
     // Объект-буфер, заполняется по ходу итераций forEach
     var criteriaList = {
       features: []

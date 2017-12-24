@@ -67,7 +67,6 @@
      * @method activate
      */
     activate: function () {
-
       // Активация формы и fieldset'ов
       window.constants.FORM.classList.remove('notice__form--disabled');
       setFieldsetsAvailability(true);
@@ -112,9 +111,9 @@
         window.validation.onInvalidInput(evt);
         window.constants.FORM_TITLE.addEventListener('input', window.validation.onInvalidInput);
       });
-
       window.constants.FORM_PRICE.addEventListener('invalid', function (evt) {
         window.validation.onInvalidInput(evt);
+        window.constants.FORM_PRICE.addEventListener('input', window.validation.onInvalidInput);
       });
 
       // Отправка данных формы на сервер
@@ -238,10 +237,10 @@
   * @function cleanupUserImages
   */
   function cleanupUserImages() {
-    // Возвращение SRC у аватара к значению по умолчанию
+    // Возвращение SRC аватара к значению по умолчанию
     window.constants.USER_AVATAR_PREVIEW.src = window.constants.USER_AVATAR_DEFAULT_PREVIEW;
 
-    // Удаление из разметки загруженных фотографий жилища
+    // Удаление из разметки загруженных фотографий жилья
     var propertyImages = window.constants.USER_PROPERTY_IMAGE_CONTAINER.querySelectorAll('img');
     var propertyImagesNumber = propertyImages.length;
 
