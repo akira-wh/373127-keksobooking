@@ -16,6 +16,7 @@
 
   // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта
   // После исполнения обоработчика - отлов удаляется.
+  window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
   window.constants.CONTROL_PIN.addEventListener('click', onControlPinFirstClick);
 
   /**
@@ -41,10 +42,9 @@
    */
   function activateServices() {
     window.constants.MAP.classList.remove('map--faded');
-    window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
     window.backend.load(onLoad, onError);
-    window.form.activate();
     window.constants.PINS_CONTAINER.addEventListener('click', onPinClick);
+    window.form.activate();
   }
 
   /**
