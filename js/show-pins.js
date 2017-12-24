@@ -25,11 +25,10 @@
    * @param {array} sourceOffers — массив объектов-объявлений для съема данных
    */
   window.showPins = function (expectedNumber, sourceOffers) {
-    var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
     var pinsFragment = document.createDocumentFragment();
 
     for (var i = 0; i < expectedNumber; i++) {
-      var pin = pinTemplate.cloneNode(true);
+      var pin = window.constants.PIN_TEMPLATE.cloneNode(true);
       var img = pin.querySelector('img');
 
       pin.style.left = sourceOffers[i].location.x - window.constants.PIN_SHIFT_X + 'px';

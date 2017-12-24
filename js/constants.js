@@ -14,6 +14,10 @@
 
   window.constants = {
 
+    // Шаблоны элементов
+    PIN_TEMPLATE: document.querySelector('template').content.querySelector('.map__pin'),
+    CARD_TEMPLATE: document.querySelector('template').content.querySelector('.map__card'),
+
     // Стандартная задерка для дебаунса (в милисекундах)
     DEBOUNCE_DELAY: 500,
 
@@ -51,6 +55,10 @@
     COORDS_MAX_LIMIT_X: 1200,
     COORDS_MIN_LIMIT_Y: 55,
     COORDS_MAX_LIMIT_Y: 455,
+
+    // Точка размещения открытых объявлений
+    // (место в разметке для appendChild(card))
+    CARD_PLACEMENT: document.querySelector('.map__filters-container'),
 
     // z-index для открытых объявлений,
     // исключающий наслоение на них других элементов
