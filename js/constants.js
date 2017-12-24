@@ -31,8 +31,8 @@
     PINS_CONTAINER: document.querySelector('.map__pins'),
 
     // Центровка пинов (кроме управляющего) по X и Y (в px)
-    PIN_SHIFT_X: 5,
-    PIN_SHIFT_Y: 37,
+    PIN_SHIFT_X: 23,
+    PIN_SHIFT_Y: 64,
 
     // Максимальное количество выводимых на страницу пинов
     PINS_MAX_LIMIT: 5,
@@ -49,8 +49,8 @@
     // Необходимо во избежание вылета пина за пределы карты
     COORDS_MIN_LIMIT_X: 0,
     COORDS_MAX_LIMIT_X: 1200,
-    COORDS_MIN_LIMIT_Y: 110,
-    COORDS_MAX_LIMIT_Y: 655,
+    COORDS_MIN_LIMIT_Y: 55,
+    COORDS_MAX_LIMIT_Y: 455,
 
     // z-index для открытых объявлений,
     // исключающий наслоение на них других элементов
