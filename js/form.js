@@ -24,42 +24,37 @@
      * @method setDefaults
      */
     setDefaults: function () {
-      window.constants.FORM.action = window.constants.FORM_ACTION_URL;
+      window.constants.FORM.action = window.constants.FORM_ACTION_DEFAULT_URL;
       window.constants.USER_AVATAR_INPUT.accept = window.constants.IMAGE_MIME_TYPES;
       window.constants.USER_PROPERTY_IMAGE_INPUT.accept = window.constants.IMAGE_MIME_TYPES;
 
       // default для поля "Заголовок объявления"
-      var inputTitle = window.constants.FORM.querySelector('input#title');
-      inputTitle.value = '';
-      inputTitle.minLength = window.constants.FORM_DEFAULT_TITLE_MIN_LENGTH;
-      inputTitle.maxLength = window.constants.FORM_DEFAULT_TITLE_MAX_LENGTH;
-      inputTitle.required = true;
+      window.constants.FORM_TITLE.value = '';
+      window.constants.FORM_TITLE.minLength = window.constants.FORM_TITLE_DEFAULT_MIN_LENGTH;
+      window.constants.FORM_TITLE.maxLength = window.constants.FORM_TITLE_DEFAULT_MAX_LENGTH;
+      window.constants.FORM_TITLE.required = true;
 
       // default для поля "Адрес"
       // сброс адреса ведет к возвращению управляющего пина на исходные координаты
-      var inputAddress = window.constants.FORM.querySelector('input#address');
-      inputAddress.value = window.constants.FORM_DEFAULT_ADDRESS;
-      inputAddress.readOnly = true;
-      inputAddress.tabIndex = window.constants.FORM_EXCLUDING_TABINDEX;
+      window.constants.FORM_ADDRESS.value = window.constants.FORM_ADDRESS_DEFAULT_VALUE;
+      window.constants.FORM_ADDRESS.readOnly = true;
+      window.constants.FORM_ADDRESS.tabIndex = window.constants.FORM_EXCLUDING_TABINDEX;
       window.constants.CONTROL_PIN.style.left = window.constants.CONTROL_PIN_BASE_COORDS_X;
       window.constants.CONTROL_PIN.style.top = window.constants.CONTROL_PIN_BASE_COORDS_Y;
 
       // default для поля "Цена за ночь"
-      var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
-      inputPropertyPrice.value = '';
-      inputPropertyPrice.placeholder = window.constants.FORM_DEFAULT_PRICE_PLACEHOLDER;
-      inputPropertyPrice.min = window.constants.FORM_DEFAULT_PRICE_MIN_VALUE;
-      inputPropertyPrice.max = window.constants.FORM_DEFAULT_PRICE_MAX_VALUE;
-      inputPropertyPrice.required = true;
+      window.constants.FORM_PRICE.value = '';
+      window.constants.FORM_PRICE.placeholder = window.constants.FORM_PRICE_DEFAULT_PLACEHOLDER;
+      window.constants.FORM_PRICE.min = window.constants.FORM_PRICE_DEFAULT_MIN_VALUE;
+      window.constants.FORM_PRICE.max = window.constants.FORM_PRICE_DEFAULT_MAX_VALUE;
+      window.constants.FORM_PRICE.required = true;
 
       // default для поля "Количество мест"
-      var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
-      selectPropertyCapacity.selectedIndex = window.constants.FORM_DEFAULT_CAPACITY_OPTION;
+      window.constants.FORM_CAPACITY.selectedIndex = window.constants.FORM_CAPACITY_DEFAULT_OPTION;
 
       // default для поля "Описание"
-      var textareaDescription = window.constants.FORM.querySelector('textarea#description');
-      textareaDescription.value = '';
-      textareaDescription.placeholder = 'Здесь расскажите о том, какое ваше жилье замечательное и вообще';
+      window.constants.FORM_DESCRIPTION.value = '';
+      window.constants.FORM_DESCRIPTION.placeholder = window.constants.FORM_DESCRIPTION_DEFAULT_PLACEHOLDER;
     },
 
     /**
@@ -79,37 +74,29 @@
 
       // Контроль синхронизации между зависимыми полями:
       // "Время заезда и выезда"
-      var selectCheckin = window.constants.FORM.querySelector('select#timein');
-      var selectCheckout = window.constants.FORM.querySelector('select#timeout');
-      selectCheckin.addEventListener('change', function () {
-        window.synchronizeFields(selectCheckin, selectCheckout, syncTimes);
+      window.constants.FORM_CHECKIN.addEventListener('change', function () {
+        window.synchronizeFields(window.constants.FORM_CHECKIN, window.constants.FORM_CHECKOUT, syncTimes);
       });
-      selectCheckout.addEventListener('change', function () {
-        window.synchronizeFields(selectCheckout, selectCheckin, syncTimes);
+      window.constants.FORM_CHECKOUT.addEventListener('change', function () {
+        window.synchronizeFields(window.constants.FORM_CHECKOUT, window.constants.FORM_CHECKIN, syncTimes);
       });
 
       // "Тип жилья", "Цена за ночь"
-      var selectPropertyType = window.constants.FORM.querySelector('select#type');
-      var inputPropertyPrice = window.constants.FORM.querySelector('input#price');
-      selectPropertyType.addEventListener('change', function () {
-        window.synchronizeFields(selectPropertyType, inputPropertyPrice, syncPropertyPrice);
+      window.constants.FORM_TYPE.addEventListener('change', function () {
+        window.synchronizeFields(window.constants.FORM_TYPE, window.constants.FORM_PRICE, syncPropertyPrice);
       });
 
       // "Количество комнат и мест"
-      var selectRoomsNumber = window.constants.FORM.querySelector('select#room_number');
-      var selectPropertyCapacity = window.constants.FORM.querySelector('select#capacity');
-      selectRoomsNumber.addEventListener('change', function () {
-        window.synchronizeFields(selectRoomsNumber, selectPropertyCapacity, syncPropertyCapacity);
+      window.constants.FORM_ROOMS_NUMBER.addEventListener('change', function () {
+        window.synchronizeFields(window.constants.FORM_ROOMS_NUMBER, window.constants.FORM_CAPACITY, syncPropertyCapacity);
       });
 
       // Контроль вводимых данных на валидность
-      var inputTitle = window.constants.FORM.querySelector('input#title');
-      var inputPrice = window.constants.FORM.querySelector('input#price');
-      inputTitle.addEventListener('invalid', function (evt) {
+      window.constants.FORM_TITLE.addEventListener('invalid', function (evt) {
         window.validation.onInvalidInput(evt);
-        inputTitle.addEventListener('input', window.validation.onInvalidInput);
+        window.constants.FORM_TITLE.addEventListener('input', window.validation.onInvalidInput);
       });
-      inputPrice.addEventListener('invalid', function (evt) {
+      window.constants.FORM_PRICE.addEventListener('invalid', function (evt) {
         window.validation.onInvalidInput(evt);
       });
 
@@ -117,8 +104,7 @@
       window.constants.FORM.addEventListener('submit', onFormSubmit);
 
       // Обнуление формы до необходимых default-значений
-      var resetButton = window.constants.FORM.querySelector('button.form__reset');
-      resetButton.addEventListener('click', function (evt) {
+      window.constants.FORM_RESET_BUTTON.addEventListener('click', function (evt) {
         evt.preventDefault();
 
         cleanupUserImages();
@@ -159,11 +145,10 @@
    * @param {boolean} booleanStatus — true, чтобы включить / false, чтобы выключить
    */
   function setFieldsetsAvailability(booleanStatus) {
-    var fieldsets = window.constants.FORM.querySelectorAll('fieldset');
-    var fieldsetsNumber = fieldsets.length;
+    var fieldsetsNumber = window.constants.FORM_FIELDSETS.length;
 
     for (var i = 0; i < fieldsetsNumber; i++) {
-      fieldsets[i].disabled = !booleanStatus;
+      window.constants.FORM_FIELDSETS[i].disabled = !booleanStatus;
     }
   }
 
@@ -240,6 +225,7 @@
 
     var propertyImages = window.constants.USER_PROPERTY_IMAGE_CONTAINER.querySelectorAll('img');
     var propertyImagesNumber = propertyImages.length;
+
     for (var i = 0; i < propertyImagesNumber; i++) {
       propertyImages[i].parentNode.removeChild(propertyImages[i]);
     }

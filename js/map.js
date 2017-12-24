@@ -225,9 +225,7 @@
    * @param {object} newControlPinCoords — объект с новыми координатами пина
    */
   function changePropertyAddress(newControlPinCoords) {
-    var inputAddress = window.constants.FORM.querySelector('input#address');
-
-    inputAddress.value =
+    window.constants.FORM_ADDRESS.value =
       'x: ' + newControlPinCoords.x + ', ' +
       'y: ' + (newControlPinCoords.y + window.constants.CONTROL_PIN_SHIFT_Y);
   }

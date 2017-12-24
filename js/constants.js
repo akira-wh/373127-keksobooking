@@ -14,9 +14,23 @@
 
   window.constants = {
 
-    // Шаблоны элементов
-    PIN_TEMPLATE: document.querySelector('template').content.querySelector('.map__pin'),
-    CARD_TEMPLATE: document.querySelector('template').content.querySelector('.map__card'),
+    /*
+    ***********************************************************************************
+    ***********************************************************************************
+    ***
+    ***                             НЕТЕМАТИЧЕСКИЕ КОНСТАНТЫ
+    ***
+    ***********************************************************************************
+    ***********************************************************************************
+    */
+
+    // Объект — Типы жилья (ключи и расшифровки)
+    // Используется для русификации типа жилья при отрисовке карт
+    OFFERS_PROPERTY_TYPES: {
+      flat: 'Квартира',
+      house: 'Дом',
+      bungalo: 'Бунгало'
+    },
 
     // Стандартная задерка для дебаунса (в милисекундах)
     DEBOUNCE_DELAY: 500,
@@ -27,6 +41,16 @@
 
     // Коды клавиш
     ESC_KEYCODE: 27,
+
+    /*
+    ***********************************************************************************
+    ***********************************************************************************
+    ***
+    ***                                   ЭЛЕМЕНТЫ КАРТЫ
+    ***
+    ***********************************************************************************
+    ***********************************************************************************
+    */
 
     // Карта пинов и объявлений
     MAP: document.querySelector('.map'),
@@ -62,7 +86,7 @@
 
     // z-index для открытых объявлений,
     // исключающий наслоение на них других элементов
-    CARD_SUPERIORITY_Z_INDEX: 100,
+    CARD_DOMINANCE_Z_INDEX: 100,
 
     // Тип недвижимости по умолчанию для объявлений.
     CARD_DEFAULT_PROPERTY_TYPE: 'Тип недвижимости не определен',
@@ -81,23 +105,53 @@
     // Используется при фильтрации.
     ID_USELESS_PREFIX: 8,
 
+    // Шаблоны элементов
+    PIN_TEMPLATE: document.querySelector('template').content.querySelector('.map__pin'),
+    CARD_TEMPLATE: document.querySelector('template').content.querySelector('.map__card'),
+
+
+    /*
+    ***********************************************************************************
+    ***********************************************************************************
+    ***
+    ***                       ЭЛЕМЕНТЫ ФОРМЫ СОЗДАНИЯ ОБЪЯВЛЕНИЙ
+    ***
+    ***********************************************************************************
+    ***********************************************************************************
+    */
+
     // Форма создания объявлений
     FORM: document.querySelector('.notice__form'),
 
     // Action URL формы
-    FORM_ACTION_URL: 'https://js.dump.academy/keksobooking',
+    FORM_ACTION_DEFAULT_URL: 'https://js.dump.academy/keksobooking',
+
+    // Элементы формы
+    FORM_FIELDSETS: document.querySelectorAll('.notice__form fieldset'),
+    FORM_TITLE: document.querySelector('input#title'),
+    FORM_ADDRESS: document.querySelector('input#address'),
+    FORM_PRICE: document.querySelector('input#price'),
+    FORM_CAPACITY: document.querySelector('select#capacity'),
+    FORM_DESCRIPTION: document.querySelector('textarea#description'),
+    FORM_CHECKIN: document.querySelector('select#timein'),
+    FORM_CHECKOUT: document.querySelector('select#timeout'),
+    FORM_TYPE: document.querySelector('select#type'),
+    FORM_ROOMS_NUMBER: document.querySelector('select#room_number'),
+    FORM_RESET_BUTTON: document.querySelector('button.form__reset'),
 
     // tabindex, при котором поле "адрес" становится недоступным для фокуса
     FORM_EXCLUDING_TABINDEX: -1,
 
     // Базовые значения элементов формы
-    FORM_DEFAULT_TITLE_MIN_LENGTH: 30,
-    FORM_DEFAULT_TITLE_MAX_LENGTH: 100,
-    FORM_DEFAULT_ADDRESS: 'x: 600, y: 420',
-    FORM_DEFAULT_PRICE_PLACEHOLDER: 1000,
-    FORM_DEFAULT_PRICE_MIN_VALUE: 1000,
-    FORM_DEFAULT_PRICE_MAX_VALUE: 1000000,
-    FORM_DEFAULT_CAPACITY_OPTION: 2,
+    FORM_TITLE_DEFAULT_MIN_LENGTH: 30,
+    FORM_TITLE_DEFAULT_MAX_LENGTH: 100,
+    FORM_ADDRESS_DEFAULT_VALUE: 'x: 600, y: 420',
+    FORM_PRICE_DEFAULT_PLACEHOLDER: 1000,
+    FORM_PRICE_DEFAULT_MIN_VALUE: 1000,
+    FORM_PRICE_DEFAULT_MAX_VALUE: 1000000,
+    FORM_CAPACITY_DEFAULT_OPTION: 2,
+    FORM_DESCRIPTION_DEFAULT_PLACEHOLDER:
+        'Здесь расскажите о том, какое ваше жилье замечательное и вообще',
 
     // Аватар и изображения жилья пользователя в форме
     USER_AVATAR_INPUT: document.querySelector('input#avatar'),
@@ -110,15 +164,17 @@
     IMAGE_TYPES: ['jpg', 'jpeg', 'gif', 'png'],
     IMAGE_MIME_TYPES: 'image/jpeg,image/png,image/gif',
 
-    // Объект — Типы жилья (ключи и расшифровки)
-    // Используется для русификации типа жилья при отрисовке карт
-    OFFERS_PROPERTY_TYPES: {
-      flat: 'Квартира',
-      house: 'Дом',
-      bungalo: 'Бунгало'
-    },
+    /*
+    ***********************************************************************************
+    ***********************************************************************************
+    ***
+    ***                           БИБЛИОТЕКА ОШИБОК ВАЛИДАЦИИ,
+    ***                             МЕДОТЫ РАБОТЫ С ОШИБКАМИ
+    ***
+    ***********************************************************************************
+    ***********************************************************************************
+    */
 
-    // Библиотека ошибок валидации формы и методы работы с ними
     INPUT_ERRORS: {
       valueMissing: 'Это поле не должно быть пустым.',
       valueShort: 'Минимально допустимая длина: 30 символов. Сейчас: ',
@@ -144,6 +200,17 @@
         return this.rangeOverflow + currentLimit + '.';
       }
     },
+
+    /*
+    ***********************************************************************************
+    ***********************************************************************************
+    ***
+    ***                           КОНСТАНТЫ ДЛЯ РАБОТЫ С СЕТЬЮ
+    ***             СТАТУСЫ, БИБЛИОТЕКА ОШИБОК, МЕТОДЫ РАБОТЫ С ОШИБКАМИ etc.
+    ***
+    ***********************************************************************************
+    ***********************************************************************************
+    */
 
     // HTTP код SUCCESS/OK/УСПЕХ
     HTTP_STATUS_OK: 200,

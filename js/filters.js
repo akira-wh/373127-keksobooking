@@ -67,9 +67,8 @@
     var criteriaList = {
       features: []
     };
-    var filters = Array.from(window.constants.FILTERS);
 
-    filters.forEach(function (currentFilter) {
+    Array.from(window.constants.FILTERS).forEach(function (currentFilter) {
       if (currentFilter.tagName.toLowerCase() === 'select') {
         var prefix = window.constants.ID_USELESS_PREFIX;
         var currentType = currentFilter.id.substring(prefix);
@@ -99,8 +98,7 @@
    * @return {array} — массив с избранными объявлениями
    */
   function filterData(criteriaList) {
-    var data = window.data;
-    var filtredData = data.filter(function (card) {
+    var filtredData = window.data.filter(function (card) {
 
       if ((card.offer.type === criteriaList.type || criteriaList.type === 'any') &&
           (card.offer.rooms === criteriaList.rooms || criteriaList.rooms === 'any') &&
