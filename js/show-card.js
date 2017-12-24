@@ -79,7 +79,7 @@
    * @return {string} — расшифрованное значение
    */
   function decodePropertyType(currentType, sourceTypes) {
-    var requestedDefinition = 'Тип недвижимости не определен';
+    var requestedDefinition = window.constants.CARD_DEFAULT_PROPERTY_TYPE;
 
     for (var key in sourceTypes) {
       if (currentType === key) {
