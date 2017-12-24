@@ -14,21 +14,37 @@
 
 (function () {
 
-  // Отлов первого взаимодействия с управляющим пином -> запуск основного функционала сайта
-  // После исполнения обоработчика - отлов удаляется.
+  // Взаимодействие с управляющим пином.
+  //
+  // 1. Когда сайт неактивен и пин перемещается:
+  // по завершению обновляются координаты адреса в форме,
+  // активируется основной функционал сайта,
+  // удаляется возможность активировать сайт повторно по ENTER.
+  //
+  // 2. Когда сайт активен и пин перемещается повторно:
+  // обновляются только координаты в форме.
+  //
+  // 3. Когда сайт неактивен и на пине нажат ENTER:
+  // активируется основной функционал сайта,
+  // удаляется возможность активировать сайт повторно по ENTER.
+  //
+  // 4. Когда сайт активен и на пине нажат ENTER:
+  // реакции не будет, удалена в пункте 3.
   window.constants.CONTROL_PIN.addEventListener('mousedown', onControlPinMousedown);
-  window.constants.CONTROL_PIN.addEventListener('click', onControlPinFirstClick);
+  window.constants.CONTROL_PIN.addEventListener('keydown', onControlPinEnterPress);
 
   /**
-   * Активация основного функционала сайта.
-   * Вызывается по первому КЛИКУ мышью, нажатию ENTER или SPACE на управлящем пине.
-   * После исполнения обоработчика - возможность повторного вызова исключается.
-   *
-   * @function onControlPinFirstClick
-   */
-  function onControlPinFirstClick() {
-    activateServices();
-    window.constants.CONTROL_PIN.removeEventListener('click', onControlPinFirstClick);
+  * Запуск основного функционала сайта по нажатию ENTER на управляющем пине.
+  * После выполнения, обработчик удаляет возможность вызвать себя повторно.
+  *
+  * @function onControlPinEnterPress
+  * @param {object} evt — объект события, нажатая клавиша ENTER
+  */
+  function onControlPinEnterPress(evt) {
+    if (evt.keyCode === window.constants.ENTER_KEYCODE) {
+      activateServices();
+      window.constants.CONTROL_PIN.removeEventListener('keydown', onControlPinEnterPress);
+    }
   }
 
   /**
@@ -142,11 +158,20 @@
    * Завершение драга на управляющем пине — удаление слушателей.
    * Хендлер прекращает контроль за перемещением мыши и удаляет сам себя.
    *
+   * Если сайт был неактивен — активация основного функционала,
+   * удаление возможности повторной активации по нажатию ENTER.
+   *
    * @function onControlPinMouseup
    * @param {object} upEvt — объект события, отжатие ЛКМ
    */
   function onControlPinMouseup(upEvt) {
     upEvt.preventDefault();
+
+    if (window.constants.MAP.classList.contains('map--faded') &&
+        window.constants.FORM.classList.contains('notice__form--disabled')) {
+      activateServices();
+      window.constants.CONTROL_PIN.removeEventListener('keydown', onControlPinEnterPress);
+    }
 
     document.removeEventListener('mousemove', onControlPinMousemove);
     document.removeEventListener('mouseup', onControlPinMouseup);
