@@ -220,10 +220,10 @@
     HTTP_TIMEOUT_LIMIT: 10000,
 
     // URL сервера для получения данных
-    SERVER_DOWNLOAD_URL: 'https://1510.dump.academy/keksobooking/data',
+    SERVER_DOWNLOAD_URL: 'https://js.dump.academy/keksobooking/data',
 
     // URL сервера для отправки данных
-    SERVER_UPLOAD_URL: 'https://1510.dump.academy/keksobooking',
+    SERVER_UPLOAD_URL: 'https://js.dump.academy/keksobooking/',
 
     // Библиотека HTTP ошибок и методы работы с ними
     HTTP_ERRORS: {
